@@ -76,7 +76,7 @@ After setting up the environment, you can start the development server and explo
 2. Open the project folder
 3. When prompted, select the `venv` environment as the interpreter for the workspace, or activate it as explained previously
 4. Change directory to the django project by navigating to \main with `cd main`
-5. `py manage.py runserver` to start the server
+5. `python manage.py runserver` to start the server
 ---
 
 ## Contributing
