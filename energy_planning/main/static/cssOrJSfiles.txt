@@ -1,0 +1,3 @@
+Inside main/templates/main, create an HTML file like home.html for the homepage.
+You can use Django's templating language to create dynamic pages. 
+Also, place CSS and JavaScript files in main/static/css or main/static/js.

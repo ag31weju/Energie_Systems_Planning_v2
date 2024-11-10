@@ -29,10 +29,6 @@ db.sqlite3
 local_settings.py
 .env
 
-# Media and static files
-media/
-staticfiles/
-static/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints
