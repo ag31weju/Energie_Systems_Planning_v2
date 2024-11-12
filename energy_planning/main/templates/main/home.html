@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -7,28 +8,21 @@
     <title>Energy Planning Dashboard</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+
 <body>
 
-<div class="container">
-    <header class="hero">
-        <h1>Welcome to Energy System Planning</h1>
-        <p>Analyze, optimize, and plan for a sustainable future</p>
-        <button id="sayHelloButton" class="cta-button">Say Hello</button>
-    </header>
-</div>
+    <div class="container">
+        <header class="hero">
+            <h1>Welcome to Energy System Planning</h1>
+            <p>Analyze, optimize, and plan for a sustainable future</p>
+            <button id="sayHelloButton" data-url="{% url 'say_hello' %}" class="cta-button">Say Hello</button>
+        </header>
+    </div>
 
-<!-- JavaScript to handle button click and AJAX request -->
-<script>
-    document.getElementById("sayHelloButton").addEventListener("click", function() {
-        fetch("{% url 'say_hello' %}")
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);  // Prints "Hello World" in the browser console
-                alert(data.message);  // Display "Hello World" in an alert box
-            })
-            .catch(error => console.error('Error:', error));
-    });
-</script>
+    <!-- JavaScript to handle button click and AJAX request -->
+    <script src="{% static 'js/button_helloworld.js' %}">
+    </script>
 
 </body>
+
 </html>
