@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # Custom apps
+    # User apps
     'main',
 ]
 
@@ -57,7 +57,7 @@ ROOT_URLCONF = 'energy_planning.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],  # Add the centralized templates directory
         'APP_DIRS': True,  # Ensure this is set to True
         'OPTIONS': {
             'context_processors': [
@@ -118,7 +118,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]  # Points to the project-level static directory
+STATIC_ROOT = BASE_DIR / "staticfiles"  # For `collectstatic` command (used in production)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
