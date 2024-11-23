@@ -265,6 +265,12 @@ body {
   justify-content: space-evenly;
 }
 
+svg {
+  width: 60%;
+  height: 30%;
+  padding-block: 10px;
+}
+
 @media (max-width: 992px) {
   .grid-row {
     flex-direction: column;
