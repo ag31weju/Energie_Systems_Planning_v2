@@ -1,3 +1,5 @@
+/*General styles */
+
 * {
   box-sizing: border-box;
 }
@@ -8,6 +10,20 @@ body {
   color: white;
 }
 
+svg {
+  width: 60%;
+  height: 30%;
+  padding-block: 10px;
+}
+
+@media (max-width: 992px) {
+  .grid-row {
+    flex-direction: column;
+  }
+}
+
+/*root div*/
+
 #rootdiv {
   display: flex;
   justify-content: flex-start;
@@ -15,14 +31,7 @@ body {
   height: 100vh;
 }
 
-#outercolumn2 {
-  display: flex;
-  min-width: 50%;
-  flex-direction: column;
-  border-style: solid;
-  border-color: black;
-  border-left: 0;
-}
+/* left page side */
 
 #outercolumn1 {
   display: flex;
@@ -36,19 +45,6 @@ body {
   min-height: 70%;
   display: flex;
   flex-direction: column;
-}
-
-#inputbox {
-  border-color: black;
-  border-style: solid;
-  border-right: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
-  min-height: 30%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 .image {
@@ -67,6 +63,31 @@ body {
   flex-direction: row;
   height: 100%;
   width: 100%;
+}
+
+#inputbox {
+  border-color: black;
+  border-style: solid;
+  border-right: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
+  min-height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* right page side */
+
+
+#outercolumn2 {
+  display: flex;
+  min-width: 50%;
+  flex-direction: column;
+  border-style: solid;
+  border-color: black;
+  border-left: 0;
 }
 
 #matrix {
@@ -98,32 +119,11 @@ body {
   justify-content: space-evenly;
 }
 
-#ibbbfw {
-  display: block;
-}
-
-#checkboxrow {
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  min-width: 100%;
-}
-
 #cbrow {
   display: flex;
   justify-content: space-evenly;
 }
 
-svg {
-  width: 60%;
-  height: 30%;
-  padding-block: 10px;
-}
 
-@media (max-width: 992px) {
-  .grid-row {
-    flex-direction: column;
-  }
-}
+
+
