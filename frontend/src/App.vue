@@ -5,12 +5,7 @@
         <div id="image"></div>
       </div>
       <div id="inputbox" class="grid-column">
-        <div style="min-width: 50%">
-          <Slider v-model="sliderVal" class="w-56"></Slider>
-          {{ sliderVal }}
-          <Slider v-model="sliderVal2" class="w-56"></Slider>
-          {{ sliderVal2 }}
-        </div>
+          <Sliders></Sliders>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
@@ -47,18 +42,17 @@
 
 <script>
 import axios from "axios";
-import Slider from "primevue/slider";
 import Chart from "primevue/chart";
+import Sliders from "./components/Sliders.vue";
 
 export default {
   data() {
     return {
-      sliderVal: 0,
-      sliderVal2: 100,
+      
     };
   },
   components: {
-    Slider,
+    Sliders,
     Chart,
   },
   methods: {
