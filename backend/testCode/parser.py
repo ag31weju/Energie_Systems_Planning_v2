@@ -51,5 +51,5 @@ for elem in elements:
     playfield_matrix[ypos][xpos] = element_type
 
 # Print the playfield matrix
-for column in playfield_matrix:
-    print('    '.join([cell if cell else 'empty' for cell in column]))  
+for row in playfield_matrix:
+    print('    '.join([cell if cell else 'empty' for cell in row]))  
