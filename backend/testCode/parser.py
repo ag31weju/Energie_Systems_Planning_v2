@@ -1,23 +1,18 @@
 #Here @AG implement parserfor the XML file
-
+import os
 import xml.etree.ElementTree as ET
 
 # check if the xml is present in the right directory
-import os
-file_path = r"C:\Users\49151\OneDrive\Desktop\energy_system_planning-1\backend\testCode\xml\scenario1.xml"
-try:
-    with open(file_path, 'r') as file:
-        # check if the file is found and print the contents
-        # content = file.read()
-        # print(content)
-        print("file found")
-except FileNotFoundError:
-    print(f"File not found: {file_path}")
+print("Current working directory:", os.getcwd())
+file_path = 'xml/scenario1.xml'
 
+current_directory = os.path.dirname(os.path.abspath(__file__))
 
-file_path = r"C:\Users\49151\OneDrive\Desktop\energy_system_planning-1\backend\testCode\xml\scenario1.xml"
+xml_file_path = os.path.join(current_directory, 'xml', 'scenario1.xml')
 
-tree = ET.parse(file_path)  # Parse the XML file
+print(current_directory)
+
+tree = ET.parse(xml_file_path)  # Parse the XML file
 root = tree.getroot()  # Get the root element of the XML
 
 # dynamic selecting matrix size 
