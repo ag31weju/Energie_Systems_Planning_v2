@@ -3,28 +3,24 @@
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
         <div id="image"></div>
+        <Playfield></Playfield>
       </div>
       <div id="inputbox" class="grid-column">
+        <Panel header="Checkboxes">
           <Sliders></Sliders>
+        </Panel>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
       <div id="matrix" class="grid-column">
-        <label>Matrix<br /></label>
+        <Panel header="Matrix"> </Panel>
       </div>
       <div id="charts" class="grid-column">
-        <label>Charts</label>
-        <div id="chart1-box" style="background-color: red">
-          <p>Hello</p>
-          <Chart
-            type="bar"
-            :data="chartset"
-            :options="chartOptions"
-            class="h-[30rem]"
-          />
-        </div>
+        <Panel header="Charts"> </Panel>
       </div>
-      <Checkboxes></Checkboxes>
+      <Panel header="Checkboxes">
+        <Checkboxes></Checkboxes>
+      </Panel>
     </div>
   </div>
 </template>
@@ -34,17 +30,19 @@ import axios from "axios";
 import Chart from "primevue/chart";
 import Sliders from "./components/Sliders.vue";
 import Checkboxes from "./components/Checkboxes.vue";
+import Playfield from "./components/Playfield.vue";
+import Panel from "primevue/panel";
 
 export default {
   data() {
-    return {
-      
-    };
+    return {};
   },
   components: {
     Checkboxes,
     Sliders,
     Chart,
+    Playfield,
+    Panel,
   },
   methods: {
     async fetchMessage() {

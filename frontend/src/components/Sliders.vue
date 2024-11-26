@@ -1,5 +1,5 @@
 <template>
-  <div style="min-width: 50%">
+  <div>
     <Slider v-model="sliderVal" class="w-56"></Slider>
     {{ sliderVal }}
     <Slider v-model="sliderVal2" class="w-56"></Slider>

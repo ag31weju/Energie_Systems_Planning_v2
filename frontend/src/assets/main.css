@@ -6,7 +6,7 @@
 
 body {
   margin: 0;
-  background-color: rgb(51, 51, 51);
+  background-color: rgba(0, 0, 0, 0.543);
   color: white;
 }
 
@@ -37,8 +37,7 @@ svg {
   display: flex;
   min-width: 50%;
   flex-direction: column;
-  border-style: solid;
-  border-color: black;
+
 }
 
 #imagebox {
@@ -65,27 +64,12 @@ svg {
   width: 100%;
 }
 
-#inputbox {
-  border-color: black;
-  border-style: solid;
-  border-right: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
-  min-height: 30%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 /* right page side */
 
 #outercolumn2 {
   display: flex;
   min-width: 50%;
   flex-direction: column;
-  border-style: solid;
-  border-color: black;
   border-left: 0;
 }
 
@@ -96,8 +80,6 @@ svg {
 }
 
 #charts {
-  border-color: black;
-  border-style: solid;
   border-left: 0px;
   border-bottom: 0px;
   border-right: 0px;
@@ -107,8 +89,6 @@ svg {
 }
 
 #checkboxes {
-  border-color: black;
-  border-style: solid;
   border-left: 0px;
   border-bottom: 0px;
   border-right: 0px;
@@ -121,4 +101,20 @@ svg {
 #cbrow {
   display: flex;
   justify-content: space-evenly;
+}
+
+.w-56 {
+  padding: 5px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+  border-radius: 5%;
+}
+
+.p-panel {
+  justify-content: center;
+  align-items: center;
+  width: 95%;
+  height: 98%;
+  margin: 20px;
+  text-align: center;
 }
