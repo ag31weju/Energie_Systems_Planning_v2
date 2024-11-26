@@ -27,7 +27,7 @@ export default {
           ex_matrix.push({
             x: i,
             y: j,
-            v: (i - 1) * 5 + j + 10,
+            v: parseInt(`${i}${j}`, 10),
           });
         }
       }
@@ -104,7 +104,10 @@ export default {
     },
   },
   mounted() {
-    this.renderMatrix();
+    //setTimeout is not a permanent fix
+    setTimeout(() => {
+      this.renderMatrix();
+    }, 100);
   },
 };
 </script>
