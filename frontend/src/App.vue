@@ -10,11 +10,10 @@
     </div>
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
-        <div id="image"></div>
         <Playfield></Playfield>
       </div>
-      <div id="inputbox" class="grid-column">
-        <Panel header="Checkboxes">
+      <div id="slider-box">
+        <Panel header="Sliders">
           <Sliders></Sliders>
         </Panel>
       </div>
@@ -27,9 +26,7 @@
       </div>
       <div id="charts" class="grid-column">
         <Panel header="Charts">
-          <label>Charts</label>
-          <div id="chart1-box" style="background-color: red">
-            <p>Hello</p>
+          <div id="chart1-box">
             <Chart
               type="bar"
               :data="chartset"
@@ -37,8 +34,7 @@
               class="h-[30rem]"
             />
           </div>
-          <div id="chart2-box" style="background-color: blue; margin-top: 20px">
-            <p>Chart 2</p>
+          <div id="chart2-box" style="margin-top: 10px">
             <Chart
               type="line"
               :data="chartset2"
@@ -98,6 +94,14 @@ export default {
             position: "left",
           },
         },
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true,
+          }
+        }
       },
       // Data for Chart 2
       chartset2: {
@@ -134,7 +138,7 @@ export default {
             display: true,
             position: "top",
           },
-        },
+        }
       },
     };
   },

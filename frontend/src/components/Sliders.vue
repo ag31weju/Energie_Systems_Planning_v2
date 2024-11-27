@@ -1,10 +1,8 @@
 <template>
-  <div>
     <Slider v-model="sliderVal" class="w-56"></Slider>
     {{ sliderVal }}
     <Slider v-model="sliderVal2" class="w-56"></Slider>
     {{ sliderVal2 }}
-  </div>
 </template>
 
 <script>

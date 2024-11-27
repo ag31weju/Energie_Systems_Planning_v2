@@ -1,8 +1,8 @@
 <template>
-  <Panel header="Playfield">
+  <Panel style="display: flex; justify-content: center; align-items: center">
     <img
       src="../assets/Shlerp.gif"
-      style="min-height: 10%; max-height: 40%; min-width: 10%; max-width: 40%; object-fit: contain;"
+      style="min-height: 10%; max-height: 50%; min-width: 10%; max-width: 50%"
     />
   </Panel>
 </template>
