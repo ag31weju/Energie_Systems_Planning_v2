@@ -1,14 +1,14 @@
-#Here @AG implement parserfor the XML file
+#Here @AG implement parser for the XML file
 import os
 import xml.etree.ElementTree as ET
 
 # check if the xml is present in the right directory
 print("Current working directory:", os.getcwd())
-file_path = 'xml/scenario1.xml'
+file_path = 'xml/scenario.xml'
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
-xml_file_path = os.path.join(current_directory, 'xml', 'scenario1.xml')
+xml_file_path = os.path.join(current_directory, 'xml', 'scenario.xml')
 
 print(current_directory)
 
@@ -36,7 +36,7 @@ for elem in elements:
 # The matrix will have (max_y + 1) rows and (max_x + 1) columns
 playfield_matrix = [['' for _ in range(max_x + 1)] for _ in range(max_y + 1)]
 
-#iterate through the xml to set the matrix
+# iterate through the xml to set the matrix
 for elem in elements:
     element_type = elem.get('type')  # Get the 'type' of the element
     xpos = int(elem.get('xpos'))  # Get the 'xpos' attribute
@@ -45,6 +45,11 @@ for elem in elements:
     # Place the element in the matrix at the correct position
     playfield_matrix[ypos][xpos] = element_type
 
-# Print the playfield matrix
-for row in playfield_matrix:
-    print('    '.join([cell if cell else 'empty' for cell in row]))  
+# Export the playfield matrix to a text file with each line separated by a ;
+output_file_path = os.path.join(current_directory, 'playfield_matrix.txt')
+with open(output_file_path, 'w') as f:
+    for row in playfield_matrix:
+        f.write(','.join([cell if cell else 'empty' for cell in row]) + ';\n')
+
+
+print(f"Playfield matrix exported to {output_file_path}")
