@@ -13,16 +13,12 @@
         <Playfield></Playfield>
       </div>
       <div id="slider-box">
-        <Panel header="Sliders">
           <Sliders></Sliders>
-        </Panel>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
-      <div id="matrix" class="grid-column">
-        <Panel header="Matrix">
+      <div id="matrix-box" class="grid-column">
           <Matrix></Matrix>
-        </Panel>
       </div>
       <div id="charts" class="grid-column">
         <Panel header="Charts">
@@ -44,9 +40,7 @@
           </div>
         </Panel>
       </div>
-      <Panel header="Checkboxes">
         <Checkboxes></Checkboxes>
-      </Panel>
     </div>
   </div>
 </template>

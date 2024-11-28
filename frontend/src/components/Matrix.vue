@@ -1,12 +1,13 @@
 <template>
-  <div>
-    <canvas id="chart-matrix"></canvas>
-  </div>
+  <Panel id="matrix" header="Matrix">
+      <canvas id="chart-matrix"></canvas>
+  </Panel>
 </template>
 
 <script>
 import { Chart, LinearScale } from "chart.js";
 import { MatrixController, MatrixElement } from "chartjs-chart-matrix";
+import Panel from "primevue/panel";
 
 // Register matrix plugin with Chart.js globally
 Chart.register(MatrixController, MatrixElement, LinearScale);
@@ -16,6 +17,9 @@ export default {
     return {
       matrix: null,
     };
+  },
+  components: {
+    Panel,
   },
   methods: {
     renderMatrix() {

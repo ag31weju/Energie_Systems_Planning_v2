@@ -1,12 +1,15 @@
 <template>
+  <Panel id="sliders" header="Sliders">
     <Slider v-model="sliderVal" class="w-56"></Slider>
     {{ sliderVal }}
     <Slider v-model="sliderVal2" class="w-56"></Slider>
     {{ sliderVal2 }}
+  </Panel>
 </template>
 
 <script>
 import Slider from "primevue/slider";
+import Panel from "primevue/panel";
 
 export default {
   data() {
@@ -17,6 +20,7 @@ export default {
   },
   components: {
     Slider,
+    Panel,
   },
   methods: {},
 };
