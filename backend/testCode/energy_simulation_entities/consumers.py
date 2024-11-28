@@ -5,7 +5,6 @@ class EnergyConsumer:
     def __init__(self, name, consumption_rate, position):
         """
         Initializes the EnergyConsumer class.
-
         :param name: Name of the consumer (e.g., "Residential Area")
         :param consumption_rate: Energy consumption rate in MW (megawatts)
         :param position: Position object indicating x, y coordinates on the board

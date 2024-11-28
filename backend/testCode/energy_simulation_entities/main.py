@@ -4,7 +4,7 @@ from producers import CoalPlant, WindTurbine, SolarPlant
 from consumers import ResidentialArea, IndustrialComplex, CommercialBuilding
 
 # Create some backdrop features
-backdrop = BackdropFeature.MOUNTAIN
+backdrop = BackdropFeature.GRASSLAND
 print(f"Backdrop feature: {backdrop.name}")
 
 # Create some energy producers
