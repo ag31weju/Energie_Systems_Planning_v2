@@ -1,15 +1,15 @@
 <template>
-  <Panel header="Checkboxes">
+  <Panel id="checkboxes-container">
     <div id="checkboxes" class="grid-column">
       <div id="cbrow" class="grid-column">
-        <input type="checkbox" id="ibbbfw" />
-        <input type="checkbox" id="igod8q" />
-        <input type="checkbox" id="ixlfdm" />
+        <input type="checkbox" class="checkbox" /> Option 1
+        <input type="checkbox" class="checkbox" /> Option 2
+        <input type="checkbox" class="checkbox" /> Option 3
       </div>
       <div id="cbrow" class="grid-column">
-        <input type="checkbox" id="ikyips" />
-        <input type="checkbox" id="i13dy2" />
-        <input type="checkbox" id="i00u17" />
+        <input type="checkbox" class="checkbox" /> Option 4
+        <input type="checkbox" class="checkbox" /> Option 5
+        <input type="checkbox" class="checkbox" /> Option 6
       </div>
     </div>
   </Panel>
@@ -21,7 +21,7 @@ import Panel from "primevue/panel";
 export default {
   components: {
     Panel,
-  }
+  },
 };
 </script>
 

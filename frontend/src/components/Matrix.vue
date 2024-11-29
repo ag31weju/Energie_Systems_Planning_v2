@@ -1,5 +1,5 @@
 <template>
-  <Panel id="matrix" header="Matrix">
+  <Panel id="matrix-container">
       <canvas id="chart-matrix"></canvas>
   </Panel>
 </template>
