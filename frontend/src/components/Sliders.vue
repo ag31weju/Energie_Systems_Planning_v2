@@ -1,9 +1,9 @@
 <template>
   <Panel id="sliders" header="Sliders">
-    <Slider v-model="sliderVal" min="0" max="5" class="w-56"></Slider>
-    {{ sliderVal }}
-    <Slider v-model="sliderVal2" min="0" max="5" class="w-56"></Slider>
-    {{ sliderVal2 }}
+    <Slider v-model="sliderVal" :step="20" class="w-56"></Slider>
+    {{ sliderVal / 20 }}
+    <Slider v-model="sliderVal2" :step="20" class="w-56"></Slider>
+    {{ sliderVal2 / 20 }}
     <div id="slider-buttons-container">
       <button @click="reset" class="slider-button">Reset</button>
       <button @click="autoSimulate" class="slider-button">Auto Simulate</button>
@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       sliderVal: 0,
-      sliderVal2: 5,
+      sliderVal2: 100,
     };
   },
   components: {
