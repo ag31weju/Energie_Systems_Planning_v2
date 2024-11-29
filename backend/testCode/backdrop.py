@@ -7,8 +7,7 @@ from tkinter import simpledialog
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 GRID_SIZE = 50
-BACKGROUND_IMAGE = "background2.png"
-IMAGE_TO_ADD = "marker.png"  # The image to be placed on the grid
+BACKGROUND_IMAGE = "background.png"
 BUTTON_COLOR = (0, 128, 255)
 BUTTON_HOVER_COLOR = (0, 150, 255)
 TEXT_COLOR = (0, 0, 0)
@@ -16,7 +15,7 @@ TEXT_COLOR = (0, 0, 0)
 # Initialize Pygame
 pygame.init()
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("Add Image to Grid")
+pygame.display.set_caption("Add Multiple Marker Types")
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 24)
 
@@ -26,10 +25,15 @@ background_path = os.path.join(current_directory, BACKGROUND_IMAGE)
 background = pygame.image.load(background_path)
 background = pygame.transform.scale(background, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
-# Load the marker image
-marker_image_path = os.path.join(current_directory, IMAGE_TO_ADD)
-marker_image = pygame.image.load(marker_image_path)
-marker_image = pygame.transform.scale(marker_image, (GRID_SIZE, GRID_SIZE))
+# Load marker images
+marker_images = {}
+for i in range(1, 3):  # Load marker1.png to marker6.png
+    marker_path = os.path.join(current_directory, f"marker{i}.png")
+    if os.path.exists(marker_path):
+        marker_image = pygame.image.load(marker_path)
+        marker_images[f"marker{i}"] = pygame.transform.scale(marker_image, (GRID_SIZE, GRID_SIZE))
+    else:
+        print(f"Warning: {marker_path} not found!")
 
 # Button setup
 toggle_button_rect = pygame.Rect(WINDOW_WIDTH - 110, 10, 100, 40)
@@ -61,19 +65,20 @@ def draw_button(rect, text):
     screen.blit(button_text, (rect.x + 10, rect.y + 10))
 
 
-def get_user_coordinates():
-    """Opens a Tkinter dialog to get user input for grid coordinates."""
+def get_user_input():
+    """Opens a Tkinter dialog to get user input for marker type and grid coordinates."""
     root = tk.Tk()
     root.withdraw()  # Hide the main Tkinter window
-    user_input = simpledialog.askstring("Input", "Enter coordinates (x,y):")
+    user_input = simpledialog.askstring("Input", "Enter marker type (marker1-6) and coordinates (x,y):")
     root.destroy()
     if user_input:
         try:
-            x, y = map(int, user_input.split(","))
-            return x, y
+            marker_type, coords = user_input.split()
+            x, y = map(int, coords.split(","))
+            return marker_type, (x, y)
         except ValueError:
-            print("Invalid input. Please enter coordinates as x,y.")
-    return None
+            print("Invalid input. Please enter as 'marker1 x,y'.")
+    return None, None
 
 
 # Main loop
@@ -86,13 +91,15 @@ while running:
             if toggle_button_rect.collidepoint(event.pos):
                 grid_visible = not grid_visible
             elif add_button_rect.collidepoint(event.pos):
-                coords = get_user_coordinates()
-                if coords:
+                marker_type, coords = get_user_input()
+                if coords and marker_type in marker_images:
                     x, y = coords
                     if 0 <= x * GRID_SIZE < WINDOW_WIDTH and 0 <= (y + 1) * GRID_SIZE <= WINDOW_HEIGHT:
-                        placed_markers.append((x, y))
+                        placed_markers.append((marker_type, x, y))
                     else:
                         print("Coordinates out of bounds.")
+                elif marker_type not in marker_images:
+                    print(f"Invalid marker type: {marker_type}")
 
     # Draw background
     screen.blit(background, (0, 0))
@@ -103,13 +110,13 @@ while running:
 
     # Draw buttons
     draw_button(toggle_button_rect, "Toggle Grid")
-    draw_button(add_button_rect, "Add Image")
+    draw_button(add_button_rect, "Add Marker")
 
     # Draw placed markers
-    for x, y in placed_markers:
+    for marker_type, x, y in placed_markers:
         coord_x = x * GRID_SIZE
         coord_y = WINDOW_HEIGHT - (y + 1) * GRID_SIZE
-        screen.blit(marker_image, (coord_x, coord_y))
+        screen.blit(marker_images[marker_type], (coord_x, coord_y))
 
     # Update the display
     pygame.display.flip()
