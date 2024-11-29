@@ -195,3 +195,23 @@ svg {
   height: 100%;
   object-fit: cover;
 }
+#slider-buttons-container {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-top: 12px;
+}
+.slider-button {
+  background-color: #4CAF50; 
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.slider-button:hover {
+  background-color: #45a049; 
+}

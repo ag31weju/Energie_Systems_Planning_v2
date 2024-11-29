@@ -4,6 +4,11 @@
     {{ sliderVal }}
     <Slider v-model="sliderVal2" class="w-56"></Slider>
     {{ sliderVal2 }}
+    <div id="slider-buttons-container">
+        <button @click="reset" class="slider-button">Reset</button>
+        <button @click="autoSimulate" class="slider-button">Auto Simulate</button>
+        <button @click="simulate" class="slider-button">Simulate</button>
+      </div>
   </Panel>
 </template>
 

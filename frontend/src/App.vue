@@ -1,10 +1,10 @@
 <template>
   <div id="rootdiv" class="grid-row">
     <div id="language-buttons-container">
-      <button @click="setLanguage('en')" id="language-button-en">
+      <button title="Translate to English" @click="setLanguage('en')" id="language-button-en">
         <img src="@/assets/en.png" alt="English Flag" />
       </button>
-      <button @click="setLanguage('de')" id="language-button-de">
+      <button title="ins Deutsch übersetzen" @click="setLanguage('de')" id="language-button-de">
         <img src="@/assets/de.png" alt="German Flag" />
       </button>
     </div>
