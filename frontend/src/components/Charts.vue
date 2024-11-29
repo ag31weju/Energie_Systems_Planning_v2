@@ -6,6 +6,7 @@
         :data="chartset"
         :options="chartOptions"
         class="h-[30rem]"
+        style="height: 10rem; width: 50rem;" 
       />
     </div>
     <div id="chart2-box" style="margin-top: 10px">
@@ -14,6 +15,8 @@
         :data="chartset2"
         :options="chartOptions2"
         class="h-[30rem]"
+        style="height: 10rem; width: 50rem;" 
+        
       />
     </div>
   </Panel>

@@ -117,8 +117,5 @@ export default {
 </script>
 
 <style>
-#chart-matrix {
-  max-width: 100%;
-  max-height: 100%;
-}
+@import "../assets/main.css";
 </style>
