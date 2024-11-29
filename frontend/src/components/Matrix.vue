@@ -1,12 +1,13 @@
 <template>
-  <div>
+  <Panel id="matrix-container">
     <canvas id="chart-matrix"></canvas>
-  </div>
+  </Panel>
 </template>
 
 <script>
 import { Chart, LinearScale } from "chart.js";
 import { MatrixController, MatrixElement } from "chartjs-chart-matrix";
+import Panel from "primevue/panel";
 
 // Register matrix plugin with Chart.js globally
 Chart.register(MatrixController, MatrixElement, LinearScale);
@@ -17,13 +18,16 @@ export default {
       matrix: null,
     };
   },
+  components: {
+    Panel,
+  },
   methods: {
     renderMatrix() {
       const context = document.getElementById("chart-matrix").getContext("2d");
       const ex_matrix = [];
 
-      for (let i = 1; i <= 5; i++) {
-        for (let j = 1; j <= 5; j++) {
+      for (let i = 0; i <= 5; i++) {
+        for (let j = 0; j <= 5; j++) {
           ex_matrix.push({
             x: i,
             y: j,
@@ -39,12 +43,12 @@ export default {
             data: ex_matrix,
             backgroundColor(context) {
               const value = context.dataset.data[context.dataIndex].v;
-              const alpha = (value - 5) / 40;
+              const alpha = (value - 6) / 40 + 0.5;
               return `rgba(0, 128, 0, ${alpha})`;
             },
             borderColor(context) {
               const value = context.dataset.data[context.dataIndex].v;
-              const alpha = (value - 5) / 40;
+              const alpha = (value - 6) / 40 + 0.5;
               return `rgba(0, 100, 0, ${alpha})`;
             },
             borderWidth: 1,
@@ -113,8 +117,5 @@ export default {
 </script>
 
 <style>
-#chart-matrix {
-  max-width: 100%;
-  max-height: 100%;
-}
+@import "../assets/main.css";
 </style>

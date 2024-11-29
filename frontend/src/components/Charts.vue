@@ -1,46 +1,36 @@
 <template>
-  <div id="rootdiv" class="grid-row">
-    <div id="language-buttons-container">
-      <button title="Translate to English" @click="setLanguage('en')" id="language-button-en">
-        <img src="@/assets/en.png" alt="English Flag" />
-      </button>
-      <button title="ins Deutsch übersetzen" @click="setLanguage('de')" id="language-button-de">
-        <img src="@/assets/de.png" alt="German Flag" />
-      </button>
+  <Panel id="charts-container">
+    <div id="chart1-box">
+      <Chart
+        type="bar"
+        :data="chartset"
+        :options="chartOptions"
+        class="h-[30rem]"
+        style="height: 10rem; width: 50rem;" 
+      />
     </div>
-    <div id="outercolumn1" class="grid-column">
-      <div id="imagebox" class="grid-column">
-        <Playfield></Playfield>
-      </div>
-      <div id="slider-box">
-          <Sliders></Sliders>
-      </div>
+    <div id="chart2-box" style="margin-top: 10px">
+      <Chart
+        type="line"
+        :data="chartset2"
+        :options="chartOptions2"
+        class="h-[30rem]"
+        style="height: 10rem; width: 50rem;" 
+        
+      />
     </div>
-    <div id="outercolumn2" class="grid-column">
-      <div id="matrix-box" class="grid-column">
-          <Matrix></Matrix>
-      </div>
-      <div id="charts-box" class="grid-column">
-        <Charts></Charts>
-      </div>
-      <div id="checkboxes-box">
-        <Checkboxes></Checkboxes>
-      </div>
-    </div>
-  </div>
+  </Panel>
 </template>
 
 <script>
-import axios from "axios";
 import Chart from "primevue/chart";
-import Sliders from "./components/Sliders.vue";
-import Checkboxes from "./components/Checkboxes.vue";
-import Playfield from "./components/Playfield.vue";
 import Panel from "primevue/panel";
-import Matrix from "./components/Matrix.vue";
-import Charts from "./components/Charts.vue";
 
 export default {
+  components: {
+    Chart,
+    Panel,
+  },
   data() {
     return {
       // Data for Chart 1
@@ -78,8 +68,8 @@ export default {
           },
           y: {
             stacked: true,
-          }
-        }
+          },
+        },
       },
       // Data for Chart 2
       chartset2: {
@@ -116,32 +106,13 @@ export default {
             display: true,
             position: "top",
           },
-        }
+        },
       },
     };
-  },
-
-  components: {
-    Checkboxes,
-    Sliders,
-    Chart,
-    Playfield,
-    Matrix,
-    Charts,
-  },
-  methods: {
-    async fetchMessage() {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/");
-        this.message = response.data.message;
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    },
   },
 };
 </script>
 
 <style>
-@import "./assets/main.css";
+@import "../assets/main.css";
 </style>

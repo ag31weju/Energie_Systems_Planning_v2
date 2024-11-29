@@ -1,12 +1,20 @@
 <template>
-    <Slider v-model="sliderVal" class="w-56"></Slider>
-    {{ sliderVal }}
-    <Slider v-model="sliderVal2" class="w-56"></Slider>
-    {{ sliderVal2 }}
+  <Panel id="sliders" header="Sliders">
+    <Slider v-model="sliderVal" :step="20" class="w-56"></Slider>
+    {{ sliderVal / 20 }}
+    <Slider v-model="sliderVal2" :step="20" class="w-56"></Slider>
+    {{ sliderVal2 / 20 }}
+    <div id="slider-buttons-container">
+      <button @click="reset" class="slider-button">Reset</button>
+      <button @click="autoSimulate" class="slider-button">Auto Simulate</button>
+      <button @click="simulate" class="slider-button">Simulate</button>
+    </div>
+  </Panel>
 </template>
 
 <script>
 import Slider from "primevue/slider";
+import Panel from "primevue/panel";
 
 export default {
   data() {
@@ -17,6 +25,7 @@ export default {
   },
   components: {
     Slider,
+    Panel,
   },
   methods: {},
 };
