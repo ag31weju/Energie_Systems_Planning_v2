@@ -22,5 +22,4 @@ urlpatterns = [
     
     #URL route for home app urls
     path('', include('home.urls')),    
-    path('api/graph/', include('graph.urls')) #Add graph's URLs to the main project.
 ]
