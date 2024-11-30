@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     #project specific files @KC
     'rest_framework',
     'home',
+    'graph',
     'corsheaders'
 ]
 
