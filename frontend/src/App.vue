@@ -1,4 +1,11 @@
 <template>
+   <div
+      id="drawerbox"
+    
+      
+    >
+      <Drawerbox></Drawerbox>
+    </div>
   <div id="rootdiv" class="grid-row">
     <div id="language-buttons-container">
       <button
@@ -16,6 +23,7 @@
         <img src="@/assets/de.png" alt="German Flag" />
       </button>
     </div>
+   
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
         <Playfield></Playfield>
@@ -33,17 +41,7 @@
       </div>
     </div>
   </div>
-  <div
-      id="drawer-box"
-      style="
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-      "
-    >
-      <Drawerbox></Drawerbox>
-    </div>
+ 
 </template>
 
 <script>
