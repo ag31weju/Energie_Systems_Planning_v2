@@ -1,133 +1,70 @@
 <template>
+   <div
+      id="drawerbox"
+    
+      
+    >
+      <Drawerbox></Drawerbox>
+    </div>
   <div id="rootdiv" class="grid-row">
     <div id="language-buttons-container">
-      <button title="Translate to English" @click="setLanguage('en')" id="language-button-en">
+      <button
+        title="Translate to English"
+        @click="setLanguage('en')"
+        id="language-button-en"
+      >
         <img src="@/assets/en.png" alt="English Flag" />
       </button>
-      <button title="ins Deutsch übersetzen" @click="setLanguage('de')" id="language-button-de">
+      <button
+        title="ins Deutsch übersetzen"
+        @click="setLanguage('de')"
+        id="language-button-de"
+      >
         <img src="@/assets/de.png" alt="German Flag" />
       </button>
     </div>
+   
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
         <Playfield></Playfield>
       </div>
       <div id="slider-box">
-          <Sliders></Sliders>
+        <Sliders></Sliders>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
       <div id="matrix-box" class="grid-column">
-          <Matrix></Matrix>
+        <Matrix></Matrix>
       </div>
       <div id="charts-box" class="grid-column">
         <Charts></Charts>
       </div>
-      <div id="checkboxes-box">
-        <Checkboxes></Checkboxes>
-      </div>
     </div>
   </div>
+ 
 </template>
 
 <script>
 import axios from "axios";
 import Chart from "primevue/chart";
 import Sliders from "./components/Sliders.vue";
-import Checkboxes from "./components/Checkboxes.vue";
 import Playfield from "./components/Playfield.vue";
-import Panel from "primevue/panel";
 import Matrix from "./components/Matrix.vue";
 import Charts from "./components/Charts.vue";
+import Drawerbox from "./components/Drawerbox.vue";
 
 export default {
   data() {
-    return {
-      // Data for Chart 1
-      chartset: {
-        labels: ["January", "February", "March", "April", "May", "June"],
-        datasets: [
-          {
-            label: "Graph 1",
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            borderColor: "rgba(75, 192, 192, 1)",
-            borderWidth: 1,
-            data: [65, 59, 80, 81, 56, 55],
-          },
-          {
-            label: "Graph 2",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            borderColor: "rgba(255, 99, 132, 1)",
-            borderWidth: 1,
-            data: [28, 48, 40, 19, 86, 27],
-          },
-        ],
-      },
-      chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true,
-            position: "left",
-          },
-        },
-        scales: {
-          x: {
-            stacked: true,
-          },
-          y: {
-            stacked: true,
-          }
-        }
-      },
-      // Data for Chart 2
-      chartset2: {
-        labels: [
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ],
-        datasets: [
-          {
-            label: "Graph A",
-            backgroundColor: "rgba(153, 102, 255, 0.2)",
-            borderColor: "rgba(153, 102, 255, 1)",
-            borderWidth: 1,
-            data: [45, 67, 75, 50, 40, 90],
-          },
-          {
-            label: "Graph B",
-            backgroundColor: "rgba(54, 162, 235, 0.2)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-            data: [30, 40, 55, 70, 60, 80],
-          },
-        ],
-      },
-      chartOptions2: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true,
-            position: "top",
-          },
-        }
-      },
-    };
+    return {};
   },
 
   components: {
-    Checkboxes,
     Sliders,
     Chart,
     Playfield,
     Matrix,
     Charts,
+    Drawerbox,
   },
   methods: {
     async fetchMessage() {
