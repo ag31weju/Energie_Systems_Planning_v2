@@ -24,3 +24,4 @@ element_map = initialize_from_xml(xml_file_path, json_file_path)
 
 # Print the initialized map
 print("Initialized Element Map:", element_map)
+
