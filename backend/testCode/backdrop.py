@@ -25,9 +25,18 @@ background_path = os.path.join(current_directory, BACKGROUND_IMAGE)
 background = pygame.image.load(background_path)
 background = pygame.transform.scale(background, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
+##ag
+graph = {
+    "nodes": [],  # Store nodes as dictionaries with id, type, and coordinates
+    "edges": []   # Store edges as dictionaries with start, end, and properties
+}
+node_counter = 0  # Unique ID counter for nodes
+edge_mode = False  # Toggle edge creation mode
+selected_nodes = []  # Nodes selected for edge creation
+
 # Load marker images
 marker_images = {}
-for i in range(1, 3):  # Load marker1.png to marker6.png
+for i in range(1, 4):  # Load marker1.png to marker6.png
     marker_path = os.path.join(current_directory, f"marker{i}.png")
     if os.path.exists(marker_path):
         marker_image = pygame.image.load(marker_path)
@@ -38,6 +47,9 @@ for i in range(1, 3):  # Load marker1.png to marker6.png
 # Button setup
 toggle_button_rect = pygame.Rect(WINDOW_WIDTH - 110, 10, 100, 40)
 add_button_rect = pygame.Rect(WINDOW_WIDTH - 110, 60, 100, 40)
+##ag
+edge_button_rect = pygame.Rect(WINDOW_WIDTH - 110, 110, 100, 40)
+
 grid_visible = True
 
 # Store placed markers
@@ -54,6 +66,21 @@ def draw_grid():
             coord_x = x // GRID_SIZE
             coord_text = font.render(f"{coord_x},{coord_y}", True, TEXT_COLOR)
             screen.blit(coord_text, (x + 5, y + 5))
+
+def draw_edges():
+    """Draw edges between connected nodes."""
+    for edge in graph["edges"]:
+        start_node = next(node for node in graph["nodes"] if node["id"] == edge["start"])
+        end_node = next(node for node in graph["nodes"] if node["id"] == edge["end"])
+        start_x, start_y = start_node["coords"]
+        end_x, end_y = end_node["coords"]
+        pygame.draw.line(
+            screen,
+            (255, 0, 0),  # Red color for edges
+            (start_x * GRID_SIZE + GRID_SIZE // 2, WINDOW_HEIGHT - (start_y + 1) * GRID_SIZE + GRID_SIZE // 2),
+            (end_x * GRID_SIZE + GRID_SIZE // 2, WINDOW_HEIGHT - (end_y + 1) * GRID_SIZE + GRID_SIZE // 2),
+            2  # Line thickness
+        )
 
 
 def draw_button(rect, text):
@@ -100,6 +127,21 @@ while running:
                         print("Coordinates out of bounds.")
                 elif marker_type not in marker_images:
                     print(f"Invalid marker type: {marker_type}")
+            ##ag
+            elif edge_button_rect.collidepoint(event.pos):
+                edge_mode = not edge_mode
+            elif edge_mode:
+                # Handle edge creation
+                for node in graph["nodes"]:
+                    node_x, node_y = node["coords"]
+                    screen_x = node_x * GRID_SIZE
+                    screen_y = WINDOW_HEIGHT - (node_y + 1) * GRID_SIZE
+                    if screen_x <= event.pos[0] <= screen_x + GRID_SIZE and screen_y <= event.pos[1] <= screen_y + GRID_SIZE:
+                        selected_nodes.append(node)
+                    if len(selected_nodes) == 2:
+                        edge = {"start": selected_nodes[0]["id"], "end": selected_nodes[1]["id"], "weight": 1}
+                        graph["edges"].append(edge)
+                        selected_nodes = []  # Reset selection
 
     # Draw background
     screen.blit(background, (0, 0))
@@ -112,14 +154,26 @@ while running:
     draw_button(toggle_button_rect, "Toggle Grid")
     draw_button(add_button_rect, "Add Marker")
 
-    # Draw placed markers
-    for marker_type, x, y in placed_markers:
-        coord_x = x * GRID_SIZE
-        coord_y = WINDOW_HEIGHT - (y + 1) * GRID_SIZE
-        screen.blit(marker_images[marker_type], (coord_x, coord_y))
+    ##ag
+    draw_button(edge_button_rect, "Edge Mode")
 
+    ##ag
+    
+
+    # Draw placed markers (nodes)
+    for node in graph["nodes"]:
+        coord_x = node["coords"][0] * GRID_SIZE
+        coord_y = WINDOW_HEIGHT - (node["coords"][1] + 1) * GRID_SIZE
+        screen.blit(marker_images[node["type"]], (coord_x, coord_y))
+
+    # Draw edges
+    draw_edges()
+    # Draw placed markers
+    
     # Update the display
     pygame.display.flip()
     clock.tick(30)
+
+
 
 pygame.quit()
