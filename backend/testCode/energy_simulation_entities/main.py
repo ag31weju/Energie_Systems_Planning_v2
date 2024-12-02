@@ -1,41 +1,52 @@
-# main.py
-from features import BackdropFeature, Position
-from producers import CoalPlant, WindTurbine, SolarPlant
-from consumers import ResidentialArea, IndustrialComplex, CommercialBuilding
+from graph import Graph
+import json
 
-# Create some backdrop features
-backdrop = BackdropFeature.GRASSLAND
-print(f"Backdrop feature: {backdrop.name}")
+def main():
+    # Create a new graph
+    graph = Graph()
 
-# Create some energy producers
-coal_plant = CoalPlant(Position(1, 1))
-wind_turbine = WindTurbine(Position(3, 4))
-solar_plant = SolarPlant(Position(5, 5))
+    # Add nodes to the graph
+    print("Adding nodes...")
+    graph.add_node(1, "type_a", "Node1", 0, 0)
+    graph.add_node(2, "type_b", "Node2", 3, 4)
+    graph.add_node(3, "type_c", "Node3", 1, 1)
+    graph.add_node(4, "type_d", "Node4", 5, 2)
 
-# Create some energy consumers
-residential = ResidentialArea(Position(2, 2))
-industrial = IndustrialComplex(Position(6, 7))
-commercial = CommercialBuilding(Position(8, 3))
+    # Display nodes
+    print("\nNodes in the graph:")
+    for node in graph.nodes.values():
+        print(node)
 
-# Simulate energy production and consumption
-producers = [coal_plant, wind_turbine, solar_plant]
-consumers = [residential, industrial, commercial]
+    # Add edges to the graph
+    print("\nAdding edges...")
+    graph.add_edge(1, 2, weight=5)
+    graph.add_edge(1, 3, weight=2)
+    graph.add_edge(2, 4, weight=3)
 
-total_energy_produced = sum(producer.produce_energy() for producer in producers)
-total_energy_consumed = sum(consumer.consume_energy() for consumer in consumers)
+    # Display edges
+    print("\nEdges in the graph:")
+    for edge in graph.edges:
+        print(edge)
 
-print("\nEnergy Producers:")
-for producer in producers:
-    print(producer)
+    # Display the complete graph
+    print("\nComplete graph representation:")
+    print(graph)
 
-print("\nEnergy Consumers:")
-for consumer in consumers:
-    print(consumer)
+    # Test distance calculation between nodes
+    print("\nTesting distance calculation...")
+    node1 = graph.nodes[1]
+    node2 = graph.nodes[2]
+    distance = node1.distance_to(node2)
+    print(f"Distance between {node1.name} and {node2.name}: {distance:.2f}")
 
-print(f"\nTotal Energy Produced: {total_energy_produced} MW")
-print(f"Total Energy Consumed: {total_energy_consumed} MW")
+     # Convert graph to dictionary
+    graph_dict = graph.to_dict()
 
-if total_energy_produced >= total_energy_consumed:
-    print("Energy supply is sufficient.")
-else:
-    print("Energy supply is insufficient.")
+    # Save to JSON file
+    with open("graph.json", "w") as json_file:
+        json.dump(graph_dict, json_file, indent=4)
+
+    print("Graph saved to 'graph.json'.")
+
+if __name__ == "__main__":
+    main()
