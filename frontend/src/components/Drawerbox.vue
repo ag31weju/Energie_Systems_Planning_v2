@@ -4,9 +4,9 @@
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 
     </p>
-    <Button @click="visible = false">Deactivate Drawer</Button>
+    <Button @click="updateDrawerVisibility">Deactivate Drawer</Button>
   </Drawer>
-  <Button @click="visible = true">Activate Drawer</Button>
+  <Button @click="updateDrawerVisibility">Activate Drawer</Button>
 </template>
 
 <script>
@@ -14,13 +14,22 @@ import { ref } from "vue";
 import Drawer from "primevue/drawer";
 import Button from "primevue/button";
 
-const visible = ref(false);
-
 export default {
+  setup() {
+    const visible = ref(false);
+    return {
+      visible
+    }
+  },
   components: {
     Drawer,
     Button,
   },
+  methods: {
+    updateDrawerVisibility() {
+      this.visible = !this.visible;
+    }
+  }
 };
 </script>
 
