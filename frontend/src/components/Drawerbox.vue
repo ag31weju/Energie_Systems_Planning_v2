@@ -1,12 +1,10 @@
 <template>
-  <Drawer v-model:visible="visible" header="Drawer" position="top" style="width: 30%;">
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-
-    </p>
-    <Button @click="updateDrawerVisibility">Deactivate Drawer</Button>
+  <Drawer id="drawer" v-model:visible="visible" position="top">
+      <Button @click="updateDrawerVisibility"><img src="../assets/de.png" style="width: 30px; height: 20px;"></Button>
+      <Button @click="updateDrawerVisibility"><img src="../assets/en.png" style="width: 30px; height: 20px"></Button>
+      <Button @click="updateDrawerVisibility"><img src="../assets/de.png" style="width: 30px; height: 20px"></Button>
   </Drawer>
-  <Button @click="updateDrawerVisibility">Activate Drawer</Button>
+  <Button id="drawer-button" @click="updateDrawerVisibility">Drawer</Button>
 </template>
 
 <script>
@@ -16,6 +14,12 @@ import Button from "primevue/button";
 
 export default {
   setup() {
+    // const visible = ref(false);
+    // return {
+    //   visible
+    // }
+  },
+  data() {
     const visible = ref(false);
     return {
       visible
