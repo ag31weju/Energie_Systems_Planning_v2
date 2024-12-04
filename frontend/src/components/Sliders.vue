@@ -7,6 +7,7 @@
         :max="5"
         :step="step"
         class="w-56"
+        style="margin: 10px;"
       ></Slider>
       {{ sliderList[index].value / step }}
     </div>
@@ -52,32 +53,65 @@ export default {
     );
   },
   methods: {
-    reset() {},
-    async simulateRequest() {
-      const url = "someserverendpoint";
-      const data = {
-        sliderList: this.sliderList,
-        reqType: "once",
+    async reset() {
+      this.sliderList.forEach((slider) => (slider.value = 0));
+      // Send reset flag to the backend
+      const url = "http://127.0.0.1:8000/api/save-slider-data/";
+      const sliderData = {
+          autoSimulate: false,
+        reset: true,  // Flag to indicate reset action to reset graphs and matrix
+        sliders: this.sliderList.map((slider) => ({
+          type: slider.type,
+          value: slider.value,
+        })),
       };
-      await this.sendRequest(url, data);
+      await this.sendRequest(url, sliderData);
     },
-    async autoSimulateRequest() {
-      const url = "someserverendpoint";
-      const data = {
-        sliderList: this.sliderList,
-        reqType: "all",
+    async simulateRequest() {
+      const url = "http://127.0.0.1:8000/api/save-slider-data/";  
+      const sliderData = {
+        autoSimulate: false,
+        reset: false,
+        sliders: this.sliderList.map((slider) => ({
+          type: slider.type,
+          value: slider.value,
+        })),
       };
-      await this.sendRequest(url, data);
+
+      // Send the full slider data to the backend
+      await this.sendRequest(url, sliderData);
+    },
+     
+      
+    async autoSimulateRequest() {
+      const url = "http://127.0.0.1:8000/api/save-slider-data/";  
+      const sliderData = {
+        reset: false,
+        autoSimulate: true,  // Send the boolean flag for auto simulation
+        sliders: this.sliderList.map((slider) => ({
+          type: slider.type,
+          value: slider.value,
+        })),
+      };
+
+      // Send the auto-simulation request with the flag
+      await this.sendRequest(url, sliderData);
     },
     async sendRequest(url, data) {
       try {
-        const response = await axios.post(url, data);
-        console.log("Response:", response.data);
+        const response = await axios.post(url, data, {
+          headers: {
+            "Content-Type": "application/json", // Ensures JSON format
+          },
+        });
+        console.log("Response from backend:", response.data);
+        return response.data;
       } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    },
-  },
+        console.error("Error sending data to backend:", error);
+        throw error; // Re-throw the error to handle it in the calling method
+    }
+  }
+},
 };
 </script>
 

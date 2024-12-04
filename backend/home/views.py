@@ -36,3 +36,43 @@ def process_scenario(request):
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON data"}, status=400)
     return JsonResponse({"error": "Invalid HTTP method"}, status=405)
+
+
+
+
+@csrf_exempt  
+def save_slider_data(request):
+    if request.method == "POST":
+        print("Request received:", request.body)
+        try:
+            # Parse the incoming JSON data
+            data = json.loads(request.body)
+
+            # Check if reset flag is present
+            reset = data.get("reset", False)
+
+            if reset:
+                # If reset flag is true, we reset the sliders (or perform any reset logic)
+                print("Reset action triggered")
+
+            # Extract sliders or autoSimulate flag from the data
+            sliders = data.get("sliders")
+            auto_simulate = data.get("autoSimulate", False)
+
+            # Ensure folder exists for saving the JSON file
+            folder_path = os.path.join(os.getcwd(), "slider_data")
+            os.makedirs(folder_path, exist_ok=True)
+
+            # Define file path for saving JSON
+            file_path = os.path.join(folder_path, "slider_data.json")
+
+            # Save the slider data (or reset) to a file
+            with open(file_path, "w") as json_file:
+                json.dump(data, json_file, indent=4)
+
+            return JsonResponse({"message": "Data successfully saved."}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data."}, status=400)
+
+    return JsonResponse({"error": "Invalid HTTP method."}, status=405)

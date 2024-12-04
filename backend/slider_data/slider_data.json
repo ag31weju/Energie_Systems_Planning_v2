@@ -1,0 +1,14 @@
+{
+    "reset": false,
+    "autoSimulate": true,
+    "sliders": [
+        {
+            "type": "test1",
+            "value": 2
+        },
+        {
+            "type": "test2",
+            "value": 2
+        }
+    ]
+}

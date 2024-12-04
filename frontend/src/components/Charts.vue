@@ -51,6 +51,21 @@ export default {
             borderWidth: 1,
             data: [28, 48, 40, 19, 86, 27],
           },
+          {
+            label : "Graph 4"
+          },
+          {
+            label : "Graph 5"
+          },
+          {
+            label : "Graph 6"
+          },
+          {
+            label : "Graph 7"
+          },
+          {
+            label : "Graph 8"
+          },
         ],
       },
       chartOptions: {
@@ -59,7 +74,7 @@ export default {
         plugins: {
           legend: {
             display: true,
-            position: "left",
+            position: "bottom",
           },
         },
         scales: {
@@ -96,6 +111,24 @@ export default {
             borderWidth: 1,
             data: [30, 40, 55, 70, 60, 80],
           },
+          {
+            label : "Graph C"
+          },
+          {
+            label : "Graph D"
+          },
+          {
+            label : "Graph E"
+          },
+          {
+            label : "Graph F"
+          },
+          {
+            label : "Graph G"
+          },
+          {
+            label : "Graph H"
+          },
         ],
       },
       chartOptions2: {
@@ -104,7 +137,7 @@ export default {
         plugins: {
           legend: {
             display: true,
-            position: "top",
+            position: "bottom",
           },
         },
       },
