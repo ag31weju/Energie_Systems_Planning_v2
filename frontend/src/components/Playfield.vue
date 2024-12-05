@@ -25,15 +25,37 @@ export default {
     Panel,
     Button,
   },
+  beforeUnmount() {
+    if (this.imageUrl) {
+      URL.revokeObjectURL(this.imageUrl);
+    }
+  },
   methods: {
     async loadRequest() {
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/"; //If frontend and backend have different ports, use the full URL
-        const data = { id: 1 };
-        const response = await axios.post(url, data);
-        console.log("Response:", response.data);
+        const id = 1;
+
+        const graphResponse = await axios.get(url, {
+          params: { id: id, filetype: "json" },
+          responseType: "json",
+        });
+
+        console.log("Response:", graphResponse.data); //graph json file
+
+        const imgResponse = await axios.get(url, {
+          params: { id: id, filetype: "png" },
+          responseType: "blob",
+        });
+
+        if (this.imageUrl) {
+          URL.revokeObjectURL(this.imageUrl);
+        }
+
+        this.imgUrl = URL.createObjectURL(imgResponse.data);
+
         // Display a popup with the backend's message
-        alert(`Backend says: ${response.data.message}`);
+        //alert(`Backend says: ${response.data.message}`);*/
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Backend says: ${response.data.message}`);

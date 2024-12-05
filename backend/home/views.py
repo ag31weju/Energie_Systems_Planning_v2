@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import os
@@ -13,30 +13,48 @@ def index(request):
 # post request from frontend
 @csrf_exempt  # Only use for testing; use CSRF protection in production!
 def process_scenario(request):
-    if request.method == "POST":
+    if request.method == "GET":
         try:
-            # Parse JSON data from the request
-            data = json.loads(request.body)
+            # request holds ID for scenario selection
+            id = request.GET.get("id")
+            filetype = request.GET.get("filetype")
+            print(id, filetype)
 
-            # Define the folder path relative to the current directory
-            folder_path = os.path.join(os.getcwd(), "scenario")
+            if not id:
+                return JsonResponse({"error": "Missing 'id' parameter"}, status=400)
 
-            # Ensure the folder exists
-            os.makedirs(folder_path, exist_ok=True)
+            if not filetype:
+                return JsonResponse({"error": "Missing 'filetype' parameter"}, status=400)
+            
 
-            # Define the file path where the JSON will be saved
-            file_path = os.path.join(folder_path, "new_file.json")
 
-            # Save the JSON data to the file
-            with open(file_path, "w") as json_file:
-                json.dump(data, json_file, indent=4)
+            # Define the folder path relative to the current working directory
+            folder_path = f"scenario/scenario{id}"
 
-            processed_data = {"received": data, "message": "Greetings from the backend"}
-            return JsonResponse(processed_data, status=200)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+            if (filetype == "json"):
+                graph_path = f"{folder_path}/graph.json" #path for graph.json
+                if not os.path.exists(graph_path):
+                    return JsonResponse({"error": "Graph file not found"}, status=404)
+
+                with open(graph_path, "r") as graph: #open the file so that it can be read
+                    data = json.load(graph) #deserializes opened json file to actual data that can be sent as a JsonResponse
+                    return JsonResponse(data, status=200)
+                    
+            elif (filetype == "png"):
+                img_path = f"{folder_path}/img.png" #path for img.png
+                if not os.path.exists(img_path):
+                    return JsonResponse({"error": "Image file not found"}, status=404)
+
+                with open(img_path, "rb") as img: 
+                    response = HttpResponse(img.read(), content_type="image/png") #Creates HTTPResponse with the binary data of the image
+                    response["Content-Disposition"] = "attachment; filename=img.png" #tells the frontend that the file should be treated as a download and not displayed
+                    return response
+            else:
+                 return JsonResponse({"error": "Invalid 'filetype' parameter. Use 'json' or 'png'."}, status=400)
+            
+        except Exception as e:
+            return JsonResponse({f"error when trying to open and process data: {e}"}, status=500)
     return JsonResponse({"error": "Invalid HTTP method"}, status=405)
-
 
 
 
