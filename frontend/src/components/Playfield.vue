@@ -2,7 +2,6 @@
   <Panel id="playfield">
     <Button @click="loadRequest" type="submit" class="slider-button">Load Scenario</Button>
     <img src="../assets/Shlerp.gif" style="min-height: 10%; max-height: 50%; min-width: 10%; max-width: 50%" />
-
   </Panel>
 </template>
 

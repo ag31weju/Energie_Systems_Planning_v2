@@ -1,22 +1,27 @@
 <template>
-  <Panel id="sliders" header="Sliders">
-    <div v-for="(_, index) in sliderList" :key="index">
-      <Slider
-        v-model="sliderList[index].value"
-        :min="0"
-        :max="5"
-        :step="step"
-        class="w-56"
-      ></Slider>
-      {{ sliderList[index].value / step }}
-    </div>
-
-    <div id="slider-buttons-container">
-      <button @click="reset" class="slider-button">Reset</button>
-      <button @click="autoSimulateRequest" class="slider-button">
-        Auto Simulate
-      </button>
-      <button @click="simulateRequest" class="slider-button">Simulate</button>
+  <Panel id="sliders">
+    <div id="sliders-grid">
+      <div
+        id="slider-sliders-container"
+        v-for="(_, index) in sliderList"
+        :key="index"
+      >
+        <Slider
+          v-model="sliderList[index].value"
+          :min="0"
+          :max="5"
+          :step="step"
+          class="w-56"
+        ></Slider>
+        {{ sliderList[index].value / step }}
+      </div>
+      <div id="slider-buttons-container">
+        <button @click="reset" class="slider-button">Reset</button>
+        <button @click="autoSimulateRequest" class="slider-button">
+          Auto Simulate
+        </button>
+        <button @click="simulateRequest" class="slider-button">Simulate</button>
+      </div>
     </div>
   </Panel>
 </template>

@@ -1,13 +1,46 @@
 /*General styles */
 
+:root {
+  --primary-background-color: white;
+  --primary-text-color: black;
+  --primary-border: 2px solid #d3d3d3;
+  --primary-panel-radius: 6px;
+  --drawer-background-color: #afafaf;
+  --drawer-border-color: 2px solid #464646;
+  --slider-range-color: black;
+}
+
+.dark-theme {
+  --primary-background-color: rgb(39, 39, 39);
+  --primary-text-color: red;
+  --primary-border: 2px solid #black;
+  --primary-panel-radius: 6px;
+  --drawer-background-color: #383838;
+  --drawer-border-color: 2px solid #1a1a1a;
+  --slider-color: #34d399;
+}
+
+.light-theme {
+  --primary-background-color: white;
+  --primary-text-color: black;
+  --primary-border: 2px solid #d3d3d3;
+  --primary-panel-radius: 6px;
+  --drawer-background-color: #afafaf;
+  --drawer-border-color: 2px solid #464646;
+  --slider-range-color: black;
+}
+
 * {
   box-sizing: border-box;
+}
+
+#app {
+  background-color: var(--primary-background-color);
 }
 
 body {
   margin: 0;
   background-color: rgba(0, 0, 0, 0.543);
-  color: white;
 }
 
 svg {
@@ -53,12 +86,12 @@ svg {
   padding: 1% 1% 0.5% 0.25%;
 }
 
-#drawerbox{
-  position: fixed; 
-  top: 0px; 
-  left: 50%; 
-  transform: translateX(-50%); 
-  z-index: 1000; 
+#drawerbox {
+  position: fixed;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
 }
 
 #drawer {
@@ -71,6 +104,8 @@ svg {
   max-width: 15%;
   min-height: 10%;
   max-height: 10%;
+  background-color: var(--drawer-background-color);
+  border: var(--drawer-border-color);
 }
 
 #drawer .p-drawer-header {
@@ -84,9 +119,8 @@ svg {
   align-items: end;
 }
 
-
 #drawerbox Button {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -125,11 +159,6 @@ svg {
   flex-direction: column;
 }
 
-#checkboxes-container {
-  min-width: 100%;
-  min-height: 100%;
-}
-
 svg {
   width: 60%;
   height: 30%;
@@ -142,22 +171,20 @@ svg {
   align-items: center;
 }
 
-.p-panel .p-panel-header {
-  display: none;
+#matrix-container {
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-background-color);
+  border: var(--primary-border);
 }
 
-#matrix-box .p-panel-p-component{
+#matrix-box .p-panel-p-component {
   display: flex;
   width: 70%;
   height: 70%;
 }
 
-#matrix-container {
-  width: 100%;
-  height: 100%;
-}
-
-#matrix .p-panel{
+#matrix .p-panel {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -170,14 +197,15 @@ svg {
 }
 
 #chart-matrix {
-  height: 10rem; width: 40rem;
-
-
+  height: 10rem;
+  width: 40rem;
 }
 
 #charts-container {
   width: 100%;
   height: 100%;
+  background-color: var(--primary-background-color);
+  border: var(--primary-border);
 }
 
 #checkboxes {
@@ -201,6 +229,8 @@ svg {
 #playfield {
   width: 100%;
   height: 100%;
+  background-color: var(--primary-background-color);
+  border: var(--primary-border);
 }
 
 #playfield .p-panel-content {
@@ -222,11 +252,35 @@ svg {
   display: flex;
   width: 100%;
   height: 100%;
+  background-color: var(--main-background-color);
+  border: var(--primary-border);
+  color: var(--primary-text-color);
+}
+
+#sliders .p-panel-header {
+  display: none;
+}
+
+#sliders .p-panel-content {
+  padding: 0 5% 0 5%;
+}
+
+#sliders .p-slider-range {
+  background-color: var(--slider-range-color);
 }
 
 #sliders_content {
+  justify-content: center;
+  align-items: center;
   min-width: 50%;
+  width: 100%;
   text-align: center;
+  padding: 0;
+}
+
+#sliders-grid::after {
+  display: table;
+  clear: both;
 }
 
 .w-56 {
@@ -235,48 +289,16 @@ svg {
   margin-bottom: 5px;
 }
 
-
-
-
-@media (max-width: 992px) {
-  .grid-row {
-    flex-direction: column;
-  }
-}
-
-#language-buttons-container {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  gap: 10px;
-  z-index: 1000;
-}
-
-#language-button-en,
-#language-button-de {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-  width: 25px;
-  height: 25px;
-  cursor: pointer;
-}
-
-#language-button-en img,
-#language-button-de img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 #slider-buttons-container {
   display: flex;
   justify-content: space-evenly;
+  float: left;
   width: 100%;
   margin-top: 12px;
 }
 .slider-button {
-  background-color: #4CAF50; 
+  float: left;
+  background-color: #4caf50;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -287,5 +309,5 @@ svg {
 }
 
 .slider-button:hover {
-  background-color: #45a049; 
+  background-color: #45a049;
 }
