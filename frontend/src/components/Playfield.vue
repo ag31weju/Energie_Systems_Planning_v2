@@ -1,22 +1,23 @@
 <template>
   <Panel id="playfield">
-    <Button @click="loadRequest" type="submit" class="slider-button"
-      >Load Scenario</Button
-    >
+
     <div id="image_box">
       <img
         id="base_image"
         :src="imgUrl"
-        style="min-height: 10%; max-height: 65%; min-width: 10%; max-width: 65%"
+        style="min-height: 10%; max-height: 65%; min-width: 10%; max-width: 75%"
       />
-      <img
+      <!-- <img
         v-for="(marker, index) in markers"
         :key="index"
         :src="marker.src"
         :style="getStyleAndPos(marker)"
         class="overlay_image"
-      />
+      /> -->
     </div>
+    <Button @click="loadRequest" type="submit" class="slider-button"
+      >Load Scenario</Button
+    >
   </Panel>
 </template>
 
