@@ -1,29 +1,8 @@
 <template>
-   <div
-      id="drawerbox"
-    
-      
-    >
-      <Drawerbox></Drawerbox>
-    </div>
+  <div id="drawerbox">
+    <Drawerbox></Drawerbox>
+  </div>
   <div id="rootdiv" class="grid-row">
-    <div id="language-buttons-container">
-      <button
-        title="Translate to English"
-        @click="setLanguage('en')"
-        id="language-button-en"
-      >
-        <img src="@/assets/en.png" alt="English Flag" />
-      </button>
-      <button
-        title="ins Deutsch übersetzen"
-        @click="setLanguage('de')"
-        id="language-button-de"
-      >
-        <img src="@/assets/de.png" alt="German Flag" />
-      </button>
-    </div>
-   
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
         <Playfield></Playfield>
@@ -41,7 +20,6 @@
       </div>
     </div>
   </div>
- 
 </template>
 
 <script>
@@ -57,7 +35,6 @@ export default {
   data() {
     return {};
   },
-
   components: {
     Sliders,
     Chart,
