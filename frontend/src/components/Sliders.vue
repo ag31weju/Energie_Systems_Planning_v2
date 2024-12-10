@@ -116,15 +116,24 @@ export default {
         /* Destructure simData into multiple parts
          */
         const tempData = {
-          matrixData: [1, 2, 3, 4, 5],
+          matrixData: Array.from({ length: 26 }, (_) => {
+            let x = Math.floor(Math.random() * 100);
+            let y = Math.floor(Math.random() * 100);
+            let v = Math.floor(Math.random() * 100);
+            return { x: x, y: y, v: v };
+          }),
           chartsData: {
             lineChartData: Array.from(
               { length: 25 },
               (_) => Math.random() * 100
             ),
             barChartData: {
-              demand: Array.from({ length: 25 }, (_) => Math.random() * -100),
-              produced: Array.from({ length: 25 }, (_) => Math.random() * 100),
+              demand: Array.from({ length: 25 }, (_) =>
+                Math.floor(Math.random() * -100)
+              ),
+              produced: Array.from({ length: 25 }, (_) =>
+                Math.floor(Math.random() * 100)
+              ),
             },
           },
         };

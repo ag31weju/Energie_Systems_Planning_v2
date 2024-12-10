@@ -29,21 +29,30 @@ export default {
     matrixData: {
       handler(newVal) {
         console.log("MatrixData updated", newVal);
+        if (newVal && Object.keys(newVal).length > 0) {
+          this.updateMatrix(newVal);
+        } else {
+          this.resetMatrixData();
+        }
       },
       deep: true,
     },
   },
   components: {
     Panel,
+    Chart,
+    MatrixController,
+    MatrixElement,
+    LinearScale,
   },
   methods: {
     renderMatrix() {
       const context = document.getElementById("chart-matrix").getContext("2d");
-      const ex_matrix = [];
+      const initMatrixData = [];
 
       for (let i = 0; i <= 5; i++) {
         for (let j = 0; j <= 5; j++) {
-          ex_matrix.push({
+          initMatrixData.push({
             x: i,
             y: j,
             v: parseInt(`${i}${j}`, 10),
@@ -51,11 +60,11 @@ export default {
         }
       }
 
-      const ex_data = {
+      const initMatrix = {
         datasets: [
           {
             label: "My Matrix",
-            data: ex_matrix,
+            data: initMatrixData,
             backgroundColor(context) {
               const value = context.dataset.data[context.dataIndex].v;
               const alpha = (value - 6) / 40 + 0.5;
@@ -69,11 +78,11 @@ export default {
             borderWidth: 1,
             width: ({ chart }) =>
               ((chart.chartArea || {}).width || 0) /
-                Math.sqrt(ex_matrix.length) -
+                Math.sqrt(initMatrixData.length) -
               1,
             height: ({ chart }) =>
               ((chart.chartArea || {}).height || 0) /
-                Math.sqrt(ex_matrix.length) -
+                Math.sqrt(initMatrixData.length) -
               1,
           },
         ],
@@ -81,7 +90,7 @@ export default {
 
       this.matrix = new Chart(context, {
         type: "matrix",
-        data: ex_data,
+        data: initMatrix,
         options: {
           plugins: {
             legend: {
@@ -120,6 +129,17 @@ export default {
           },
         },
       });
+    },
+    updateMatrix(data) {
+      //only when the matrix exists, should any changes be allowed/Possible
+      if (this.matrix) {
+        this.matrix.data.datasets[0].data = data;
+      }
+    },
+    resetMatrixData() {
+      if (this.matrix) {
+        this.matrix.data.datasets[0].data = [];
+      }
     },
   },
   mounted() {
