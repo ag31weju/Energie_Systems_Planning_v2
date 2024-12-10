@@ -118,10 +118,13 @@ export default {
         const tempData = {
           matrixData: [1, 2, 3, 4, 5],
           chartsData: {
-            lineChartData: [1, 2, 3, 4, 5, 6],
+            lineChartData: Array.from(
+              { length: 25 },
+              (_) => Math.random() * 100
+            ),
             barChartData: {
-              demand: 123,
-              produced: 123,
+              demand: Array.from({ length: 25 }, (_) => Math.random() * -100),
+              produced: Array.from({ length: 25 }, (_) => Math.random() * 100),
             },
           },
         };
