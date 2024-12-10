@@ -13,10 +13,25 @@ import Panel from "primevue/panel";
 Chart.register(MatrixController, MatrixElement, LinearScale);
 
 export default {
+  props: {
+    matrixData: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+  },
   data() {
     return {
       matrix: null,
     };
+  },
+  watch: {
+    matrixData: {
+      handler(newVal) {
+        console.log("MatrixData updated", newVal);
+      },
+      deep: true,
+    },
   },
   components: {
     Panel,

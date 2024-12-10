@@ -7,7 +7,7 @@
         :max="5"
         :step="step"
         class="w-56"
-        style="margin: 10px;"
+        style="margin: 10px"
       ></Slider>
       {{ sliderList[index].value / step }}
     </div>
@@ -58,17 +58,17 @@ export default {
       // Send reset flag to the backend
       const url = "http://127.0.0.1:8000/api/save-slider-data/";
       const sliderData = {
-          autoSimulate: false,
-        reset: true,  // Flag to indicate reset action to reset graphs and matrix
+        autoSimulate: false,
+        reset: true, // Flag to indicate reset action to reset graphs and matrix
         sliders: this.sliderList.map((slider) => ({
           type: slider.type,
           value: slider.value,
         })),
       };
-      await this.sendRequest(url, sliderData);
+      await this.postAndGet(url, sliderData);
     },
     async simulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";  
+      const url = "http://127.0.0.1:8000/api/save-slider-data/";
       const sliderData = {
         autoSimulate: false,
         reset: false,
@@ -79,15 +79,14 @@ export default {
       };
 
       // Send the full slider data to the backend
-      await this.sendRequest(url, sliderData);
+      await this.postAndGet(url, sliderData);
     },
-     
-      
+
     async autoSimulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";  
+      const url = "http://127.0.0.1:8000/api/save-slider-data/";
       const sliderData = {
         reset: false,
-        autoSimulate: true,  // Send the boolean flag for auto simulation
+        autoSimulate: true, // Send the boolean flag for auto simulation
         sliders: this.sliderList.map((slider) => ({
           type: slider.type,
           value: slider.value,
@@ -95,23 +94,44 @@ export default {
       };
 
       // Send the auto-simulation request with the flag
-      await this.sendRequest(url, sliderData);
+      await this.postAndGet(url, sliderData);
     },
-    async sendRequest(url, data) {
+    async postAndGet(url, data) {
       try {
-        const response = await axios.post(url, data, {
-          headers: {
-            "Content-Type": "application/json", // Ensures JSON format
+        const response = await axios
+          .post(url, data, {
+            headers: {
+              "Content-Type": "application/json", // Ensures JSON format
+            },
+          })
+          .catch((e) => console.error("POST did not work", e));
+        //if response is ok, then do GET function
+        const simData = await axios
+          .get(/* url for receiving data */)
+          .then((res) => {
+            return res.data;
+          })
+          .catch((e) => console.error("GET did not work:", e));
+
+        /* Destructure simData into multiple parts
+         */
+        const tempData = {
+          matrixData: [1, 2, 3, 4, 5],
+          chartsData: {
+            lineChartData: [1, 2, 3, 4, 5, 6],
+            barChartData: {
+              demand: 123,
+              produced: 123,
+            },
           },
-        });
-        console.log("Response from backend:", response.data);
-        return response.data;
+        };
+        this.$emit("getSimulationData", tempData);
       } catch (error) {
         console.error("Error sending data to backend:", error);
         throw error; // Re-throw the error to handle it in the calling method
-    }
-  }
-},
+      }
+    },
+  },
 };
 </script>
 

@@ -8,15 +8,15 @@
         <Playfield></Playfield>
       </div>
       <div id="slider-box">
-        <Sliders></Sliders>
+        <Sliders @getSimulationData="handleSimulationData"></Sliders>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
       <div id="matrix-box" class="grid-column">
-        <Matrix></Matrix>
+        <Matrix :matrixData="matrixData"></Matrix>
       </div>
       <div id="charts-box" class="grid-column">
-        <Charts></Charts>
+        <Charts :chartsData="chartsData"></Charts>
       </div>
     </div>
   </div>
@@ -33,7 +33,10 @@ import Drawerbox from "./components/Drawerbox.vue";
 
 export default {
   data() {
-    return {};
+    return {
+      matrixData: null,
+      chartsData: null,
+    };
   },
   components: {
     Sliders,
@@ -51,6 +54,10 @@ export default {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
+    },
+    handleSimulationData(simData) {
+      this.matrixData = simData.matrixData;
+      this.chartsData = simData.chartsData;
     },
   },
 };
