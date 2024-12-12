@@ -63,9 +63,14 @@ td {
   border: 1px solid black;
   padding: 10px;
   text-align: center;
+  color: var(--matrix-text-color);
 }
 
 th {
-  background-color: #f2f2f2;
+  background-color: var(--matrix-background-color-header);
+}
+
+td {
+  background-color: var(--matrix-background-color-cell);
 }
 </style>

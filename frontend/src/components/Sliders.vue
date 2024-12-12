@@ -13,10 +13,14 @@
     </div>
 
     <div id="slider-buttons-container">
-      <Button @click="reset" class="button" v-bind:label='reset_text'></Button>
-      <Button @click="autoSimulateRequest" class="button" v-bind:label='auto'>
+      <Button @click="reset" class="button" v-bind:label="reset_text"></Button>
+      <Button @click="autoSimulateRequest" class="button" v-bind:label="auto">
       </Button>
-      <Button @click="simulateRequest" class="button" v-bind:label='simulate'></Button>
+      <Button
+        @click="simulateRequest"
+        class="button"
+        v-bind:label="simulate"
+      ></Button>
     </div>
   </Panel>
 </template>
@@ -28,7 +32,7 @@ import Panel from "primevue/panel";
 import axios from "axios";
 
 export default {
-  props: ['auto', 'simulate', 'reset_text'],
+  props: ["auto", "simulate", "reset_text"],
   data() {
     return {
       propData: ["test1", "test2"], //This array tells what the amount and type of nodes are inside the graph
@@ -117,6 +121,10 @@ export default {
 
         /* Destructure simData into multiple parts
          */
+        const chartsTemp = Array.from({ length: 25 }, (_) =>
+          Math.floor(Math.random() * 100)
+        );
+
         const tempData = {
           matrixData: Array.from({ length: 6 }, () =>
             Array.from({ length: 6 }, () => Math.floor(Math.random() * 100))
@@ -127,12 +135,12 @@ export default {
               (_) => Math.random() * 100
             ),
             barChartData: {
-              demand: Array.from({ length: 25 }, (_) =>
-                Math.floor(Math.random() * -100)
-              ),
-              produced: Array.from({ length: 25 }, (_) =>
-                Math.floor(Math.random() * 100)
-              ),
+              purchased_power: chartsTemp,
+              pv_production: chartsTemp,
+              pv_curtailment: chartsTemp,
+              storage_charge: chartsTemp,
+              storage_discharge: chartsTemp,
+              demand: chartsTemp.map((el) => -(4 * el)),
             },
           },
         };

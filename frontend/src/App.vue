@@ -9,7 +9,7 @@
       </div>
       <div id="slider-box">
         <Sliders
-        v-bind:reset_text="reset_text"
+          v-bind:reset_text="reset_text"
           v-bind:simulate="simulate"
           v-bind:auto="auto"
           @getSimulationData="handleSimulationData"
@@ -40,10 +40,13 @@ import ENLang from "@/assets/languages/en.json";
 import DELang from "@/assets/languages/de.json";
 
 export default {
+  data() {
+    return {
+      matrixData: undefined,
+      chartsData: undefined,
+    };
+  },
   setup() {
-    const matrixData = ref(undefined)
-    const chartsData = ref(undefined)
-
     const currentLang = ref("EN");
     let currentLangJSON = ENLang;
     let capacity = ref(currentLangJSON.capacity);

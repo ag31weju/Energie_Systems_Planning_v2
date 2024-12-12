@@ -9,6 +9,9 @@
   --drawer-border-color: 2px solid #464646;
   --slider-range-color: black;
   --slider-handle-border-color: #464646;
+  --matrix-background-color-cell: white;
+  --matrix-background-color-header: lightgray;
+  --matrix-text-color: black;
 }
 
 .dark-theme {
@@ -21,6 +24,9 @@
   --drawer-border-color: 2px solid black;
   --slider-color: #34d399;
   --slider-text-color: white;
+  --matrix-background-color-cell: rgb(39, 39, 39);
+  --matrix-background-color-header: rgb(60, 60, 60);
+  --matrix-text-color: white;
 }
 
 * {
@@ -62,8 +68,6 @@ svg {
   display: flex;
   padding: 1% 0.5% 0.5% 1%;
 }
-
-
 
 #matrix-box {
   min-width: 100%;
@@ -324,12 +328,9 @@ svg {
   color: var(--primary-text-color);
 }
 
-
 .slider-button:hover {
   background-color: #45a049;
 }
-
-
 
 #drawer-button {
   display: flex;
