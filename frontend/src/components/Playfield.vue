@@ -37,7 +37,7 @@
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container">
-      <Button @click="loadRequest" type="submit" class="slider-button">Load Scenario</Button>
+      <Button @click="loadRequest" type="submit" class="slider-button" v-bind:label="load_scenario"></Button>
       <Button @click="toggleGridOverlay" type="submit" class="slider-button">Toggle Grid</Button>
       <Button @click="addConsumerNode" type="submit" class="slider-button">Add Consumer</Button>
       <Button @click="addEnergySourceNode" type="submit" class="slider-button">Add EnergySource</Button>
@@ -54,6 +54,7 @@ import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 
 export default {
+  props: [ 'load_scenario' ],
   components: {
     Panel,
     Button,

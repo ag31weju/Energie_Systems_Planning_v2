@@ -327,9 +327,7 @@ svg {
   background-color: #45a049;
 }
 
-#image_box {
-  position: relative; /*Ensure the container is the positioning reference*/
-}
+
 
 #drawer-button {
   display: flex;
