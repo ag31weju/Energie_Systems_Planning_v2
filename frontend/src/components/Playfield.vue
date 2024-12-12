@@ -5,7 +5,7 @@
       <!-- Display Image -->
       <img
         :src="imgUrl"
-        style="max-width: 100%; max-height: auto; object-fit: contain;"
+        style="max-width: 100%; max-height: auto; object-fit: contain"
         ref="imageElement"
       />
 
@@ -14,14 +14,27 @@
         v-if="showGrid"
         ref="gridCanvas"
         id="grid_overlay"
-        style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          pointer-events: none;
+          z-index: 1;
+        "
       ></canvas>
 
       <!-- Vue Flow Container -->
       <div
         id="vueflow_container"
         ref="vueFlowContainer"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 2;
+        "
       >
         <vue-flow
           v-model:nodes="nodes"
@@ -37,11 +50,24 @@
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container">
-      <Button @click="loadRequest" type="submit" class="slider-button" v-bind:label="load_scenario"></Button>
-      <Button @click="toggleGridOverlay" type="submit" class="slider-button">Toggle Grid</Button>
-      <Button @click="addConsumerNode" type="submit" class="slider-button">Add Consumer</Button>
-      <Button @click="addEnergySourceNode" type="submit" class="slider-button">Add EnergySource</Button>
-      <Button @click="clearNodes" type="submit" class="slider-button">Clear Nodes</Button>
+      <Button
+        @click="loadRequest"
+        type="submit"
+        class="slider-button"
+        v-bind:label="load_scenario"
+      ></Button>
+      <Button @click="toggleGridOverlay" type="submit" class="slider-button" v-bind:label="toggle_grid"
+        ></Button
+      >
+      <Button @click="addConsumerNode" type="submit" class="slider-button" v-bind:label="add_consumer"
+        ></Button
+      >
+      <Button @click="addEnergySourceNode" type="submit" class="slider-button" v-bind:label="add_energy_source"
+        ></Button
+      >
+      <Button @click="clearNodes" type="submit" class="slider-button" v-bind:label="clear_nodes"
+        ></Button
+      >
     </div>
   </Panel>
 </template>
@@ -54,7 +80,13 @@ import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 
 export default {
-  props: [ 'load_scenario' ],
+  props: [
+    "load_scenario",
+    "toggle_grid",
+    "add_consumer",
+    "add_energy_source",
+    "clear_nodes",
+  ],
   components: {
     Panel,
     Button,
@@ -158,7 +190,12 @@ export default {
         type: "consumer",
         position: { x: width / 3, y: height / 3 },
         data: { label: `Consumer` },
-        style: { backgroundColor: "#FF5733", color: "#FFFFFF", padding: "10px", borderRadius: "5px" },
+        style: {
+          backgroundColor: "#FF5733",
+          color: "#FFFFFF",
+          padding: "10px",
+          borderRadius: "5px",
+        },
       };
       this.nodes.push(newNode);
     },
@@ -176,7 +213,12 @@ export default {
         type: "energySource",
         position: { x: (2 * width) / 3, y: (2 * height) / 3 },
         data: { label: `EnergySource` },
-        style: { backgroundColor: "#33FF57", color: "#000000", padding: "10px", borderRadius: "5px" },
+        style: {
+          backgroundColor: "#33FF57",
+          color: "#000000",
+          padding: "10px",
+          borderRadius: "5px",
+        },
       };
       this.nodes.push(newNode);
     },
@@ -187,7 +229,10 @@ export default {
       const nodeId = event.id;
       const targetNode = this.nodes.find((n) => n.id === nodeId);
       if (targetNode) {
-        const newName = prompt("Enter new name for the node:", targetNode.data.label);
+        const newName = prompt(
+          "Enter new name for the node:",
+          targetNode.data.label
+        );
         if (newName) {
           targetNode.data.label = newName;
         }
@@ -196,7 +241,6 @@ export default {
   },
 };
 </script>
-
 
 <style>
 /* Playfield Styles */
@@ -212,18 +256,6 @@ export default {
   position: relative; /* Set relative positioning to position the buttons container absolutely */
 }
 
-#image_box {
-  position: absolute;
-  top: 0; /* Anchor to the bottom of the parent */
-  left: 0;
-  width: 100%;
-  height: 90%; /* Default height */
-  background-color: #f4f4f4;
-  overflow: hidden;
-  transition: height 0.3s ease; /* Smoothly animate height changes */
-}
-
-
 #grid_overlay {
   position: relative; /* Overlay on top of the image */
   top: 0;
@@ -231,7 +263,6 @@ export default {
   pointer-events: none; /* Allow clicks to pass through the canvas */
   z-index: 1;
 }
-
 
 #buttons_container {
   display: flex;
@@ -244,11 +275,15 @@ export default {
   bottom: 0; /* Position it at the bottom */
   padding: 10px; /* Add padding for spacing */
   background-color: var(--primary-background-color);
-   /* Add a border on top to separate from the image box */
+  /* Add a border on top to separate from the image box */
 }
 
 .slider-button {
   margin-bottom: 5px; /* Reduced space between buttons */
+}
+
+.slider-button .p-button-label{
+  color: black;
 }
 
 #vueflow_container {
@@ -259,6 +294,4 @@ export default {
   z-index: 2;
   overflow: hidden;
 }
-
-
 </style>

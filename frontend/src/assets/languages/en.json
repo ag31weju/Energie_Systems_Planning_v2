@@ -17,5 +17,9 @@
     "title_upper_plot": "Average Energy price [cent/kWh]",
     "title_middle_plot": "Storage Level",
     "title_lower_plot": "Dispatch",
-    "load_scenario": "Load Scenario"
+    "load_scenario": "Load Scenario",
+    "toggle_grid": "Toggle Grid",
+    "add_consumer": "Add Consumer",
+    "add_energy_source": "Add Energy Source",
+    "clear_nodes": "Clear Nodes"
 }

@@ -13,9 +13,13 @@
     "storage_level": "Speicherstand",
     "simulate": "Simulieren",
     "reset_text": "Zurücksetzen",
-    "auto": "Automatisch\n simulieren",
+    "auto": "Automatisch simulieren",
     "title_upper_plot": "Durchschnittlicher Strompreis [cent/kWh]",
     "title_middle_plot": "Speicherstand",
     "title_lower_plot": "Einsatzplan",
-    "load_scenario": "Szenario laden"
+    "load_scenario": "Szenario laden",
+    "toggle_grid": "Raster umschalten",
+    "add_consumer": "Konsumenten hinzufügen",
+    "add_energy_source": "Energiequelle hinzufügen",
+    "clear_nodes": "Alle Knoten entfernen"
 }
