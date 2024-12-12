@@ -157,10 +157,12 @@ svg {
 }
 
 #matrix-container {
+  position: relative;
   width: 100%;
   height: 100%;
   background-color: var(--primary-panel-color);
   border: var(--primary-border);
+  display: block;
 }
 
 #matrix-box .p-panel-p-component {

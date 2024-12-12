@@ -1,121 +1,120 @@
 <template>
-  <Panel id="matrix-container">
-    <canvas id="chart-matrix"></canvas>
+  <Panel id="matrix-container" :header="null">
+    <div>
+      <apexchart
+        type="heatmap"
+        height="350"
+        style="height: 100%; width: 100%"
+        :options="chartOptions"
+        :series="series"
+      ></apexchart>
+    </div>
   </Panel>
 </template>
 
 <script>
-import { Chart, LinearScale } from "chart.js";
-import { MatrixController, MatrixElement } from "chartjs-chart-matrix";
-import Panel from "primevue/panel";
-
-// Register matrix plugin with Chart.js globally
-Chart.register(MatrixController, MatrixElement, LinearScale);
+import { Panel } from "primevue";
+import VueApexCharts from "vue3-apexcharts";
 
 export default {
-  data() {
-    return {
-      matrix: null,
-    };
-  },
   components: {
     Panel,
+    apexchart: VueApexCharts,
   },
-  methods: {
-    renderMatrix() {
-      const context = document.getElementById("chart-matrix").getContext("2d");
-      const ex_matrix = [];
-
-      for (let i = 0; i <= 5; i++) {
-        for (let j = 0; j <= 5; j++) {
-          ex_matrix.push({
-            x: i,
-            y: j,
-            v: parseInt(`${i}${j}`, 10),
-          });
-        }
-      }
-
-      const ex_data = {
-        datasets: [
-          {
-            label: "My Matrix",
-            data: ex_matrix,
-            backgroundColor(context) {
-              const value = context.dataset.data[context.dataIndex].v;
-              const alpha = (value - 6) / 40 + 0.5;
-              return `rgba(0, 128, 0, ${alpha})`;
-            },
-            borderColor(context) {
-              const value = context.dataset.data[context.dataIndex].v;
-              const alpha = (value - 6) / 40 + 0.5;
-              return `rgba(0, 100, 0, ${alpha})`;
-            },
-            borderWidth: 1,
-            width: ({ chart }) =>
-              ((chart.chartArea || {}).width || 0) /
-                Math.sqrt(ex_matrix.length) -
-              1,
-            height: ({ chart }) =>
-              ((chart.chartArea || {}).height || 0) /
-                Math.sqrt(ex_matrix.length) -
-              1,
-          },
-        ],
-      };
-
-      this.matrix = new Chart(context, {
-        type: "matrix",
-        data: ex_data,
-        options: {
-          plugins: {
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              callbacks: {
-                title() {
-                  return "";
+  props: {
+    matrixData: {
+      type: Array,
+      required: false,
+      default: () =>
+        Array.from({ length: 6 }, (_, rowIndex) =>
+          Array.from({ length: 6 }, () => Math.floor(Math.random() * 100))
+        ),
+    },
+  },
+  data() {
+    return {
+      chartOptions: {
+        chart: {
+          height: "350",
+          type: "heatmap",
+        },
+        stroke: {
+          width: 0,
+        },
+        plotOptions: {
+          heatmap: {
+            radius: 30,
+            enableShades: false,
+            colorScale: {
+              ranges: [
+                {
+                  from: 0,
+                  to: 50,
+                  color: "#008FFB",
                 },
-                label(context) {
-                  const v = context.dataset.data[context.dataIndex];
-                  return [`x: ${v.x}`, `y: ${v.y}`, `v: ${v.v}`];
+                {
+                  from: 51,
+                  to: 100,
+                  color: "#00E396",
                 },
-              },
-            },
-          },
-          scales: {
-            x: {
-              ticks: {
-                stepSize: 1,
-              },
-              grid: {
-                display: false,
-              },
-            },
-            y: {
-              offset: true,
-              ticks: {
-                stepSize: 1,
-              },
-              grid: {
-                display: false,
-              },
+              ],
             },
           },
         },
-      });
+        dataLabels: {
+          enabled: true,
+          style: {
+            colors: ["#fff"],
+          },
+        },
+        xaxis: {
+          type: "category",
+        },
+        title: {
+          text: "Heatmap Example",
+        },
+      },
+      series: this.transformMatrixDataToSeries(),
+    };
+  },
+  watch: {
+    matrixData: {
+      handler() {
+        this.series = this.transformMatrixDataToSeries();
+      },
+      deep: true,
     },
   },
-  mounted() {
-    //setTimeout is not a permanent fix
-    setTimeout(() => {
-      this.renderMatrix();
-    }, 100);
+  methods: {
+    transformMatrixDataToSeries() {
+      // Convert matrixData into the format ApexCharts expects
+      return this.matrixData.map((row, rowIndex) => ({
+        name: `Row ${rowIndex + 1}`,
+        data: row.map((value, colIndex) => ({
+          x: `Col ${colIndex + 1}`,
+          y: value,
+        })),
+      }));
+    },
   },
 };
 </script>
 
-<style>
-@import "../assets/main.css";
+<style scoped>
+table {
+  border-collapse: collapse;
+  width: 100%;
+  height: 100%;
+}
+
+th,
+td {
+  border: 1px solid black;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #f2f2f2;
+}
 </style>

@@ -67,7 +67,7 @@ export default {
           value: slider.value,
         })),
       };
-      await this.sendRequest(url, sliderData);
+      await this.postAndGet(url, sliderData);
     },
     async simulateRequest() {
       const url = "http://127.0.0.1:8000/api/save-slider-data/";
@@ -81,7 +81,7 @@ export default {
       };
 
       // Send the full slider data to the backend
-      await this.sendRequest(url, sliderData);
+      await this.postAndGet(url, sliderData);
     },
 
     async autoSimulateRequest() {
@@ -96,17 +96,47 @@ export default {
       };
 
       // Send the auto-simulation request with the flag
-      await this.sendRequest(url, sliderData);
+      await this.postAndGet(url, sliderData);
     },
-    async sendRequest(url, data) {
+    async postAndGet(url, data) {
       try {
-        const response = await axios.post(url, data, {
-          headers: {
-            "Content-Type": "application/json", // Ensures JSON format
+        const response = await axios
+          .post(url, data, {
+            headers: {
+              "Content-Type": "application/json", // Ensures JSON format
+            },
+          })
+          .catch((e) => console.error("POST did not work", e));
+        //if response is ok, then do GET function
+        const simData = await axios
+          .get(/* url for receiving data */)
+          .then((res) => {
+            return res.data;
+          })
+          .catch((e) => console.error("GET did not work:", e));
+
+        /* Destructure simData into multiple parts
+         */
+        const tempData = {
+          matrixData: Array.from({ length: 6 }, () =>
+            Array.from({ length: 6 }, () => Math.floor(Math.random() * 100))
+          ),
+          chartsData: {
+            lineChartData: Array.from(
+              { length: 25 },
+              (_) => Math.random() * 100
+            ),
+            barChartData: {
+              demand: Array.from({ length: 25 }, (_) =>
+                Math.floor(Math.random() * -100)
+              ),
+              produced: Array.from({ length: 25 }, (_) =>
+                Math.floor(Math.random() * 100)
+              ),
+            },
           },
-        });
-        console.log("Response from backend:", response.data);
-        return response.data;
+        };
+        this.$emit("getSimulationData", tempData);
       } catch (error) {
         console.error("Error sending data to backend:", error);
         throw error; // Re-throw the error to handle it in the calling method

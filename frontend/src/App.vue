@@ -9,18 +9,19 @@
       </div>
       <div id="slider-box">
         <Sliders
-          v-bind:reset_text="reset_text"
+        v-bind:reset_text="reset_text"
           v-bind:simulate="simulate"
           v-bind:auto="auto"
+          @getSimulationData="handleSimulationData"
         ></Sliders>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
       <div id="matrix-box" class="grid-column">
-        <Matrix></Matrix>
+        <Matrix :matrixData="matrixData"></Matrix>
       </div>
       <div id="charts-box" class="grid-column">
-        <Charts></Charts>
+        <Charts :chartsData="chartsData"></Charts>
       </div>
     </div>
   </div>
@@ -32,7 +33,7 @@ import { ref } from "vue";
 import Chart from "primevue/chart";
 import Sliders from "./components/Sliders.vue";
 import Playfield from "./components/Playfield.vue";
-import Matrix from "./components/Matrix.vue";
+import Matrix from "./components/MatrixOLD2.vue";
 import Charts from "./components/Charts.vue";
 import Drawerbox from "./components/Drawerbox.vue";
 import ENLang from "@/assets/languages/en.json";
@@ -40,6 +41,9 @@ import DELang from "@/assets/languages/de.json";
 
 export default {
   setup() {
+    const matrixData = ref(undefined)
+    const chartsData = ref(undefined)
+
     const currentLang = ref("EN");
     let currentLangJSON = ENLang;
     let capacity = ref(currentLangJSON.capacity);
@@ -125,6 +129,20 @@ export default {
     Matrix,
     Charts,
     Drawerbox,
+  },
+  methods: {
+    async fetchMessage() {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/");
+        this.message = response.data.message;
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    },
+    handleSimulationData(simData) {
+      this.matrixData = simData.matrixData;
+      this.chartsData = simData.chartsData;
+    },
   },
 };
 </script>
