@@ -6,7 +6,7 @@
         :data="chartset"
         :options="chartOptions"
         class="h-[30rem]"
-        style="height: 10rem; width: 50rem;" 
+        style="height: 10rem; width: 50rem"
       />
     </div>
     <div id="chart2-box">
@@ -15,7 +15,7 @@
         :data="chartset2"
         :options="chartOptions2"
         class="h-[30rem]"
-        style="height: 10rem; width: 50rem;" 
+        style="height: 10rem; width: 50rem"
       />
     </div>
   </Panel>
@@ -26,6 +26,16 @@ import Chart from "primevue/chart";
 import Panel from "primevue/panel";
 
 export default {
+  props: [
+    "dispatch",
+    "time",
+    "pv_production",
+    "pv_curtailment",
+    "purchased_power",
+    'demand',
+    'storage_charge',
+    'storage_discharge',
+  ],
   components: {
     Chart,
     Panel,
@@ -51,19 +61,19 @@ export default {
             data: [28, 48, 40, 19, 86, 27],
           },
           {
-            label : "Graph 4"
+            label: "Graph 4",
           },
           {
-            label : "Graph 5"
+            label: "Graph 5",
           },
           {
-            label : "Graph 6"
+            label: "Graph 6",
           },
           {
-            label : "Graph 7"
+            label: "Graph 7",
           },
           {
-            label : "Graph 8"
+            label: "Graph 8",
           },
         ],
       },
@@ -111,22 +121,22 @@ export default {
             data: [30, 40, 55, 70, 60, 80],
           },
           {
-            label : "Graph C"
+            label: "Graph C",
           },
           {
-            label : "Graph D"
+            label: "Graph D",
           },
           {
-            label : "Graph E"
+            label: "Graph E",
           },
           {
-            label : "Graph F"
+            label: "Graph F",
           },
           {
-            label : "Graph G"
+            label: "Graph G",
           },
           {
-            label : "Graph H"
+            label: "Graph H",
           },
         ],
       },

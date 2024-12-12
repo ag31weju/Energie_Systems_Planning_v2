@@ -9,9 +9,9 @@
       </div>
       <div id="slider-box">
         <Sliders
-        v-bind:reset_text="reset_text"
-        v-bind:simulate="simulate"
-        v-bind:auto="auto"
+          v-bind:reset_text="reset_text"
+          v-bind:simulate="simulate"
+          v-bind:auto="auto"
         ></Sliders>
       </div>
     </div>
@@ -68,12 +68,12 @@ export default {
 
       if (language == "EN") {
         currentLangJSON = ENLang;
-        currentLang.value = 'EN'
+        currentLang.value = "EN";
       }
 
       if (language == "DE") {
         currentLangJSON = DELang;
-        currentLang.value = 'DE'
+        currentLang.value = "DE";
       }
 
       capacity.value = ref(currentLangJSON.capacity);
