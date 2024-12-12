@@ -1,7 +1,7 @@
 <template>
   <Panel id="playfield">
     <!-- Image Box -->
-    <div id="image_box">
+    <div id="image_box" ref="imageBox">
       <!-- Display Image -->
       <img
         :src="imgUrl"
@@ -16,12 +16,32 @@
         id="grid_overlay"
         style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"
       ></canvas>
+
+      <!-- Vue Flow Container -->
+      <div
+        id="vueflow_container"
+        ref="vueFlowContainer"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"
+      >
+        <vue-flow
+          v-model:nodes="nodes"
+          :fit-view="false"
+          :zoom-on-scroll="false"
+          :pan-on-drag="false"
+          :connection-mode="'strict'"
+          :node-types="customNodeTypes"
+          @node-dblclick="onNodeDblClick"
+        />
+      </div>
     </div>
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container">
       <Button @click="loadRequest" type="submit" class="slider-button">Load Scenario</Button>
       <Button @click="toggleGridOverlay" type="submit" class="slider-button">Toggle Grid</Button>
+      <Button @click="addConsumerNode" type="submit" class="slider-button">Add Consumer</Button>
+      <Button @click="addEnergySourceNode" type="submit" class="slider-button">Add EnergySource</Button>
+      <Button @click="clearNodes" type="submit" class="slider-button">Clear Nodes</Button>
     </div>
   </Panel>
 </template>
@@ -30,18 +50,24 @@
 import { Button } from "primevue";
 import Panel from "primevue/panel";
 import axios from "axios";
+import { VueFlow } from "@vue-flow/core";
+import "@vue-flow/core/dist/style.css";
 
 export default {
+  components: {
+    Panel,
+    Button,
+    VueFlow,
+  },
   data() {
     return {
       imgUrl: null, // URL for the image
       showGrid: false, // Flag for showing grid
       gridSize: 15, // Grid size (number of cells per row/column)
+      nodes: [], // Nodes for Vue Flow
+      customNodeTypes: {}, // Define custom node types if needed
+      nodeIdCounter: 1, // Counter for unique IDs
     };
-  },
-  components: {
-    Panel,
-    Button,
   },
   methods: {
     async loadRequest() {
@@ -76,51 +102,100 @@ export default {
       }
     },
     drawGrid() {
-  const canvas = this.$refs.gridCanvas;
-  const imgElement = this.$refs.imageElement;
+      const canvas = this.$refs.gridCanvas;
+      const imgElement = this.$refs.imageElement;
 
-  if (!canvas || !imgElement) return;
+      if (!canvas || !imgElement) return;
 
-  // Get the rendered dimensions of the image
-  const width = imgElement.offsetWidth;
-  const height = imgElement.offsetHeight;
+      // Get the rendered dimensions of the image
+      const width = imgElement.offsetWidth;
+      const height = imgElement.offsetHeight;
 
-  // Update canvas dimensions to match the image
-  canvas.width = width;
-  canvas.height = height;
+      // Update canvas dimensions to match the image
+      canvas.width = width;
+      canvas.height = height;
 
-  const context = canvas.getContext("2d");
-  const cellWidth = width / this.gridSize;
-  const cellHeight = height / this.gridSize;
+      const context = canvas.getContext("2d");
+      const cellWidth = width / this.gridSize;
+      const cellHeight = height / this.gridSize;
 
-  // Clear any previous drawing on the canvas
-  context.clearRect(0, 0, width, height);
+      // Clear any previous drawing on the canvas
+      context.clearRect(0, 0, width, height);
 
-  context.strokeStyle = "#000000"; // Set grid line color
-  context.lineWidth = 1;
+      context.strokeStyle = "#000000"; // Set grid line color
+      context.lineWidth = 1;
 
-  // Draw vertical grid lines
-  for (let x = 0; x <= this.gridSize; x++) {
-    const xPos = x * cellWidth;
-    context.beginPath();
-    context.moveTo(xPos, 0);
-    context.lineTo(xPos, height);
-    context.stroke();
-  }
+      // Draw vertical grid lines
+      for (let x = 0; x <= this.gridSize; x++) {
+        const xPos = x * cellWidth;
+        context.beginPath();
+        context.moveTo(xPos, 0);
+        context.lineTo(xPos, height);
+        context.stroke();
+      }
 
-  // Draw horizontal grid lines
-  for (let y = 0; y <= this.gridSize; y++) {
-    const yPos = y * cellHeight;
-    context.beginPath();
-    context.moveTo(0, yPos);
-    context.lineTo(width, yPos);
-    context.stroke();
-   }
-  }
+      // Draw horizontal grid lines
+      for (let y = 0; y <= this.gridSize; y++) {
+        const yPos = y * cellHeight;
+        context.beginPath();
+        context.moveTo(0, yPos);
+        context.lineTo(width, yPos);
+        context.stroke();
+      }
+    },
+    addConsumerNode() {
+      const imgElement = this.$refs.imageElement;
+      if (!imgElement) return;
 
+      // Get image dimensions
+      const width = imgElement.offsetWidth;
+      const height = imgElement.offsetHeight;
+
+      // Add a new Consumer node
+      const newNode = {
+        id: `node_${this.nodeIdCounter++}`,
+        type: "consumer",
+        position: { x: width / 3, y: height / 3 },
+        data: { label: `Consumer` },
+        style: { backgroundColor: "#FF5733", color: "#FFFFFF", padding: "10px", borderRadius: "5px" },
+      };
+      this.nodes.push(newNode);
+    },
+    addEnergySourceNode() {
+      const imgElement = this.$refs.imageElement;
+      if (!imgElement) return;
+
+      // Get image dimensions
+      const width = imgElement.offsetWidth;
+      const height = imgElement.offsetHeight;
+
+      // Add a new EnergySource node
+      const newNode = {
+        id: `node_${this.nodeIdCounter++}`,
+        type: "energySource",
+        position: { x: (2 * width) / 3, y: (2 * height) / 3 },
+        data: { label: `EnergySource` },
+        style: { backgroundColor: "#33FF57", color: "#000000", padding: "10px", borderRadius: "5px" },
+      };
+      this.nodes.push(newNode);
+    },
+    clearNodes() {
+      this.nodes = [];
+    },
+    onNodeDblClick(event) {
+      const nodeId = event.id;
+      const targetNode = this.nodes.find((n) => n.id === nodeId);
+      if (targetNode) {
+        const newName = prompt("Enter new name for the node:", targetNode.data.label);
+        if (newName) {
+          targetNode.data.label = newName;
+        }
+      }
+    },
   },
 };
 </script>
+
 
 <style>
 /* Playfield Styles */
@@ -174,5 +249,15 @@ export default {
 .slider-button {
   margin-bottom: 5px; /* Reduced space between buttons */
 }
+
+#vueflow_container {
+  position: relative;
+  top: 0;
+  left: 0;
+  pointer-events: auto; /* Allow interaction */
+  z-index: 2;
+  overflow: hidden;
+}
+
 
 </style>
