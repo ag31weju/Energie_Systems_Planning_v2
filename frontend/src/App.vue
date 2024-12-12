@@ -34,8 +34,8 @@ import Drawerbox from "./components/Drawerbox.vue";
 export default {
   data() {
     return {
-      matrixData: null,
-      chartsData: null,
+      matrixData: undefined,
+      chartsData: undefined,
     };
   },
   components: {

@@ -80,14 +80,14 @@ export default {
         labels: Array.from({ length: 25 }, (_, i) => i),
         datasets: [
           {
-            label: "Graph 1",
+            label: "Power",
             backgroundColor: "rgba(75, 192, 192, 0.2)",
             borderColor: "rgba(75, 192, 192, 1)",
             borderWidth: 1,
             data: [],
           },
           {
-            label: "Graph 2",
+            label: "Demand",
             backgroundColor: "rgba(255, 99, 132, 0.2)",
             borderColor: "rgba(255, 99, 132, 1)",
             borderWidth: 1,
