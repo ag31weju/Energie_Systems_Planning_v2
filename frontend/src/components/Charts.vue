@@ -7,7 +7,7 @@
           :data="chartset"
           :options="chartOptions"
           class="h-[30rem]"
-          style="height: 10rem; width: 50rem"
+          style="height: 10rem; width: 40rem"
         />
       </div>
       <Chart
@@ -15,7 +15,7 @@
         :data="chartset2"
         :options="chartOptions2"
         class="h-[30rem]"
-        style="height: 10rem; width: 50rem"
+        style="height: 10rem; width: 40rem"
       />
     </div>
   </Panel>

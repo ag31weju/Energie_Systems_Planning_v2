@@ -1,52 +1,101 @@
 <template>
   <Panel id="matrix-container" :header="null">
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th v-for="(_, colIndex) in matrixData[0]" :key="colIndex">
-            {{ colIndex }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(row, rowIndex) in matrixData" :key="rowIndex">
-          <th>{{ rowIndex }}</th>
-          <td
-            v-for="(value, colIndex) in matrixData[rowIndex]"
-            :key="rowIndex + colIndex"
-          >
-            {{ value }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div>
+      <apexchart
+        type="heatmap"
+        height="350"
+        style="height: 100%; width: 100%"
+        :options="chartOptions"
+        :series="series"
+      ></apexchart>
+    </div>
   </Panel>
 </template>
 
 <script>
 import { Panel } from "primevue";
+import VueApexCharts from "vue3-apexcharts";
 
 export default {
+  components: {
+    Panel,
+    apexchart: VueApexCharts,
+  },
   props: {
     matrixData: {
       type: Array,
       required: false,
       default: () =>
-        Array.from({ length: 6 }, (_, colIndex) => {
-          const col = {};
-          Array.from({ length: 6 }, (_, rowIndex) => {
-            col[rowIndex] = "";
-          });
-          return col;
-        }),
+        Array.from({ length: 6 }, (_, rowIndex) =>
+          Array.from({ length: 6 }, () => Math.floor(Math.random() * 100))
+        ),
     },
   },
   data() {
-    return {};
+    return {
+      chartOptions: {
+        chart: {
+          height: "350",
+          type: "heatmap",
+        },
+        stroke: {
+          width: 0,
+        },
+        plotOptions: {
+          heatmap: {
+            radius: 30,
+            enableShades: false,
+            colorScale: {
+              ranges: [
+                {
+                  from: 0,
+                  to: 50,
+                  color: "#008FFB",
+                },
+                {
+                  from: 51,
+                  to: 100,
+                  color: "#00E396",
+                },
+              ],
+            },
+          },
+        },
+        dataLabels: {
+          enabled: true,
+          style: {
+            colors: ["#fff"],
+          },
+        },
+        xaxis: {
+          type: "category",
+        },
+        title: {
+          text: "Heatmap Example",
+        },
+      },
+      series: this.transformMatrixDataToSeries(),
+    };
   },
-  components: {
-    Panel,
+  watch: {
+    matrixData: {
+      handler() {
+        this.series = this.transformMatrixDataToSeries();
+      },
+      deep: true,
+    },
+  },
+  methods: {
+    transformMatrixDataToSeries() {
+      // Convert matrixData into the format ApexCharts expects
+      return this.matrixData.map((row, rowIndex) => ({
+        name: `Row ${rowIndex + 1}`,
+        data: row.map((value, colIndex) => ({
+          x: `Col ${colIndex + 1}`,
+          y: value,
+        })),
+      }));
+    },
   },
 };
 </script>

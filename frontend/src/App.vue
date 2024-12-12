@@ -27,7 +27,7 @@ import axios from "axios";
 import Chart from "primevue/chart";
 import Sliders from "./components/Sliders.vue";
 import Playfield from "./components/Playfield.vue";
-import Matrix from "./components/Matrix.vue";
+import Matrix from "./components/MatrixOLD2.vue";
 import Charts from "./components/Charts.vue";
 import Drawerbox from "./components/Drawerbox.vue";
 
