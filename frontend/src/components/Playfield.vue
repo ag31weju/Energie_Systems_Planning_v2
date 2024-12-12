@@ -1,6 +1,5 @@
 <template>
   <Panel id="playfield">
-
     <div id="image_box">
       <img
         id="base_image"
@@ -15,9 +14,8 @@
         class="overlay_image"
       /> -->
     </div>
-    <Button @click="loadRequest" type="submit" class="slider-button"
-      >Load Scenario</Button
-    >
+    <Button @click="loadRequest" type="submit" class="button"
+    v-bind:label="load_scenario"></Button>
   </Panel>
 </template>
 
@@ -27,6 +25,7 @@ import Panel from "primevue/panel";
 import axios from "axios";
 
 export default {
+  props: [ 'load_scenario' ],
   data() {
     return {
       imgUrl: null,
@@ -116,7 +115,4 @@ export default {
 
 <style>
 @import "../assets/main.css";
-#image_box {
-  position: relative; /*Ensure the container is the positioning reference*/
-}
 </style>

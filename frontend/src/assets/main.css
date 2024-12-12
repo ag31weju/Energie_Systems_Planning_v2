@@ -3,6 +3,7 @@
 :root {
   --primary-background-color: white;
   --primary-text-color: black;
+  --primary-panel-color: white;
   --primary-border: 2px solid #d3d3d3;
   --primary-panel-radius: 6px;
   --drawer-border-color: 2px solid #464646;
@@ -10,38 +11,21 @@
   --slider-handle-border-color: #464646;
 }
 
-body.dark-theme {
-  --primary-background-color: black;
-  --primary-text-color: white;
-  --primary-border: 2px solid #d3d3d3;
-  --primary-panel-radius: 6px;
-  --drawer-border-color: 2px solid #464646;
-  --slider-range-color: black;
-  --slider-handle-border-color: #464646;
-  /* --primary-background-color: rgb(0, 0, 0);
-  --primary-text-color: red;
+.dark-theme {
+  --primary-background-color: rgb(24, 24, 24);
   --primary-text-color: black;
-  --primary-border: 2px solid #black;
+  --primary-panel-color: rgb(39, 39, 39);
+  --primary-border: 2px solid rgb(22, 22, 22);
   --primary-panel-radius: 6px;
-  --drawer-border-color: 2px solid #1a1a1a;
+  --drawer-background-color: #383838;
+  --drawer-border-color: 2px solid black;
   --slider-color: #34d399;
-  --slider-handle-border-color: #464646; */
+  --slider-text-color: white;
 }
-
-/* body.light-theme {
-  --primary-background-color: white;
-  --primary-text-color: black;
-  --primary-border: 2px solid #d3d3d3;
-  --primary-panel-radius: 6px;
-  --drawer-border-color: 2px solid #464646;
-  --slider-range-color: black;
-  --slider-handle-border-color: #464646;
-} */
 
 * {
   box-sizing: border-box;
 }
-
 
 body {
   background-color: var(--primary-background-color);
@@ -53,7 +37,6 @@ svg {
   height: 30%;
   padding-block: 10px;
 }
-
 
 /*root div*/
 
@@ -84,7 +67,7 @@ svg {
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   width: 100%;
   height: 100%;
 }
@@ -111,8 +94,8 @@ svg {
   border-bottom-right-radius: 30px;
   min-width: 300px;
   max-width: 300px;
-  min-height: 100px;
-  max-height: 100px;
+  min-height: 80px;
+  max-height: 80px;
   background-color: var(--primary-background-color);
   border: var(--drawer-border-color);
 }
@@ -183,7 +166,7 @@ svg {
 #matrix-container {
   width: 100%;
   height: 100%;
-  background-color: var(--primary-background-color);
+  background-color: var(--primary-panel-color);
   border: var(--primary-border);
 }
 
@@ -213,7 +196,7 @@ svg {
 #charts-container {
   width: 100%;
   height: 100%;
-  background-color: var(--primary-background-color);
+  background-color: var(--primary-panel-color);
   border: var(--primary-border);
 }
 
@@ -238,11 +221,11 @@ svg {
 #playfield {
   width: 100%;
   height: 100%;
-  background-color: var(--primary-background-color);
+  background-color: var(--primary-panel-color);
   border: var(--primary-border);
 }
 
-#playfield .p-panel-header{
+#playfield .p-panel-header {
   display: none;
 }
 
@@ -274,9 +257,9 @@ svg {
   display: flex;
   width: 100%;
   height: 100%;
-  background-color: var(--main-background-color);
+  background-color: var(--primary-panel-color);
   border: var(--primary-border);
-  color: var(--primary-text-color);
+  color: var(--slider-text-color);
 }
 
 #sliders .p-panel-header {
@@ -310,7 +293,6 @@ svg {
 #sliders-grid::after {
   display: table;
   clear: both;
-
 }
 
 .w-56 {
@@ -326,10 +308,10 @@ svg {
   width: 100%;
   margin-top: 12px;
 }
-.slider-button {
+
+.button {
   float: left;
   background-color: #4caf50;
-  color: white;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -338,6 +320,39 @@ svg {
   transition: background-color 0.3s ease;
 }
 
+.button .p-button-label {
+  color: var(--primary-text-color);
+}
+
+
 .slider-button:hover {
   background-color: #45a049;
+}
+
+#image_box {
+  position: relative; /*Ensure the container is the positioning reference*/
+}
+
+#drawer-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.hamburger-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 20px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.line {
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  border-radius: 1px;
 }

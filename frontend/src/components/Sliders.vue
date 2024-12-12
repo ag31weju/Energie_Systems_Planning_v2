@@ -7,27 +7,28 @@
         :max="5"
         :step="step"
         class="w-56"
-        style="margin: 10px;"
+        style="margin: 10px"
       ></Slider>
       {{ sliderList[index].value / step }}
     </div>
 
     <div id="slider-buttons-container">
-      <button @click="reset" class="slider-button">Reset</button>
-      <button @click="autoSimulateRequest" class="slider-button">
-        Auto Simulate
-      </button>
-      <button @click="simulateRequest" class="slider-button">Simulate</button>
+      <Button @click="reset" class="button" v-bind:label='reset_text'></Button>
+      <Button @click="autoSimulateRequest" class="button" v-bind:label='auto'>
+      </Button>
+      <Button @click="simulateRequest" class="button" v-bind:label='simulate'></Button>
     </div>
   </Panel>
 </template>
 
 <script>
 import Slider from "primevue/slider";
+import Button from "primevue/button";
 import Panel from "primevue/panel";
 import axios from "axios";
 
 export default {
+  props: ['auto', 'simulate', 'reset_text'],
   data() {
     return {
       propData: ["test1", "test2"], //This array tells what the amount and type of nodes are inside the graph
@@ -40,6 +41,7 @@ export default {
   components: {
     Slider,
     Panel,
+    Button,
   },
   mounted() {
     this.sliderList = Array.from(
@@ -58,8 +60,8 @@ export default {
       // Send reset flag to the backend
       const url = "http://127.0.0.1:8000/api/save-slider-data/";
       const sliderData = {
-          autoSimulate: false,
-        reset: true,  // Flag to indicate reset action to reset graphs and matrix
+        autoSimulate: false,
+        reset: true, // Flag to indicate reset action to reset graphs and matrix
         sliders: this.sliderList.map((slider) => ({
           type: slider.type,
           value: slider.value,
@@ -68,7 +70,7 @@ export default {
       await this.sendRequest(url, sliderData);
     },
     async simulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";  
+      const url = "http://127.0.0.1:8000/api/save-slider-data/";
       const sliderData = {
         autoSimulate: false,
         reset: false,
@@ -81,13 +83,12 @@ export default {
       // Send the full slider data to the backend
       await this.sendRequest(url, sliderData);
     },
-     
-      
+
     async autoSimulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";  
+      const url = "http://127.0.0.1:8000/api/save-slider-data/";
       const sliderData = {
         reset: false,
-        autoSimulate: true,  // Send the boolean flag for auto simulation
+        autoSimulate: true, // Send the boolean flag for auto simulation
         sliders: this.sliderList.map((slider) => ({
           type: slider.type,
           value: slider.value,
@@ -109,9 +110,9 @@ export default {
       } catch (error) {
         console.error("Error sending data to backend:", error);
         throw error; // Re-throw the error to handle it in the calling method
-    }
-  }
-},
+      }
+    },
+  },
 };
 </script>
 

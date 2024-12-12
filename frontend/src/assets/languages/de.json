@@ -1,0 +1,21 @@
+{
+    "capacity": "Kapazität",
+    "cost": "Preis",
+    "battery": "Batterie Kapazität",
+    "pv": "PV Kapazität",
+    "time": "Uhrzeit",
+    "pv_production": "PV Produktion",
+    "pv_curtailment": "PV Abregelung",
+    "demand": "Verbrauch",
+    "purchased_power": "Netzbezug",
+    "storage_charge": "Speicherladung",
+    "storage_discharge": "Speicherentladung",
+    "storage_level": "Speicherstand",
+    "simulate": "Simulieren",
+    "reset_text": "Zurücksetzen",
+    "auto": "Automatisch\n simulieren",
+    "title_upper_plot": "Durchschnittlicher Strompreis [cent/kWh]",
+    "title_middle_plot": "Speicherstand",
+    "title_lower_plot": "Einsatzplan",
+    "load_scenario": "Szenario laden"
+}

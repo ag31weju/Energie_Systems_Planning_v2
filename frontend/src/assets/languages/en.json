@@ -1,0 +1,21 @@
+{
+    "capacity": "Capacity",
+    "cost": "Cost",
+    "battery": "Battery Capacity",
+    "pv": "PV Capacity",
+    "time": "Time",
+    "pv_production": "PV Production",
+    "pv_curtailment": "PV Curtailment",
+    "demand": "Demand",
+    "purchased_power": "Purchased Power",
+    "storage_charge": "Storage Charge",
+    "storage_discharge": "Storage Discharge",
+    "storage_level": "Storage Level",
+    "simulate": "Simulate",
+    "reset_text": "Reset",
+    "auto": "Auto Simulate",
+    "title_upper_plot": "Average Energy price [cent/kWh]",
+    "title_middle_plot": "Storage Level",
+    "title_lower_plot": "Dispatch",
+    "load_scenario": "Load Scenario"
+}
