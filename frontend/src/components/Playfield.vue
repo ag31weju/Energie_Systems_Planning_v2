@@ -160,7 +160,7 @@ export default {
         }
 
         this.imgUrl = URL.createObjectURL(imgResponse.data);
-        
+
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
@@ -309,13 +309,14 @@ export default {
         alert("Error saving data.");
       }
 
-      /* // Optionally, download the JSON file
+      // Optionally, download the JSON file
       const blob = new Blob([jsonData], { type: "application/json" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "scenario_data.json";
-      link.click();*/
-    } catch (error) {
+      link.click();
+    }
+     catch (error) {
       console.error("Error saving data:", error);
       alert(`Error: ${error.message}`);
     }

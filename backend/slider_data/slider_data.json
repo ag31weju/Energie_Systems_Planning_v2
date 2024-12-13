@@ -1,6 +1,6 @@
 {
     "autoSimulate": false,
-    "reset": false,
+    "reset": true,
     "sliders": [
         {
             "type": "test1",
