@@ -94,3 +94,30 @@ def save_slider_data(request):
             return JsonResponse({"error": "Invalid JSON data."}, status=400)
 
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+@csrf_exempt  
+def save_scenario(request):
+    if request.method == 'POST':
+        try:
+            # Parse the incoming JSON data
+            data = json.loads(request.body)
+            nodes = data.get('nodes')
+            edges = data.get('edges')
+            image_url = data.get('imageUrl')
+
+            folder_path = os.path.join(os.getcwd(), "scenario_data")
+            os.makedirs(folder_path, exist_ok=True)
+
+            # Define file path for saving JSON
+            file_path = os.path.join(folder_path, "scenario_data.json")
+            
+            with open(file_path, 'w') as f:
+                json.dump(data, f)
+
+           
+
+            return JsonResponse({"status": "success", "message": "Data saved successfully."}, status=200)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+    return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)

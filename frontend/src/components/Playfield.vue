@@ -14,36 +14,30 @@
         v-if="showGrid"
         ref="gridCanvas"
         id="grid_overlay"
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          pointer-events: none;
-          z-index: 1;
-        "
+        style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"
       ></canvas>
 
       <!-- Vue Flow Container -->
       <div
         id="vueflow_container"
         ref="vueFlowContainer"
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 2;
-        "
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"
       >
         <vue-flow
           v-model:nodes="nodes"
-          :fit-view="false"
+          v-model:edges="edges"
+          :fit-view="true"
           :zoom-on-scroll="false"
+          :zoom-on-pinching="false"
           :pan-on-drag="false"
-          :connection-mode="'strict'"
+          :pan-on-scroll="false"
+          :prevent-scrolling="true"
+          :coordinate-extent="coordinateExtent"
+          :connection-mode="connectionMode"
           :node-types="customNodeTypes"
-          @node-dblclick="onNodeDblClick"
+          :nodes-draggable="!locked" 
+          :edges-connectable="!locked"
+          @connect="onConnect"
         />
       </div>
     </div>
@@ -56,18 +50,50 @@
         class="slider-button"
         v-bind:label="load_scenario"
       ></Button>
-      <Button @click="toggleGridOverlay" type="submit" class="slider-button" v-bind:label="toggle_grid"
-        ></Button
-      >
-      <Button @click="addConsumerNode" type="submit" class="slider-button" v-bind:label="add_consumer"
-        ></Button
-      >
-      <Button @click="addEnergySourceNode" type="submit" class="slider-button" v-bind:label="add_energy_source"
-        ></Button
-      >
-      <Button @click="clearNodes" type="submit" class="slider-button" v-bind:label="clear_nodes"
-        ></Button
-      >
+      <Button
+        @click="toggleGridOverlay"
+        type="submit"
+        class="slider-button"
+        v-bind:label="toggle_grid"
+      ></Button>
+      <Button
+        @click="addConsumerNode"
+        type="submit"
+        class="slider-button"
+        v-bind:label="add_consumer"
+      ></Button>
+      <Button
+        @click="addEnergySourceNode"
+        type="submit"
+        class="slider-button"
+        v-bind:label="add_energy_source"
+      ></Button>
+      <Button
+        @click="toggleEdgeMode"
+        type="submit"
+        class="slider-button"
+        v-bind:label="add_edge"
+      >Edge mode</Button>
+      <Button
+        @click="toggleLock"
+        type="submit"
+        class="slider-button"
+        v-bind:label="locked ? 'Unlock' : 'Lock'"
+      >TL</Button>
+      <Button
+        @click="clearNodes"
+        type="submit"
+        class="slider-button"
+        v-bind:label="clear_nodes"
+      ></Button>
+      <Button
+  @click="saveData"
+  type="submit"
+  class="slider-button"
+  v-bind:label="'Save'"
+  ></Button>
+
+
     </div>
   </Panel>
 </template>
@@ -86,6 +112,7 @@ export default {
     "add_consumer",
     "add_energy_source",
     "clear_nodes",
+    "add_edge",
   ],
   components: {
     Panel,
@@ -98,11 +125,25 @@ export default {
       showGrid: false, // Flag for showing grid
       gridSize: 15, // Grid size (number of cells per row/column)
       nodes: [], // Nodes for Vue Flow
+      edges: [], // Edges for Vue Flow
       customNodeTypes: {}, // Define custom node types if needed
       nodeIdCounter: 1, // Counter for unique IDs
+      connectionMode: "strict", // Connection mode for the graph
+      edgeMode: false, // Flag to track if edge creation mode is activated
+      selectedNodeId: null, // Track the selected node for edge creation
+      edgeProps: { // Default edge properties (adjustable)
+        color: "#000000", // Edge color
+        animated: true, // Edge animation
+        style: { strokeWidth: 5 }, // Edge style
+      },
+      locked: false, // Lock flag
     };
   },
   methods: {
+    toggleLock() {
+      this.locked = !this.locked;
+    },
+
     async loadRequest() {
       // Fetch the image URL
       try {
@@ -119,15 +160,14 @@ export default {
         }
 
         this.imgUrl = URL.createObjectURL(imgResponse.data);
+        
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
       }
     },
     toggleGridOverlay() {
-      // Toggle the grid visibility
       this.showGrid = !this.showGrid;
-
       if (this.showGrid) {
         this.$nextTick(() => {
           this.drawGrid();
@@ -137,14 +177,10 @@ export default {
     drawGrid() {
       const canvas = this.$refs.gridCanvas;
       const imgElement = this.$refs.imageElement;
-
       if (!canvas || !imgElement) return;
 
-      // Get the rendered dimensions of the image
       const width = imgElement.offsetWidth;
       const height = imgElement.offsetHeight;
-
-      // Update canvas dimensions to match the image
       canvas.width = width;
       canvas.height = height;
 
@@ -152,13 +188,10 @@ export default {
       const cellWidth = width / this.gridSize;
       const cellHeight = height / this.gridSize;
 
-      // Clear any previous drawing on the canvas
       context.clearRect(0, 0, width, height);
-
-      context.strokeStyle = "#000000"; // Set grid line color
+      context.strokeStyle = "#000000"; 
       context.lineWidth = 1;
 
-      // Draw vertical grid lines
       for (let x = 0; x <= this.gridSize; x++) {
         const xPos = x * cellWidth;
         context.beginPath();
@@ -167,7 +200,6 @@ export default {
         context.stroke();
       }
 
-      // Draw horizontal grid lines
       for (let y = 0; y <= this.gridSize; y++) {
         const yPos = y * cellHeight;
         context.beginPath();
@@ -180,22 +212,15 @@ export default {
       const imgElement = this.$refs.imageElement;
       if (!imgElement) return;
 
-      // Get image dimensions
       const width = imgElement.offsetWidth;
       const height = imgElement.offsetHeight;
 
-      // Add a new Consumer node
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
         type: "consumer",
         position: { x: width / 3, y: height / 3 },
         data: { label: `Consumer` },
-        style: {
-          backgroundColor: "#FF5733",
-          color: "#FFFFFF",
-          padding: "10px",
-          borderRadius: "5px",
-        },
+        style: { backgroundColor: "#FF5733", color: "#FFFFFF", padding: "10px", borderRadius: "5px" },
       };
       this.nodes.push(newNode);
     },
@@ -203,41 +228,98 @@ export default {
       const imgElement = this.$refs.imageElement;
       if (!imgElement) return;
 
-      // Get image dimensions
       const width = imgElement.offsetWidth;
       const height = imgElement.offsetHeight;
 
-      // Add a new EnergySource node
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
         type: "energySource",
         position: { x: (2 * width) / 3, y: (2 * height) / 3 },
         data: { label: `EnergySource` },
-        style: {
-          backgroundColor: "#33FF57",
-          color: "#000000",
-          padding: "10px",
-          borderRadius: "5px",
-        },
+        style: { backgroundColor: "#33FF57", color: "#000000", padding: "10px", borderRadius: "5px" },
       };
       this.nodes.push(newNode);
     },
-    clearNodes() {
-      this.nodes = [];
-    },
-    onNodeDblClick(event) {
-      const nodeId = event.id;
-      const targetNode = this.nodes.find((n) => n.id === nodeId);
-      if (targetNode) {
-        const newName = prompt(
-          "Enter new name for the node:",
-          targetNode.data.label
-        );
-        if (newName) {
-          targetNode.data.label = newName;
-        }
+    toggleEdgeMode() {
+      // Toggle edge creation mode
+      this.edgeMode = !this.edgeMode;
+      if (this.edgeMode) {
+        this.selectedNodeId = null;
+        this.connectionMode = "loose"; // Allow loose connections for edge creation
+      } else {
+        this.connectionMode = "strict"; // Return to strict mode
       }
     },
+    clearNodes() {
+      this.nodes = [];
+      this.edges = [];
+    },
+    
+    onConnect(connection) {
+      if (this.edgeMode) {
+        const newEdge = {
+          id: `edge_${this.edges.length + 1}`,
+          source: connection.source,
+          target: connection.target,
+          type: "default",
+          animated: this.edgeProps.animated,
+          style: this.edgeProps.style,
+          color: this.edgeProps.color,
+        };
+        this.edges.push(newEdge);
+      }
+    },
+    async saveData() {
+    try {
+      // Get node and edge data
+      const dataToSave = {
+        nodes: this.nodes.map(node => ({
+          id: node.id,
+          position: node.position,
+          type: node.type,
+          label: node.data.label,
+        })),
+        edges: this.edges.map(edge => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          color: edge.color,
+          style: edge.style,
+        })),
+        imageUrl: this.imgUrl,
+      };
+
+      // Convert to JSON
+    
+
+      // Send to backend (Django)
+      
+      const url = "http://127.0.0.1:8000/api/save-scenario/";
+      const response = await axios.post(url, {
+        data: dataToSave,
+      }, 
+      {headers:{
+              "Content-Type": "application/json", // Ensures JSON format
+            },
+          });
+
+      if (response.status === 200) {
+        alert("Data saved successfully!");
+      } else {
+        alert("Error saving data.");
+      }
+
+      /* // Optionally, download the JSON file
+      const blob = new Blob([jsonData], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "scenario_data.json";
+      link.click();*/
+    } catch (error) {
+      console.error("Error saving data:", error);
+      alert(`Error: ${error.message}`);
+    }
+  },
   },
 };
 </script>
@@ -246,43 +328,42 @@ export default {
 /* Playfield Styles */
 #playfield {
   display: flex;
-  flex-direction: column; /* Stack elements vertically */
-  justify-content: flex-start; /* Align items to the top */
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: stretch;
   width: 100%;
   height: 100%;
   background-color: var(--primary-background-color);
   border: var(--primary-border);
-  position: relative; /* Set relative positioning to position the buttons container absolutely */
+  position: relative;
 }
 
 #grid_overlay {
-  position: relative; /* Overlay on top of the image */
+  position: relative;
   top: 0;
   left: 0;
-  pointer-events: none; /* Allow clicks to pass through the canvas */
+  pointer-events: none;
   z-index: 1;
 }
 
 #buttons_container {
   display: flex;
-  flex-direction: row; /* Stack buttons vertically */
-  justify-content: center; /* Center buttons vertically */
-  align-items: center; /* Center buttons horizontally */
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  height: auto; /* Height adjusts to the button content */
-  position: absolute; /* Fix the position at the bottom of the playfield */
-  bottom: 0; /* Position it at the bottom */
-  padding: 10px; /* Add padding for spacing */
+  height: auto;
+  position: absolute;
+  bottom: 0;
+  padding: 10px;
   background-color: var(--primary-background-color);
-  /* Add a border on top to separate from the image box */
 }
 
 .slider-button {
-  margin-bottom: 5px; /* Reduced space between buttons */
+  margin-bottom: 5px;
 }
 
-.slider-button .p-button-label{
+.slider-button .p-button-label {
   color: black;
 }
 
@@ -290,7 +371,7 @@ export default {
   position: relative;
   top: 0;
   left: 0;
-  pointer-events: auto; /* Allow interaction */
+  pointer-events: auto;
   z-index: 2;
   overflow: hidden;
 }
