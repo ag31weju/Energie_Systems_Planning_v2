@@ -3,73 +3,27 @@
     <!-- Image Box -->
     <div id="image_box" ref="imageBox">
       <!-- Display Image -->
-      <img :src="imgUrl" style="max-width: 100%; max-height: auto; object-fit: contain" ref="imageElement" />
+      <img :src="imgUrl" style="max-width: 100%; max-height: 100%; object-fit: fill" ref="imageElement" />
 
-      <!-- Canvas for Grid Overlay -->
-      <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          pointer-events: none;
-          z-index: 1;
-        "></canvas>
-
-      <!-- Vue Flow Container -->
-      <div
-        id="vueflow_container"
-        ref="vueFlowContainer"
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 2;
-        "
-      >
-        <vue-flow
-          v-model:nodes="nodes"
-          :fit-view="false"
-          :zoom-on-scroll="false"
-          :pan-on-drag="false"
-          :connection-mode="'strict'"
-          :node-types="customNodeTypes"
-          @node-dblclick="onNodeDblClick"
-        />
+      <!-- Sigma.js Container -->
+      <div ref="sigmaContainer" id="sigma_overlay"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; z-index: 1;">
       </div>
     </div>
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container">
-      <Button
-        @click="loadRequest"
-        type="submit"
-        class="slider-button"
-        v-bind:label="load_scenario"
-      ></Button>
-      <Button @click="toggleGridOverlay" type="submit" class="slider-button" v-bind:label="toggle_grid"
-        ></Button
-      >
-      <Button @click="addConsumerNode" type="submit" class="slider-button" v-bind:label="add_consumer"
-        ></Button
-      >
-      <Button @click="addEnergySourceNode" type="submit" class="slider-button" v-bind:label="add_energy_source"
-        ></Button
-      >
-      <Button @click="clearNodes" type="submit" class="slider-button" v-bind:label="clear_nodes"
-        ></Button
-      >
-      <Button @click="triggerFileUpload" type="button" class="slider-button">Upload Scenario</Button>
+      <Button @click="loadRequest" type="submit" class="slider-button" v-bind:label="load_scenario"></Button>
+      <Button @click="initSigma" type="submit" class="slider-button">Show Graph</Button>
+      <Button @click="triggerFileUpload" type="button" class="slider-button" v-bind:label="upload_scenario"></Button>
     </div>
 
+    <!-- File Inputs (Hidden) -->
     <!-- File Inputs (Hidden) -->
     <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
       style="display: none;" />
     <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
       style="display: none;" />
-
-
 
   </Panel>
 </template>
@@ -78,30 +32,29 @@
 import { Button } from "primevue";
 import Panel from "primevue/panel";
 import axios from "axios";
-import { VueFlow } from "@vue-flow/core";
-import "@vue-flow/core/dist/style.css";
+import Sigma from "sigma";
+import { Graph } from "graphology";
 
 export default {
   props: [
+    "upload_scenario",
     "load_scenario",
-    "toggle_grid",
-    "add_consumer",
-    "add_energy_source",
-    "clear_nodes",
   ],
   components: {
     Panel,
     Button,
-    VueFlow,
   },
   data() {
     return {
       imgUrl: null, // URL for the image
       showGrid: false, // Flag for showing grid
       gridSize: 15, // Grid size (number of cells per row/column)
-      nodes: [], // Nodes for Vue Flow
-      customNodeTypes: {}, // Define custom node types if needed
-      nodeIdCounter: 1, // Counter for unique IDs
+
+      imageFile: null, // To store selected image
+      jsonFile: null, // To store selected JSON file
+
+      sigmaInstance: null, // Reference to the Sigma.js instance
+      isGraphDrawn: false,
     };
   },
   methods: {
@@ -129,156 +82,7 @@ export default {
 
 
 
-    toggleGridOverlay() {
-      // Toggle the grid visibility
-      this.showGrid = !this.showGrid;
-
-      if (this.showGrid) {
-        this.$nextTick(() => {
-          this.drawGrid();
-        });
-      }
-    },
-    drawGrid() {
-      const canvas = this.$refs.gridCanvas;
-      const imgElement = this.$refs.imageElement;
-      const canvas = this.$refs.gridCanvas;
-      const imgElement = this.$refs.imageElement;
-
-      if (!canvas || !imgElement) return;
-      if (!canvas || !imgElement) return;
-
-      // Get the rendered dimensions of the image
-      const width = imgElement.offsetWidth;
-      const height = imgElement.offsetHeight;
-      // Get the rendered dimensions of the image
-      const width = imgElement.offsetWidth;
-      const height = imgElement.offsetHeight;
-
-      // Update canvas dimensions to match the image
-      canvas.width = width;
-      canvas.height = height;
-      // Update canvas dimensions to match the image
-      canvas.width = width;
-      canvas.height = height;
-
-      const context = canvas.getContext("2d");
-      const cellWidth = width / this.gridSize;
-      const cellHeight = height / this.gridSize;
-      const context = canvas.getContext("2d");
-      const cellWidth = width / this.gridSize;
-      const cellHeight = height / this.gridSize;
-
-      // Clear any previous drawing on the canvas
-      context.clearRect(0, 0, width, height);
-      // Clear any previous drawing on the canvas
-      context.clearRect(0, 0, width, height);
-
-      context.strokeStyle = "#000000"; // Set grid line color
-      context.lineWidth = 1;
-      context.strokeStyle = "#000000"; // Set grid line color
-      context.lineWidth = 1;
-
-      // Draw vertical grid lines
-      for (let x = 0; x <= this.gridSize; x++) {
-        const xPos = x * cellWidth;
-        context.beginPath();
-        context.moveTo(xPos, 0);
-        context.lineTo(xPos, height);
-        context.stroke();
-      }
-      // Draw vertical grid lines
-      for (let x = 0; x <= this.gridSize; x++) {
-        const xPos = x * cellWidth;
-        context.beginPath();
-        context.moveTo(xPos, 0);
-        context.lineTo(xPos, height);
-        context.stroke();
-      }
-
-      // Draw horizontal grid lines
-      for (let y = 0; y <= this.gridSize; y++) {
-        const yPos = y * cellHeight;
-        context.beginPath();
-        context.moveTo(0, yPos);
-        context.lineTo(width, yPos);
-        context.stroke();
-      }
-    },
-    addConsumerNode() {
-      const imgElement = this.$refs.imageElement;
-      if (!imgElement) return;
-
-      // Get image dimensions
-      const width = imgElement.offsetWidth;
-      const height = imgElement.offsetHeight;
-
-      // Add a new Consumer node
-      const newNode = {
-        id: `node_${this.nodeIdCounter++}`,
-        type: "consumer",
-        position: { x: width / 3, y: height / 3 },
-        data: { label: `Consumer` },
-        style: {
-          backgroundColor: "#FF5733",
-          color: "#FFFFFF",
-          padding: "10px",
-          borderRadius: "5px",
-        },
-      };
-      this.nodes.push(newNode);
-    },
-    addEnergySourceNode() {
-      const imgElement = this.$refs.imageElement;
-      if (!imgElement) return;
-
-      // Get image dimensions
-      const width = imgElement.offsetWidth;
-      const height = imgElement.offsetHeight;
-
-      // Add a new EnergySource node
-      const newNode = {
-        id: `node_${this.nodeIdCounter++}`,
-        type: "energySource",
-        position: { x: (2 * width) / 3, y: (2 * height) / 3 },
-        data: { label: `EnergySource` },
-        style: {
-          backgroundColor: "#33FF57",
-          color: "#000000",
-          padding: "10px",
-          borderRadius: "5px",
-        },
-      };
-      this.nodes.push(newNode);
-    },
-    clearNodes() {
-      this.nodes = [];
-    },
-    onNodeDblClick(event) {
-      const nodeId = event.id;
-      const targetNode = this.nodes.find((n) => n.id === nodeId);
-      if (targetNode) {
-        const newName = prompt(
-          "Enter new name for the node:",
-          targetNode.data.label
-        );
-        if (newName) {
-          targetNode.data.label = newName;
-        }
-      }
-    },
-      // Draw horizontal grid lines
-      for (let y = 0; y <= this.gridSize; y++) {
-        const yPos = y * cellHeight;
-        context.beginPath();
-        context.moveTo(0, yPos);
-        context.lineTo(width, yPos);
-        context.stroke();
-      }
-    },
-
-
-
+    //Start---Scenario Upload------//
     //Start---Scenario Upload------//
     triggerFileUpload() {
       // First trigger the image input picker
@@ -344,7 +148,99 @@ export default {
 
 
     //End---Scenario Upload------//
+
+    //SigmaJs
+    initSigma() {
+      const graph = new Graph();
+
+      // Get image and canvas dimensions
+      // Get image and canvas dimensions
+      const imgElement = this.$refs.imageElement;
+      const width = imgElement.offsetWidth;
+      const height = imgElement.offsetHeight;
+      const cellWidth = width / 15;
+      const cellHeight = height / 15;
+
+      // Define your nodes with grid-based coordinates
+      const nodes = [
+        { id: "node1", gridX: 1, gridY: 0, label: "A", color: "#FF0000" },
+        { id: "node2", gridX: 5, gridY: 5, label: "B", color: "#00FF00" },
+        { id: "node3", gridX: 9, gridY: 10, label: "C", color: "#0000FF" },
+        { id: "node4", gridX: 2, gridY: 2, label: "D", color: "#FF0000" },
+        { id: "node5", gridX: 1, gridY: 8, label: "E", color: "#00FF00" },
+        { id: "node6", gridX: 1, gridY: 5, label: "F", color: "#0000FF" },
+      ];
+
+      // Add nodes to the graph
+      nodes.forEach((node) => {
+        // Adjust coordinates to center the grid in Sigma's coordinate system
+        const nodeX = (node.gridX * cellWidth) + (cellWidth / 2); // Center horizontally
+        const nodeY = (node.gridY * cellHeight) + (cellHeight / 2); // Center vertically
+
+        graph.addNode(node.id, {
+          x: nodeX,
+          y: nodeY,
+          size: 10,
+          label: node.label,
+          color: node.color,
+        });
+      });
+
+      // Optional: Add edges
+      graph.addEdge("node1", "node2", { size: 3 });
+      graph.addEdge("node2", "node3", { size: 3 });
+
+      // Initialize Sigma.js
+      const container = this.$refs.sigmaContainer;
+
+      if (!container) {
+        console.error("Sigma container not found!");
+        return;
+      }
+
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
+
+      // Create the Sigma.js instance
+      if (!this.isGraphDrawn) {
+        this.sigmaInstance = new Sigma(graph, container, {
+          enablePan: false, // Disable panning
+          enableZoom: false, // Disable zoom
+          enableEdgeHoverEvents: true, // Enable edge hover events
+          enableCameraPanning: false,
+          enableCameraZooming: false,
+        });
+        this.isGraphDrawn = true; // Update the reactive property
+      }
+
+
+
+      // Add click and hover events for nodes
+      this.sigmaInstance.on("clickNode", ({ node }) => {
+        alert(`Node clicked: ${graph.getNodeAttribute(node, "label")}`);
+      });
+
+      this.sigmaInstance.on("enterNode", ({ node }) => {
+        // Get node attributes
+        const nodeLabel = graph.getNodeAttribute(node, "label");
+        const nodeX = graph.getNodeAttribute(node, "x");
+        const nodeY = graph.getNodeAttribute(node, "y");
+
+        // Highlight the node and display its label and position
+
+        console.log(`Node: ${nodeLabel}, Position: (${nodeX.toFixed(2)}, ${nodeY.toFixed(2)})`);
+      });
+
+      //  this.sigmaInstance.on("leaveNode", ({ node }) => {
+      //    const originalColor = graph.getNodeAttribute(node, "color"); // Get the original color
+      //    this.sigmaInstance.getGraph().setNodeAttribute(node, "color", originalColor); // Reset color
+      // });
+
+      console.log("Sigma graph initialized with panning disabled.");
+    },
   },
+
+
 };
 </script>
 
@@ -364,6 +260,7 @@ export default {
   position: relative;
   /* Set relative positioning to position the buttons container absolutely */
 }
+
 
 #grid_overlay {
   position: relative;
@@ -402,7 +299,7 @@ export default {
   /* Reduced space between buttons */
 }
 
-.slider-button .p-button-label{
+.slider-button .p-button-label {
   color: black;
 }
 
@@ -410,7 +307,8 @@ export default {
   position: relative;
   top: 0;
   left: 0;
-  pointer-events: auto; /* Allow interaction */
+  pointer-events: auto;
+  /* Allow interaction */
   z-index: 2;
   overflow: hidden;
 }

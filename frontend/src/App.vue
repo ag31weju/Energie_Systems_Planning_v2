@@ -7,6 +7,7 @@
       <div id="imagebox" class="grid-column">
         <Playfield
           v-bind:load_scenario="load_scenario"
+          v-bind:upload_scenario="upload_scenario"
           v-bind:toggle_grid="toggle_grid"
           v-bind:add_consumer="add_consumer"
           v-bind:add_energy_source="add_energy_source"
@@ -73,6 +74,7 @@ export default {
     let title_middle_plot = ref(currentLangJSON.title_middle_plot);
     let title_lower_plot = ref(currentLangJSON.title_lower_plot);
     let load_scenario = ref(currentLangJSON.load_scenario);
+    let upload_scenario = ref(currentLangJSON.upload_scenario);
     let toggle_grid = ref(currentLangJSON.toggle_grid);
     let add_consumer = ref(currentLangJSON.add_consumer);
     let add_energy_source = ref(currentLangJSON.add_energy_source);
@@ -111,6 +113,7 @@ export default {
       title_middle_plot.value = currentLangJSON.title_middle_plot;
       title_lower_plot.value = currentLangJSON.title_lower_plot;
       load_scenario.value = currentLangJSON.load_scenario;
+      upload_scenario.value = currentLangJSON.upload_scenario;
       toggle_grid.value = currentLangJSON.toggle_grid;
       add_consumer.value = currentLangJSON.add_consumer;
       add_energy_source.value = currentLangJSON.add_energy_source;
@@ -137,6 +140,7 @@ export default {
       title_middle_plot,
       title_lower_plot,
       load_scenario,
+      upload_scenario,
       toggle_grid,
       add_consumer,
       add_energy_source,
