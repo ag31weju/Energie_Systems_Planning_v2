@@ -1,25 +1,34 @@
 <template>
   <Panel id="matrix-container" :header="null">
-    <div>
-      <apexchart
-        type="heatmap"
-        height="350"
-        style="height: 100%; width: 100%"
-        :options="chartOptions"
-        :series="series"
-      ></apexchart>
-    </div>
+    <VuePlotly
+      :data="data"
+      :layout="layout"
+      :display-mode-bar="true"
+      :config="{
+        displayModeBar: true,
+        modeBarButtonsToRemove: [
+          'zoomIn',
+          'zoomOut',
+          'zoom',
+          'pan2d',
+          'resetScale2d',
+        ],
+      }"
+      class="matrix-plotly"
+    ></VuePlotly>
   </Panel>
 </template>
 
 <script>
 import { Panel } from "primevue";
 import VueApexCharts from "vue3-apexcharts";
+import { VuePlotly } from "vue3-plotly";
 
 export default {
   components: {
     Panel,
     apexchart: VueApexCharts,
+    VuePlotly,
   },
   props: {
     matrixData: {
@@ -27,94 +36,86 @@ export default {
       required: false,
       default: () =>
         Array.from({ length: 6 }, (_, rowIndex) =>
-          Array.from({ length: 6 }, () => Math.floor(Math.random() * 100))
+          Array.from({ length: 6 }, () => null)
         ),
     },
   },
   data() {
     return {
-      chartOptions: {
-        chart: {
-          height: "350",
-          type: "heatmap",
-        },
-        stroke: {
-          width: 0,
-        },
-        plotOptions: {
-          heatmap: {
-            radius: 30,
-            enableShades: false,
-            colorScale: {
-              ranges: [
-                {
-                  from: 0,
-                  to: 50,
-                  color: "#008FFB",
-                },
-                {
-                  from: 51,
-                  to: 100,
-                  color: "#00E396",
-                },
-              ],
-            },
-          },
-        },
-        dataLabels: {
-          enabled: true,
-          style: {
-            colors: ["#fff"],
-          },
-        },
-        xaxis: {
-          type: "category",
-        },
-        title: {
-          text: "Heatmap Example",
-        },
-      },
-      series: this.transformMatrixDataToSeries(),
+      data: null,
+      layout: null,
     };
+  },
+  mounted() {
+    console.log("init data", this.data);
+    this.data = [
+      {
+        z: this.matrixData,
+        x: [0, 1, 2, 3, 4, 5],
+        y: [0, 1, 2, 3, 4, 5],
+        type: "heatmap",
+        hoverongaps: false,
+      },
+    ];
+    this.layout = {
+      xaxis: {
+        range: [0, 5],
+        fixedrange: true,
+        scaleanchor: "y",
+      },
+      yaxis: {
+        range: [0, 5],
+        fixedrange: true,
+        scaleanchor: "x",
+      },
+      margin: { t: 20, r: 20, b: 40, l: 40 },
+    };
+    console.log("mounted data", this.data);
   },
   watch: {
     matrixData: {
-      handler() {
-        this.series = this.transformMatrixDataToSeries();
+      handler(newVal) {
+        if (newVal && Object.keys(newVal).length > 0) {
+          this.updateHeatmap(newVal);
+        } else {
+          this.resetHeatmap();
+        }
       },
       deep: true,
     },
   },
   methods: {
-    transformMatrixDataToSeries() {
-      // Convert matrixData into the format ApexCharts expects
-      return this.matrixData.map((row, rowIndex) => ({
-        name: `Row ${rowIndex + 1}`,
-        data: row.map((value, colIndex) => ({
-          x: `Col ${colIndex + 1}`,
-          y: value,
-        })),
-      }));
+    updateHeatmap(newVals) {
+      this.data = [
+        {
+          z: newVals,
+          x: [0, 1, 2, 3, 4, 5],
+          y: [0, 1, 2, 3, 4, 5],
+          type: "heatmap",
+          hoverongaps: false,
+        },
+      ];
+    },
+    resetHeatmap() {
+      this.data = [
+        {
+          z: Array.from({ length: 6 }, () =>
+            Array.from({ length: 6 }, () => null)
+          ),
+          x: [0, 1, 2, 3, 4, 5],
+          y: [0, 1, 2, 3, 4, 5],
+          type: "heatmap",
+          hoverongaps: false,
+        },
+      ];
     },
   },
 };
 </script>
 
 <style scoped>
-table {
-  border-collapse: collapse;
-  width: 100%;
+.matrix-plotly {
   height: 100%;
-}
-
-th,
-td {
-  border: 1px solid black;
-  padding: 10px;
-  text-align: center;
-}
-
-th {
-  background-color: #f2f2f2;
+  width: 100%;
 }
 </style>

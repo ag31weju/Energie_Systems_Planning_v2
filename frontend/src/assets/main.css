@@ -38,12 +38,6 @@ body {
   margin: 0;
 }
 
-svg {
-  width: 60%;
-  height: 30%;
-  padding-block: 10px;
-}
-
 /*root div*/
 
 #rootdiv {
@@ -159,12 +153,6 @@ svg {
   flex-direction: column;
 }
 
-svg {
-  width: 60%;
-  height: 30%;
-  padding-block: 10px;
-}
-
 .p-panel {
   display: flex;
   justify-content: center;
@@ -178,6 +166,20 @@ svg {
   background-color: var(--primary-panel-color);
   border: var(--primary-border);
   display: block;
+}
+
+#matrix-container .p-panel-header {
+  display: none;
+}
+
+#matrix-container .p-panel-content {
+  width: 100%;
+  height: 100%;
+}
+
+#matrix-container_content {
+  width: 100%;
+  height: 100%;
 }
 
 #matrix-box .p-panel-p-component {
