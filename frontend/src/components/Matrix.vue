@@ -47,7 +47,6 @@ export default {
     };
   },
   mounted() {
-    console.log("init data", this.data);
     this.data = [
       {
         z: this.matrixData,
@@ -59,16 +58,21 @@ export default {
     ];
     this.layout = {
       xaxis: {
-        range: [0, 5],
-        fixedrange: true,
-        scaleanchor: "y",
+        range: [-0.5, 5.5],
+        tickmode: "array",
+        ticks: "outside",
+        showgrid: false,
+        zeroline: false,
+        tickvals: [0, 1, 2, 3, 4, 5],
       },
       yaxis: {
-        range: [0, 5],
-        fixedrange: true,
-        scaleanchor: "x",
+        range: [-0.5, 5.5], //-0.5 to 5.5 in order to display the cells with their axis values centered
+        tickmode: "array",
+        ticks: "outside", //for the - at the numbers at the axis baselines
+        showgrid: false, //for the grid lines inside the coordinate system
+        zeroline: false, //for the baseline of an x axis (the thick one)
+        tickvals: [0, 1, 2, 3, 4, 5], //values where the ticks should be located
       },
-      margin: { t: 20, r: 20, b: 40, l: 40 },
     };
     console.log("mounted data", this.data);
   },
@@ -91,6 +95,10 @@ export default {
           z: newVals,
           x: [0, 1, 2, 3, 4, 5],
           y: [0, 1, 2, 3, 4, 5],
+          x0: 0, // Starting value on the x-axis
+          dx: 1, // Step size for equal spacing
+          y0: 0, // Starting value on the y-axis
+          dy: 1,
           type: "heatmap",
           hoverongaps: false,
         },
