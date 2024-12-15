@@ -50,6 +50,9 @@
 import { Button } from "primevue";
 import Panel from "primevue/panel";
 import axios from "axios";
+import { VueFlow } from "@vue-flow/core";
+import "@vue-flow/core/dist/style.css";
+
 
 export default {
   props: [
@@ -64,6 +67,7 @@ export default {
   components: {
     Panel,
     Button,
+    VueFlow,
   },
   data() {
     return {
