@@ -18,6 +18,7 @@
     "title_middle_plot": "Speicherstand",
     "title_lower_plot": "Einsatzplan",
     "load_scenario": "Szenario laden",
+    "upload_scenario": "Szenario hochladen",
     "toggle_grid": "Raster umschalten",
     "add_consumer": "Konsumenten hinzufügen",
     "add_energy_source": "Energiequelle hinzufügen",

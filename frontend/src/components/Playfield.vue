@@ -3,11 +3,7 @@
     <!-- Image Box -->
     <div id="image_box" ref="imageBox">
       <!-- Display Image -->
-      <img
-        :src="imgUrl"
-        style="max-width: 100%; max-height: auto; object-fit: contain"
-        ref="imageElement"
-      />
+      <img :src="imgUrl" style="max-width: 100%; max-height: 100%; object-fit: fill" ref="imageElement" />
 
       <!-- Canvas for Grid Overlay -->
       <canvas
@@ -95,6 +91,14 @@
 
 
     </div>
+
+    <!-- File Inputs (Hidden) -->
+    <!-- File Inputs (Hidden) -->
+    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
+      style="display: none;" />
+    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
+      style="display: none;" />
+
   </Panel>
 </template>
 
@@ -102,11 +106,12 @@
 import { Button } from "primevue";
 import Panel from "primevue/panel";
 import axios from "axios";
-import { VueFlow } from "@vue-flow/core";
-import "@vue-flow/core/dist/style.css";
+import Sigma from "sigma";
+import { Graph } from "graphology";
 
 export default {
   props: [
+    "upload_scenario",
     "load_scenario",
     "toggle_grid",
     "add_consumer",
@@ -117,7 +122,6 @@ export default {
   components: {
     Panel,
     Button,
-    VueFlow,
   },
   data() {
     return {
@@ -322,6 +326,8 @@ export default {
     }
   },
   },
+
+
 };
 </script>
 
@@ -338,6 +344,7 @@ export default {
   border: var(--primary-border);
   position: relative;
 }
+
 
 #grid_overlay {
   position: relative;
@@ -364,6 +371,7 @@ export default {
   margin-bottom: 5px;
 }
 
+.slider-button .p-button-label {
 .slider-button .p-button-label {
   color: black;
 }
