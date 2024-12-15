@@ -6,88 +6,32 @@
       <img :src="imgUrl" style="max-width: 100%; max-height: 100%; object-fit: fill" ref="imageElement" />
 
       <!-- Canvas for Grid Overlay -->
-      <canvas
-        v-if="showGrid"
-        ref="gridCanvas"
-        id="grid_overlay"
-        style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"
-      ></canvas>
+      <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"
+        style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"></canvas>
 
       <!-- Vue Flow Container -->
-      <div
-        id="vueflow_container"
-        ref="vueFlowContainer"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"
-      >
-        <vue-flow
-          v-model:nodes="nodes"
-          v-model:edges="edges"
-          :fit-view="true"
-          :zoom-on-scroll="false"
-          :zoom-on-pinching="false"
-          :pan-on-drag="false"
-          :pan-on-scroll="false"
-          :prevent-scrolling="true"
-          :coordinate-extent="coordinateExtent"
-          :connection-mode="connectionMode"
-          :node-types="customNodeTypes"
-          :nodes-draggable="!locked" 
-          :edges-connectable="!locked"
-          @connect="onConnect"
-        />
+      <div id="vueflow_container" ref="vueFlowContainer"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
+        <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoom-on-scroll="false"
+          :zoom-on-pinching="false" :pan-on-drag="false" :pan-on-scroll="false" :prevent-scrolling="true"
+          :coordinate-extent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
+          :nodes-draggable="!locked" :edges-connectable="!locked" @connect="onConnect" />
       </div>
     </div>
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container">
-      <Button
-        @click="loadRequest"
-        type="submit"
-        class="slider-button"
-        v-bind:label="load_scenario"
-      ></Button>
-      <Button
-        @click="toggleGridOverlay"
-        type="submit"
-        class="slider-button"
-        v-bind:label="toggle_grid"
-      ></Button>
-      <Button
-        @click="addConsumerNode"
-        type="submit"
-        class="slider-button"
-        v-bind:label="add_consumer"
-      ></Button>
-      <Button
-        @click="addEnergySourceNode"
-        type="submit"
-        class="slider-button"
-        v-bind:label="add_energy_source"
-      ></Button>
-      <Button
-        @click="toggleEdgeMode"
-        type="submit"
-        class="slider-button"
-        v-bind:label="add_edge"
-      >Edge mode</Button>
-      <Button
-        @click="toggleLock"
-        type="submit"
-        class="slider-button"
-        v-bind:label="locked ? 'Unlock' : 'Lock'"
-      >TL</Button>
-      <Button
-        @click="clearNodes"
-        type="submit"
-        class="slider-button"
-        v-bind:label="clear_nodes"
-      ></Button>
-      <Button
-  @click="saveData"
-  type="submit"
-  class="slider-button"
-  v-bind:label="'Save'"
-  ></Button>
+      <Button @click="loadRequest" type="submit" class="slider-button" v-bind:label="load_scenario"></Button>
+      <Button @click="toggleGridOverlay" type="submit" class="slider-button" v-bind:label="toggle_grid"></Button>
+      <Button @click="addConsumerNode" type="submit" class="slider-button" v-bind:label="add_consumer"></Button>
+      <Button @click="addEnergySourceNode" type="submit" class="slider-button"
+        v-bind:label="add_energy_source"></Button>
+      <Button @click="toggleEdgeMode" type="submit" class="slider-button" v-bind:label="add_edge">Edge mode</Button>
+      <Button @click="toggleLock" type="submit" class="slider-button"
+        v-bind:label="locked ? 'Unlock' : 'Lock'">TL</Button>
+      <Button @click="clearNodes" type="submit" class="slider-button" v-bind:label="clear_nodes"></Button>
+      <Button @click="saveData" type="submit" class="slider-button" v-bind:label="'Save'"></Button>
+      <Button @click="triggerFileUpload" type="button" class="slider-button" v-bind:label="upload_scenario"></Button>
 
 
     </div>
@@ -106,8 +50,6 @@
 import { Button } from "primevue";
 import Panel from "primevue/panel";
 import axios from "axios";
-import Sigma from "sigma";
-import { Graph } from "graphology";
 
 export default {
   props: [
@@ -128,6 +70,8 @@ export default {
       imgUrl: null, // URL for the image
       showGrid: false, // Flag for showing grid
       gridSize: 15, // Grid size (number of cells per row/column)
+      imageFile: null, // To store selected image
+      jsonFile: null, // To store selected JSON file
       nodes: [], // Nodes for Vue Flow
       edges: [], // Edges for Vue Flow
       customNodeTypes: {}, // Define custom node types if needed
@@ -143,6 +87,8 @@ export default {
       locked: false, // Lock flag
     };
   },
+
+
   methods: {
     toggleLock() {
       this.locked = !this.locked;
@@ -193,7 +139,7 @@ export default {
       const cellHeight = height / this.gridSize;
 
       context.clearRect(0, 0, width, height);
-      context.strokeStyle = "#000000"; 
+      context.strokeStyle = "#000000";
       context.lineWidth = 1;
 
       for (let x = 0; x <= this.gridSize; x++) {
@@ -258,7 +204,7 @@ export default {
       this.nodes = [];
       this.edges = [];
     },
-    
+
     onConnect(connection) {
       if (this.edgeMode) {
         const newEdge = {
@@ -274,59 +220,129 @@ export default {
       }
     },
     async saveData() {
-    try {
-      // Get node and edge data
-      const dataToSave = {
-        nodes: this.nodes.map(node => ({
-          id: node.id,
-          position: node.position,
-          type: node.type,
-          label: node.data.label,
-        })),
-        edges: this.edges.map(edge => ({
-          id: edge.id,
-          source: edge.source,
-          target: edge.target,
-          color: edge.color,
-          style: edge.style,
-        })),
-        imageUrl: this.imgUrl,
-      };
+      try {
+        // Get node and edge data
+        const dataToSave = {
+          nodes: this.nodes.map(node => ({
+            id: node.id,
+            position: node.position,
+            type: node.type,
+            label: node.data.label,
+          })),
+          edges: this.edges.map(edge => ({
+            id: edge.id,
+            source: edge.source,
+            target: edge.target,
+            color: edge.color,
+            style: edge.style,
+          })),
+          imageUrl: this.imgUrl,
+        };
 
-      // Convert to JSON
-    
+        // Convert to JSON
 
-      // Send to backend (Django)
-      
-      const url = "http://127.0.0.1:8000/api/save-scenario/";
-      const response = await axios.post(url, {
-        data: dataToSave,
-      }, 
-      {headers:{
+
+        // Send to backend (Django)
+
+        const url = "http://127.0.0.1:8000/api/save-scenario/";
+        const response = await axios.post(url, {
+          data: dataToSave,
+        },
+          {
+            headers: {
               "Content-Type": "application/json", // Ensures JSON format
             },
           });
 
-      if (response.status === 200) {
-        alert("Data saved successfully!");
-      } else {
-        alert("Error saving data.");
+        if (response.status === 200) {
+          alert("Data saved successfully!");
+        } else {
+          alert("Error saving data.");
+        }
+
+        // Optionally, download the JSON file
+        const blob = new Blob([jsonData], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "scenario_data.json";
+        link.click();
+      }
+      catch (error) {
+        console.error("Error saving data:", error);
+        alert(`Error: ${error.message}`);
+      }
+    },
+
+
+    //Start---Scenario Upload------//
+    triggerFileUpload() {
+      // First trigger the image input picker
+      alert("Please upload scenario image and json");
+      this.$refs.imageInput.click();
+    },
+
+    handleFileChange(type, event) {
+      const file = event.target.files[0];
+      if (type === "image") {
+        this.imageFile = file;
+        // Convert the selected image file into a URL for display
+        if (this.imgUrl) {
+          URL.revokeObjectURL(this.imgUrl); // Clean up the previous object URL if any
+        }
+        // After selecting the image, trigger the JSON file picker
+        if (file) {
+          this.$refs.jsonInput.click();
+        }
+      } else if (type === "json") {
+        this.jsonFile = file;
+
+        // If both files are selected, proceed to upload
+        if (this.imageFile && this.jsonFile) {
+          this.uploadFiles();
+        }
+      }
+    },
+
+
+    async uploadFiles() {
+      if (!this.imageFile || !this.jsonFile) {
+        alert("Please select both an image and a JSON file.");
+        return;
       }
 
-      // Optionally, download the JSON file
-      const blob = new Blob([jsonData], { type: "application/json" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "scenario_data.json";
-      link.click();
-    }
-     catch (error) {
-      console.error("Error saving data:", error);
-      alert(`Error: ${error.message}`);
-    }
-  },
-  },
+      try {
+        const url = "http://127.0.0.1:8000/api/upload_files/";
+        const formData = new FormData();
 
+        formData.append("image", this.imageFile);
+        formData.append("json", this.jsonFile);
+
+        const response = await axios.post(url, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          responseType: "blob", // Expect a blob (binary data) from the server
+        });
+
+        // Convert the blob response into a URL and set imgUrl
+        if (this.imgUrl) {
+          URL.revokeObjectURL(this.imgUrl); // Clean up any previous object URL
+        }
+
+        this.imgUrl = URL.createObjectURL(response.data);
+
+        alert("Image & Json successfully processed and updated!");
+
+      } catch (error) {
+        console.error("Error uploading files:", error);
+        alert("Failed to upload files. Please try again.");
+      }
+    },
+
+
+    //End---Scenario Upload------//
+
+
+
+  },
 
 };
 </script>
@@ -344,7 +360,6 @@ export default {
   border: var(--primary-border);
   position: relative;
 }
-
 
 #grid_overlay {
   position: relative;
@@ -372,7 +387,6 @@ export default {
 }
 
 .slider-button .p-button-label {
-.slider-button .p-button-label {
   color: black;
 }
 
@@ -384,4 +398,5 @@ export default {
   z-index: 2;
   overflow: hidden;
 }
+
 </style>
