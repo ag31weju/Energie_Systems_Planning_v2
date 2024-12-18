@@ -1,7 +1,16 @@
 <template>
   <Panel id="matrix-container" :header="null">
     <VuePlotly
-      :data="data"
+      :data="[
+        {
+          z: z,
+          x: axisDimension,
+          y: axisDimension,
+          type: 'heatmap',
+          hoverongaps: false,
+          colorscale: 'RdBu',
+        },
+      ]"
       :layout="layout"
       :display-mode-bar="true"
       :config="{
@@ -42,20 +51,14 @@ export default {
   },
   data() {
     return {
-      data: null,
+      z: null,
       layout: null,
+      axisDimension: Array.from({ length: 6 }, (_, i) => i),
     };
   },
   mounted() {
-    this.data = [
-      {
-        z: this.matrixData,
-        x: [0, 1, 2, 3, 4, 5],
-        y: [0, 1, 2, 3, 4, 5],
-        type: "heatmap",
-        hoverongaps: false,
-      },
-    ];
+    this.z = this.matrixData;
+
     this.layout = {
       xaxis: {
         range: [-0.5, 5.5],
@@ -90,32 +93,12 @@ export default {
   },
   methods: {
     updateHeatmap(newVals) {
-      this.data = [
-        {
-          z: newVals,
-          x: [0, 1, 2, 3, 4, 5],
-          y: [0, 1, 2, 3, 4, 5],
-          x0: 0, // Starting value on the x-axis
-          dx: 1, // Step size for equal spacing
-          y0: 0, // Starting value on the y-axis
-          dy: 1,
-          type: "heatmap",
-          hoverongaps: false,
-        },
-      ];
+      this.z = newVals;
     },
     resetHeatmap() {
-      this.data = [
-        {
-          z: Array.from({ length: 6 }, () =>
-            Array.from({ length: 6 }, () => null)
-          ),
-          x: [0, 1, 2, 3, 4, 5],
-          y: [0, 1, 2, 3, 4, 5],
-          type: "heatmap",
-          hoverongaps: false,
-        },
-      ];
+      this.z = Array.from({ length: 6 }, () =>
+        Array.from({ length: 6 }, () => null)
+      );
     },
   },
 };

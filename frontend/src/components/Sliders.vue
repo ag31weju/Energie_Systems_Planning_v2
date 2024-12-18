@@ -126,9 +126,14 @@ export default {
         );
 
         const tempData = {
-          matrixData: Array.from({ length: 6 }, () =>
-            Array.from({ length: 6 }, () => Math.floor(Math.random() * 100))
-          ),
+          matrixData: [
+            [0.0, -0.33, -0.5, -0.67, -0.83, -1.0],
+            [0.17, 0.0, -0.5, -0.67, -0.83, -1.0],
+            [0.17, 0.33, 0.0, -0.67, -0.83, -1.0],
+            [0.17, 0.33, 0.5, 0.0, -0.83, -1.0],
+            [0.17, 0.33, 0.5, 0.67, 0.0, -1.0],
+            [0.17, 0.33, 0.5, 0.67, 0.83, 0.0],
+          ],
           chartsData: {
             lineChartData: Array.from(
               { length: 25 },
