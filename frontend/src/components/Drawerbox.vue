@@ -8,7 +8,7 @@
       ><img src="../assets/de.png" style="width: 30px; height: 20px"
     /></Button>
   </Drawer>
-  <Button id="drawer-button"  @click="visible = !visible">
+  <Button id="drawer-button" @click="visible = !visible">
     <div class="hamburger-menu">
       <div class="line"></div>
       <div class="line"></div>
@@ -41,10 +41,11 @@ export default {
         currentTheme.value = light;
       }
       body.classList.toggle("dark-theme");
+      context.emit("changeMatrixTheme", darkMode.value);
     }
 
     function changeLanguageEvent(language) {
-      context.emit('changeLanguage', language);
+      context.emit("changeLanguage", language);
     }
 
     return {
@@ -60,7 +61,7 @@ export default {
     Drawer,
     Button,
   },
-  emits: ['changeLanguage']
+  emits: ["changeLanguage", "changeMatrixTheme"],
 };
 </script>
 

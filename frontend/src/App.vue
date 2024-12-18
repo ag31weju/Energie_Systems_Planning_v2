@@ -1,6 +1,9 @@
 <template>
   <div id="drawerbox">
-    <Drawerbox @changeLanguage="updateLanguage"></Drawerbox>
+    <Drawerbox
+      @changeLanguage="updateLanguage"
+      @changeMatrixTheme="updateMatrixTheme"
+    ></Drawerbox>
   </div>
   <div id="rootdiv" class="grid-row">
     <div id="outercolumn1" class="grid-column">
@@ -24,7 +27,7 @@
     </div>
     <div id="outercolumn2" class="grid-column">
       <div id="matrix-box" class="grid-column">
-        <Matrix :matrixData="matrixData"></Matrix>
+        <Matrix :matrixData="matrixData" :matrixTheme="matrixTheme"></Matrix>
       </div>
       <div id="charts-box" class="grid-column">
         <Charts :chartsData="chartsData"></Charts>
@@ -117,8 +120,10 @@ export default {
       clear_nodes.value = currentLangJSON.clear_nodes;
     }
 
+    const matrixTheme = ref("white");
     return {
       updateLanguage,
+      matrixTheme,
       capacity,
       cost,
       battery,
@@ -152,6 +157,9 @@ export default {
     Drawerbox,
   },
   methods: {
+    updateMatrixTheme(darkMode) {
+      this.matrixTheme = darkMode ? "rgb(39, 39, 39)" : "white";
+    },
     async fetchMessage() {
       try {
         const response = await axios.get("http://127.0.0.1:8000/");
