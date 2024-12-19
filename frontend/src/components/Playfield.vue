@@ -8,6 +8,8 @@
       <!-- Canvas for Grid Overlay -->
       <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"
         style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"></canvas>
+      <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"
+        style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"></canvas>
 
       <!-- Vue Flow Container -->
       <div id="vueflow_container" ref="vueFlowContainer"
@@ -69,6 +71,7 @@ export default {
     Panel,
     Button,
     VueFlow,
+    VueFlow,
   },
   data() {
     return {
@@ -95,6 +98,8 @@ export default {
       coordinateExtent: [[0, 0], [0, 0]],
     };
   },
+
+
 
 
   methods: {
@@ -148,6 +153,7 @@ export default {
       const cellHeight = height / this.gridSize;
 
       context.clearRect(0, 0, width, height);
+      context.strokeStyle = "#000000";
       context.strokeStyle = "#000000";
       context.lineWidth = 1;
 
@@ -217,6 +223,7 @@ export default {
       this.edges = [];
     },
 
+
     onConnect(connection) {
       if (this.edgeMode) {
         const newEdge = {
@@ -250,6 +257,26 @@ export default {
           })),
           imageUrl: this.imgUrl,
         };
+      try {
+        // Get node and edge data
+        const dataToSave = {
+          nodes: this.nodes.map(node => ({
+            id: node.id,
+            position: node.position,
+            type: node.type,
+            label: node.data.label,
+          })),
+          edges: this.edges.map(edge => ({
+            id: edge.id,
+            source: edge.source,
+            target: edge.target,
+            color: edge.color,
+            style: edge.style,
+          })),
+          imageUrl: this.imgUrl,
+        };
+
+        // Convert to JSON
 
         // Convert to JSON
 
@@ -262,10 +289,23 @@ export default {
         },
           {
             headers: {
+        // Send to backend (Django)
+
+        const url = "http://127.0.0.1:8000/api/save-scenario/";
+        const response = await axios.post(url, {
+          data: dataToSave,
+        },
+          {
+            headers: {
               "Content-Type": "application/json", // Ensures JSON format
             },
           });
 
+        if (response.status === 200) {
+          alert("Data saved successfully!");
+        } else {
+          alert("Error saving data.");
+        }
         if (response.status === 200) {
           alert("Data saved successfully!");
         } else {
@@ -399,4 +439,5 @@ export default {
   z-index: 2;
   overflow: hidden;
 }
+
 </style>
