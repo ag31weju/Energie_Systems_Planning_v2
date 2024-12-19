@@ -1,14 +1,49 @@
 import { createApp } from "vue";
+import { createRouter, createWebHistory } from 'vue-router'
 import App from "./App.vue";
-import router from "./router";
+import ScenarioCreator from "./views/ScenarioCreator.vue";
+import Home from "./views/home.vue"; //main page
+
 import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura/";
 import VueApexCharts from "vue3-apexcharts";
 import "./assets/main.css";
 
+// Hardcoded password
+const PASSWORD = 'password';
+
+//creates link for root aka / ehich opens home.vue and /admin opens admin.vue
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/', component: Home }, //route to main page
+    {
+      path: '/scenario', component: ScenarioCreator, //route to password protected scenario creator 
+      beforeEnter: (to, from, next) => {
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        if (isAuthenticated === 'true') {
+          next(); // Allow access
+        } else {
+          const userPassword = prompt('Enter the password:');
+          if (userPassword === PASSWORD) {
+            localStorage.setItem('isAuthenticated', 'true');
+            next(); // Allow access
+          } else {
+            alert('Incorrect password!');
+            next('/'); // Redirect to landing page
+          }
+        }
+      }
+
+    }, //route to scenario creator
+    // all others route to home
+    { path: '/:pathMatch(.*)*', redirect: '/' }
+  ]
+});
+
 const app = createApp(App);
 
-app.use(router);
+
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
@@ -21,6 +56,7 @@ app.use(PrimeVue, {
 });
 app.use(VueApexCharts);
 
+
+app.use(router);
 app.mount("#app");
-//make vue communicate with Django
-//createApp(App).mount("#app");
+
