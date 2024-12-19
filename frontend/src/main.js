@@ -20,21 +20,14 @@ const router = createRouter({
     {
       path: '/scenario', component: ScenarioCreator, //route to password protected scenario creator 
       beforeEnter: (to, from, next) => {
-        const isAuthenticated = localStorage.getItem('isAuthenticated');
-        if (isAuthenticated === 'true') {
+        const userPassword = prompt('Enter the password:');
+        if (userPassword === PASSWORD) {
           next(); // Allow access
         } else {
-          const userPassword = prompt('Enter the password:');
-          if (userPassword === PASSWORD) {
-            localStorage.setItem('isAuthenticated', 'true');
-            next(); // Allow access
-          } else {
-            alert('Incorrect password!');
-            next('/'); // Redirect to landing page
-          }
+          alert('Incorrect password!');
+          next('/'); // Redirect to landing page
         }
       }
-
     }, //route to scenario creator
     // all others route to home
     { path: '/:pathMatch(.*)*', redirect: '/' }
