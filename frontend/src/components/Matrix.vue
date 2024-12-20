@@ -9,7 +9,10 @@
           xgap: 3,
           ygap: 3,
           type: 'heatmap',
-          text: z,
+          text:
+            z !== null
+              ? z.map((row) => row.map((cell) => (cell === null ? '-' : cell)))
+              : z,
           texttemplate: '%{text}',
           hoverongaps: false,
           colorscale: 'RdBu',
@@ -49,10 +52,14 @@ export default {
     matrixData: {
       type: Array,
       required: false,
-      default: () =>
-        Array.from({ length: 6 }, (_, rowIndex) =>
-          Array.from({ length: 6 }, () => null)
-        ),
+      default: () => {
+        return {
+          reset: false,
+          matrixValues: Array.from({ length: 6 }, (_, rowIndex) =>
+            Array.from({ length: 6 }, () => null)
+          ),
+        };
+      },
     },
     matrixTheme: {
       type: String,
@@ -74,7 +81,7 @@ export default {
     };
   },
   mounted() {
-    this.z = this.matrixData;
+    this.z = this.matrixData.matrixValues;
     this.outlinePosition = this.sliderVals;
 
     this.layout = {
@@ -123,16 +130,19 @@ export default {
     matrixData: {
       handler(newVal) {
         if (newVal && Object.keys(newVal).length > 0) {
-          this.updateHeatmap(newVal);
+          if (!newVal.reset) {
+            this.updateHeatmap(newVal.matrixValues);
+          } else {
+            this.resetHeatmap();
+          }
         } else {
-          this.resetHeatmap();
+          console.error("Not good, matrix is not receiving data");
         }
       },
       deep: true,
     },
     sliderVals: {
       handler(newVal) {
-        console.log("happen");
         this.outlinePosition = newVal;
         console.log(this.outlinePosition);
         this.layout = this.layout = {
@@ -164,7 +174,6 @@ export default {
   },
   methods: {
     updateHeatmap(newVals) {
-      console.log(newVals);
       this.z = this.z.map((row, rowIndex) => {
         return row.map((cell, colIndex) => {
           const newVal = newVals[rowIndex][colIndex];

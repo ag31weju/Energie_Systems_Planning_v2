@@ -118,26 +118,30 @@ def save_slider_data(request):
             json_data = json.load(sliderData)
             sliders = [sliderData for sliderData in json_data.get("sliders")]
             autoSimulate = json_data.get("autoSimulate")
+            reset = json_data.get("reset")
             print(sliders)
+            print(reset)
             print([v.get("value") for v in sliders])
             
-        matrixData = [[None for _ in range(6)] for _ in range(6)]
+        matrixValues = [[None for _ in range(6)] for _ in range(6)]
+        chartsData = [None for _ in range(26)]
 
-        if autoSimulate:
-            matrixData = [
-                        [math.floor(random.uniform(-100, 100)) for v in range(6)] for _ in range(6)
-                        ]
-        else:
-            sliderVals = [v.get("value") for v in sliders] 
-            matrixData[sliderVals[1]][sliderVals[0]] = math.floor(random.uniform(-100, 100)) #matrix row (first index) is y, matrix column (second index) is x
-
-            
         
-        chartsData = [math.floor(random.random() * 100) for _ in range (26)]
+            
+        if not reset: 
+            chartsData = [math.floor(random.random() * 100) for _ in range(26)]
+            if autoSimulate:
+                matrixValues = [
+                            [math.floor(random.uniform(-100, 100)) for v in range(6)] for _ in range(6)
+                            ]
+            else:
+                sliderVals = [v.get("value") for v in sliders] 
+                matrixValues[sliderVals[1]][sliderVals[0]] = math.floor(random.uniform(-100, 100)) #matrix row (first index) is y, matrix column (second index) is x
+
 
         response = {
           "sliderVals": [v.get("value") for v in sliders],
-          "matrixData": matrixData,
+          "matrixData": {"reset": reset, "matrixValues": matrixValues},
           "chartsData": {
             "lineChartData": chartsData,
             "barChartData": {
@@ -146,7 +150,7 @@ def save_slider_data(request):
               "pv_curtailment": chartsData,
               "storage_charge": chartsData,
               "storage_discharge": chartsData,
-              "demand": [- 4 * el for el in chartsData ]
+              "demand": [- 4 * el for el in chartsData if el is not None]
             },
           },
         }
