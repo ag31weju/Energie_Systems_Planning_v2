@@ -17,7 +17,7 @@
         <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false"
         :zoomOnPinch="false"  :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true"
         :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
-          :nodes-draggable="!locked" :edges-connectable="!locked" @connect="onConnect" />
+          :nodes-draggable="!locked" :edges-connectable="edgeMode" @connect="onConnect" />
       </div>
     </div>
 
@@ -32,8 +32,6 @@
       <Button @click="addEnergySourceNode" type="submit" class="slider-button"
         v-bind:label="add_energy_source"></Button>
       <Button @click="toggleEdgeMode" type="submit" class="slider-button" v-bind:label="add_edge">Edge mode</Button>
-      <Button @click="toggleLock" type="submit" class="slider-button"
-        v-bind:label="locked ? 'Unlock' : 'Lock'">TL</Button>
       <Button @click="clearNodes" type="submit" class="slider-button" v-bind:label="clear_nodes"></Button>
       <Button @click="saveData" type="submit" class="slider-button" v-bind:label="'Save'"></Button>
 
@@ -52,7 +50,7 @@ import Panel from "primevue/panel";
 import axios from "axios";
 import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
-import ConsumerNode from "./CustomNodes.vue"; 
+import ConsumerNode from "./cusotmNodes/Consumer.vue"; 
 import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico"; 
 
 
@@ -70,7 +68,7 @@ export default {
   components: {
     Panel,
     Button,
-    VueFlow,
+
     VueFlow,
   },
   data() {
@@ -93,7 +91,7 @@ export default {
         style: { strokeWidth: 5 }, // Edge style
       },
       locked: false, // Lock flag
-      imgUrl: null,
+   
       jsonUrl: null,
       coordinateExtent: [[0, 0], [0, 0]],
     };
@@ -184,11 +182,15 @@ export default {
         id: `node_${this.nodeIdCounter++}`,
         type: "consumer",
         position: { x: width*5, y: height*4 },
-        data: { label: "",
+        data: { label: "consumer",
           icon: ConsumerIcon,
+          inputs: [0], 
+          outputs: [0, 1], 
 
          },
-        style: { backgroundColor: "#FF5733", color: "#FFFFFF", padding: "10px", borderRadius: "5px" },
+         targetPosition: "left",
+         sourcePosition: "right",
+      
       };
       this.nodes.push(newNode);
     },
@@ -210,6 +212,7 @@ export default {
     },
     toggleEdgeMode() {
       // Toggle edge creation mode
+      this.locked = !this.locked;
       this.edgeMode = !this.edgeMode;
       if (this.edgeMode) {
         this.selectedNodeId = null;
@@ -239,24 +242,7 @@ export default {
       }
     },
     async saveData() {
-      try {
-        // Get node and edge data
-        const dataToSave = {
-          nodes: this.nodes.map(node => ({
-            id: node.id,
-            position: node.position,
-            type: node.type,
-            label: node.data.label,
-          })),
-          edges: this.edges.map(edge => ({
-            id: edge.id,
-            source: edge.source,
-            target: edge.target,
-            color: edge.color,
-            style: edge.style,
-          })),
-          imageUrl: this.imgUrl,
-        };
+      
       try {
         // Get node and edge data
         const dataToSave = {
@@ -276,19 +262,14 @@ export default {
           imageUrl: this.imgUrl,
         };
 
-        // Convert to JSON
+        
 
         // Convert to JSON
 
 
         // Send to backend (Django)
 
-        const url = "http://127.0.0.1:8000/api/save-scenario/";
-        const response = await axios.post(url, {
-          data: dataToSave,
-        },
-          {
-            headers: {
+          
         // Send to backend (Django)
 
         const url = "http://127.0.0.1:8000/api/save-scenario/";
@@ -301,11 +282,6 @@ export default {
             },
           });
 
-        if (response.status === 200) {
-          alert("Data saved successfully!");
-        } else {
-          alert("Error saving data.");
-        }
         if (response.status === 200) {
           alert("Data saved successfully!");
         } else {

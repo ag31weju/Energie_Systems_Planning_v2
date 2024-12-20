@@ -30,7 +30,7 @@
   import { ref } from "vue";
   import Chart from "primevue/chart";
   import Sliders from "../components/Sliders.vue";
-  import Playfield from "../components/Playfield.vue";
+  import Playfield from "../components/PlayfieldStudent.vue";
   import Matrix from "../components/MatrixOLD2.vue";
   import Charts from "../components/Charts.vue";
   import Drawerbox from "../components/Drawerbox.vue";
