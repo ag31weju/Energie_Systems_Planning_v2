@@ -71,7 +71,7 @@ export default {
         if (newVal && Object.keys(newVal).length > 0) {
           this.updateChart(newVal);
         } else {
-          this.resetChartData();
+          console.error("Not good, charts are not receiving data");
         }
       },
       deep: true,
@@ -185,12 +185,12 @@ export default {
       this.chartset2.datasets[5].data =
         data.barChartData.storage_discharge || [];
     },
-    resetChartData() {
+    /*resetChartData() {
       this.chartset.datasets[0].data = [];
       this.chartset2.datasets.forEach((dataset) => {
         dataset.data = [];
       });
-    },
+    },*/
   },
 };
 </script>
