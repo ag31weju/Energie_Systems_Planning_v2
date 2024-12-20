@@ -9,6 +9,8 @@
           xgap: 3,
           ygap: 3,
           type: 'heatmap',
+          text: z,
+          texttemplate: '%{text}',
           hoverongaps: false,
           colorscale: 'RdBu',
         },
