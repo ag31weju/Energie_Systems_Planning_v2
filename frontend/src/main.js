@@ -1,8 +1,8 @@
 import { createApp } from "vue";
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 import App from "./App.vue";
 import ScenarioCreator from "./views/ScenarioCreator.vue";
-import Home from "./views/home.vue"; //main page
+import Home from "./views/Home.vue"; //main page
 
 import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura/";
@@ -10,32 +10,32 @@ import VueApexCharts from "vue3-apexcharts";
 import "./assets/main.css";
 
 // Hardcoded password
-const PASSWORD = 'password';
+const PASSWORD = "password";
 
 //creates link for root aka / ehich opens home.vue and /admin opens admin.vue
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: Home }, //route to main page
+    { path: "/", component: Home }, //route to main page
     {
-      path: '/scenario', component: ScenarioCreator, //route to password protected scenario creator 
+      path: "/scenario",
+      component: ScenarioCreator, //route to password protected scenario creator
       beforeEnter: (to, from, next) => {
-        const userPassword = prompt('Enter the password:');
+        const userPassword = prompt("Enter the password:");
         if (userPassword === PASSWORD) {
           next(); // Allow access
         } else {
-          alert('Incorrect password!');
-          next('/'); // Redirect to landing page
+          alert("Incorrect password!");
+          next("/"); // Redirect to landing page
         }
-      }
+      },
     }, //route to scenario creator
     // all others route to home
-    { path: '/:pathMatch(.*)*', redirect: '/' }
-  ]
+    { path: "/:pathMatch(.*)*", redirect: "/" },
+  ],
 });
 
 const app = createApp(App);
-
 
 app.use(PrimeVue, {
   theme: {
@@ -49,7 +49,5 @@ app.use(PrimeVue, {
 });
 app.use(VueApexCharts);
 
-
 app.use(router);
 app.mount("#app");
-
