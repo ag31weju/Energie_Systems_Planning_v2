@@ -6,6 +6,7 @@ from .scenario_processing import process_image,parse_json  # Import the external
 from PIL import Image, ImageOps
 import json
 import os, io
+import random
 
 
 # Create your views here.
@@ -107,7 +108,34 @@ def save_slider_data(request):
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON data."}, status=400)
+    elif request.method == "GET":
+        # Use the gotten Slider data for some computation with the optimizer
 
+        chartsData = [random.random() * 100 for _ in range (26)]
+
+        response = {
+          "matrixData": [
+            [0.0, -0.33, -0.5, -0.67, -0.83, -1.0],
+            [0.17, 0.0, -0.5, -0.67, -0.83, -1.0],
+            [0.17, 0.33, 0.0, -0.67, -0.83, -1.0],
+            [0.17, 0.33, 0.5, 0.0, -0.83, -1.0],
+            [0.17, 0.33, 0.5, 0.67, 0.0, -1.0],
+            [0.17, 0.33, 0.5, 0.67, 0.83, 0.0],
+          ],
+          "chartsData": {
+            "lineChartData": chartsData,
+            "barChartData": {
+              "purchased_power": chartsData,
+              "pv_production": chartsData,
+              "pv_curtailment": chartsData,
+              "storage_charge": chartsData,
+              "storage_discharge": chartsData,
+              "demand": [- 4 * el for el in chartsData ]
+            },
+          },
+        }
+
+        return JsonResponse(response, status=200)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 @csrf_exempt  

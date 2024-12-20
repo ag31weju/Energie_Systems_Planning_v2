@@ -113,43 +113,14 @@ export default {
           .catch((e) => console.error("POST did not work", e));
         //if response is ok, then do GET function
         const simData = await axios
-          .get(/* url for receiving data */)
+          .get(url)
           .then((res) => {
             return res.data;
           })
           .catch((e) => console.error("GET did not work:", e));
 
-        /* Destructure simData into multiple parts
-         */
-        const chartsTemp = Array.from({ length: 25 }, (_) =>
-          Math.floor(Math.random() * 100)
-        );
-
-        const tempData = {
-          matrixData: [
-            [0.0, -0.33, -0.5, -0.67, -0.83, -1.0],
-            [0.17, 0.0, -0.5, -0.67, -0.83, -1.0],
-            [0.17, 0.33, 0.0, -0.67, -0.83, -1.0],
-            [0.17, 0.33, 0.5, 0.0, -0.83, -1.0],
-            [0.17, 0.33, 0.5, 0.67, 0.0, -1.0],
-            [0.17, 0.33, 0.5, 0.67, 0.83, 0.0],
-          ],
-          chartsData: {
-            lineChartData: Array.from(
-              { length: 25 },
-              (_) => Math.random() * 100
-            ),
-            barChartData: {
-              purchased_power: chartsTemp,
-              pv_production: chartsTemp,
-              pv_curtailment: chartsTemp,
-              storage_charge: chartsTemp,
-              storage_discharge: chartsTemp,
-              demand: chartsTemp.map((el) => -(4 * el)),
-            },
-          },
-        };
-        this.$emit("getSimulationData", tempData);
+        console.log(simData);
+        this.$emit("getSimulationData", simData);
       } catch (error) {
         console.error("Error sending data to backend:", error);
         throw error; // Re-throw the error to handle it in the calling method
