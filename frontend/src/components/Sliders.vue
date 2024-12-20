@@ -38,8 +38,6 @@ export default {
       propData: ["test1", "test2"], //This array tells what the amount and type of nodes are inside the graph
       step: 1,
       sliderList: [],
-      sliderVal: 0,
-      sliderVal2: 5,
     };
   },
   components: {
@@ -118,8 +116,6 @@ export default {
             return res.data;
           })
           .catch((e) => console.error("GET did not work:", e));
-
-        console.log(simData);
         this.$emit("getSimulationData", simData);
       } catch (error) {
         console.error("Error sending data to backend:", error);

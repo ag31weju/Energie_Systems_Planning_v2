@@ -6,7 +6,7 @@ from .scenario_processing import process_image,parse_json  # Import the external
 from PIL import Image, ImageOps
 import json
 import os, io
-import random
+import random, math
 
 
 # Create your views here.
@@ -111,17 +111,33 @@ def save_slider_data(request):
     elif request.method == "GET":
         # Use the gotten Slider data for some computation with the optimizer
 
-        chartsData = [random.random() * 100 for _ in range (26)]
+        sliders = []
+        autoSimulate = None
+
+        with open("slider_data/slider_data.json", "r") as sliderData:
+            json_data = json.load(sliderData)
+            sliders = [sliderData for sliderData in json_data.get("sliders")]
+            autoSimulate = json_data.get("autoSimulate")
+            print(sliders)
+            print([v.get("value") for v in sliders])
+            
+        matrixData = [[None for _ in range(6)] for _ in range(6)]
+
+        if autoSimulate:
+            matrixData = [
+                        [math.floor(random.uniform(-100, 100)) for v in range(6)] for _ in range(6)
+                        ]
+        else:
+            sliderVals = [v.get("value") for v in sliders] 
+            matrixData[sliderVals[1]][sliderVals[0]] = math.floor(random.uniform(-100, 100)) #matrix row (first index) is y, matrix column (second index) is x
+
+            
+        
+        chartsData = [math.floor(random.random() * 100) for _ in range (26)]
 
         response = {
-          "matrixData": [
-            [0.0, -0.33, -0.5, -0.67, -0.83, -1.0],
-            [0.17, 0.0, -0.5, -0.67, -0.83, -1.0],
-            [0.17, 0.33, 0.0, -0.67, -0.83, -1.0],
-            [0.17, 0.33, 0.5, 0.0, -0.83, -1.0],
-            [0.17, 0.33, 0.5, 0.67, 0.0, -1.0],
-            [0.17, 0.33, 0.5, 0.67, 0.83, 0.0],
-          ],
+          "sliderVals": [v.get("value") for v in sliders],
+          "matrixData": matrixData,
           "chartsData": {
             "lineChartData": chartsData,
             "barChartData": {

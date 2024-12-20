@@ -68,7 +68,6 @@ export default {
   watch: {
     chartsData: {
       handler(newVal) {
-        console.log("ChartsData updated", newVal);
         if (newVal && Object.keys(newVal).length > 0) {
           this.updateChart(newVal);
         } else {

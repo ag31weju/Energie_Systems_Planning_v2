@@ -28,7 +28,11 @@
     </div>
     <div id="outercolumn2" class="grid-column">
       <div id="matrix-box" class="grid-column">
-        <Matrix :matrixData="matrixData" :matrixTheme="matrixTheme"></Matrix>
+        <Matrix
+          :matrixData="matrixData"
+          :matrixTheme="matrixTheme"
+          :sliderVals="sliderVals"
+        ></Matrix>
       </div>
       <div id="charts-box" class="grid-column">
         <Charts :chartsData="chartsData"></Charts>
@@ -52,6 +56,7 @@ import DELang from "@/assets/languages/de.json";
 export default {
   data() {
     return {
+      sliderVals: undefined,
       matrixData: undefined,
       chartsData: undefined,
     };
@@ -173,6 +178,7 @@ export default {
       }
     },
     handleSimulationData(simData) {
+      this.sliderVals = simData.sliderVals;
       this.matrixData = simData.matrixData;
       this.chartsData = simData.chartsData;
     },

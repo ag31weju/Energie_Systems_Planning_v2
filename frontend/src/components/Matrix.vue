@@ -13,6 +13,8 @@
           texttemplate: '%{text}',
           hoverongaps: false,
           colorscale: 'RdBu',
+          zmin: -100,
+          zmax: 100,
         },
       ]"
       :layout="layout"
@@ -57,9 +59,15 @@ export default {
       required: false,
       default: "white",
     },
+    sliderVals: {
+      type: Array,
+      required: false,
+      default: [0, 0],
+    },
   },
   data() {
     return {
+      outlinePosition: null,
       z: null,
       layout: null,
       axisDimension: Array.from({ length: 6 }, (_, i) => i),
@@ -67,6 +75,7 @@ export default {
   },
   mounted() {
     this.z = this.matrixData;
+    this.outlinePosition = this.sliderVals;
 
     this.layout = {
       xaxis: {
@@ -94,10 +103,10 @@ export default {
       shapes: [
         {
           type: "rect",
-          x0: -0.5, // Left boundary of the cell
-          x1: 0.5, // Right boundary of the cell
-          y0: -0.45, // Bottom boundary of the cell
-          y1: 0.45, // Top boundary of the cell
+          x0: this.outlinePosition[0] - 0.5, // Left boundary of the cell
+          x1: this.outlinePosition[0] + 0.48, // Right boundary of the cell
+          y0: this.outlinePosition[1] - 0.45, // Bottom boundary of the cell
+          y1: this.outlinePosition[1] + 0.45, // Top boundary of the cell
           xref: "x",
           yref: "y",
           line: {
@@ -121,21 +130,47 @@ export default {
       },
       deep: true,
     },
+    sliderVals: {
+      handler(newVal) {
+        console.log("happen");
+        this.outlinePosition = newVal;
+        console.log(this.outlinePosition);
+        this.layout = this.layout = {
+          ...this.layout, // Spread the existing layout properties
+          shapes: [
+            {
+              ...this.layout.shapes[0],
+              x0: this.outlinePosition[0] - 0.5, // Left boundary of the cell
+              x1: this.outlinePosition[0] + 0.48, // Right boundary of the cell
+              y0: this.outlinePosition[1] - 0.45, // Bottom boundary of the cell
+              y1: this.outlinePosition[1] + 0.45, // Top boundary of the cell
+            },
+          ],
+        };
+
+        console.log(this.layout);
+      },
+    },
     matrixTheme: {
       handler(newVal) {
-        const newLayout = {
-          ...this.layout, // Spread existing layout
+        this.layout = {
+          ...this.layout,
           paper_bgcolor: newVal,
           plot_bgcolor: newVal,
         };
-        this.layout = newLayout;
         console.log("Handler worked");
       },
     },
   },
   methods: {
     updateHeatmap(newVals) {
-      this.z = newVals;
+      console.log(newVals);
+      this.z = this.z.map((row, rowIndex) => {
+        return row.map((cell, colIndex) => {
+          const newVal = newVals[rowIndex][colIndex];
+          return newVal !== null ? newVal : cell;
+        });
+      });
     },
     resetHeatmap() {
       this.z = Array.from({ length: 6 }, () =>
