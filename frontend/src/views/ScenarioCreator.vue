@@ -1,66 +1,34 @@
-/**
-* App.vue contains all the pages and sets the routes which are set in main.js
-* Home.vue is loaded as root and /scenario loads the Scenario creator page
-* All routes are set in main.js and vue pages are in frontend\src\views folder
-*/
-
 <template>
+  <div>
+    <h1>Welcome to the Scenario Creator Page</h1>
+  </div>
+
   <div id="drawerbox">
-    <Drawerbox
-      @changeLanguage="updateLanguage"
-      @changeMatrixTheme="updateMatrixTheme"
-    ></Drawerbox>
+    <Drawerbox @changeLanguage="updateLanguage"></Drawerbox>
   </div>
   <div id="rootdiv" class="grid-row">
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
-        <Playfield
-          v-bind:load_scenario="load_scenario"
-          v-bind:toggle_grid="toggle_grid"
-          v-bind:add_consumer="add_consumer"
-          v-bind:add_energy_source="add_energy_source"
-          v-bind:clear_nodes="clear_nodes"
-        ></Playfield>
+        <Playfield v-bind:load_scenario="load_scenario" v-bind:upload_scenario="upload_scenario"
+          v-bind:toggle_grid="toggle_grid" v-bind:add_consumer="add_consumer"
+          v-bind:add_energy_source="add_energy_source" v-bind:clear_nodes="clear_nodes"></Playfield>
       </div>
-      <div id="slider-box">
-        <Sliders
-          v-bind:reset_text="reset_text"
-          v-bind:simulate="simulate"
-          v-bind:auto="auto"
-          @getSimulationData="handleSimulationData"
-        ></Sliders>
-      </div>
+
     </div>
-    <div id="outercolumn2" class="grid-column">
-      <div id="matrix-box" class="grid-column">
-        <Matrix :matrixData="matrixData" :matrixTheme="matrixTheme"></Matrix>
-      </div>
-      <div id="charts-box" class="grid-column">
-        <Charts :chartsData="chartsData"></Charts>
-      </div>
-    </div>
+
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import { ref } from "vue";
-import Chart from "primevue/chart";
-import Sliders from "./components/Sliders.vue";
-import Playfield from "./components/Playfield.vue";
-import Matrix from "./components/Matrix.vue";
-import Charts from "./components/Charts.vue";
-import Drawerbox from "./components/Drawerbox.vue";
+import Sliders from "../components/Sliders.vue";
+import Playfield from "../components/Playfield.vue";
 import ENLang from "@/assets/languages/en.json";
 import DELang from "@/assets/languages/de.json";
 
 export default {
-  data() {
-    return {
-      matrixData: undefined,
-      chartsData: undefined,
-    };
-  },
+
   setup() {
     const currentLang = ref("EN");
     let currentLangJSON = ENLang;
@@ -82,6 +50,7 @@ export default {
     let title_middle_plot = ref(currentLangJSON.title_middle_plot);
     let title_lower_plot = ref(currentLangJSON.title_lower_plot);
     let load_scenario = ref(currentLangJSON.load_scenario);
+    let upload_scenario = ref(currentLangJSON.upload_scenario);
     let toggle_grid = ref(currentLangJSON.toggle_grid);
     let add_consumer = ref(currentLangJSON.add_consumer);
     let add_energy_source = ref(currentLangJSON.add_energy_source);
@@ -120,16 +89,15 @@ export default {
       title_middle_plot.value = currentLangJSON.title_middle_plot;
       title_lower_plot.value = currentLangJSON.title_lower_plot;
       load_scenario.value = currentLangJSON.load_scenario;
+      upload_scenario.value = currentLangJSON.upload_scenario;
       toggle_grid.value = currentLangJSON.toggle_grid;
       add_consumer.value = currentLangJSON.add_consumer;
       add_energy_source.value = currentLangJSON.add_energy_source;
       clear_nodes.value = currentLangJSON.clear_nodes;
     }
 
-    const matrixTheme = ref("white");
     return {
       updateLanguage,
-      matrixTheme,
       capacity,
       cost,
       battery,
@@ -148,6 +116,7 @@ export default {
       title_middle_plot,
       title_lower_plot,
       load_scenario,
+      upload_scenario,
       toggle_grid,
       add_consumer,
       add_energy_source,
@@ -155,33 +124,11 @@ export default {
     };
   },
   components: {
-    Sliders,
-    Chart,
     Playfield,
-    Matrix,
-    Charts,
-    Drawerbox,
   },
   methods: {
-    updateMatrixTheme(darkMode) {
-      this.matrixTheme = darkMode ? "rgb(39, 39, 39)" : "white";
-    },
-    async fetchMessage() {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/");
-        this.message = response.data.message;
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    },
-    handleSimulationData(simData) {
-      this.matrixData = simData.matrixData;
-      this.chartsData = simData.chartsData;
-    },
+
   },
 };
 </script>
-
-<style>
-@import "./assets/main.css";
-</style>
+<style></style>

@@ -18,6 +18,7 @@
     "title_middle_plot": "Storage Level",
     "title_lower_plot": "Dispatch",
     "load_scenario": "Load Scenario",
+    "upload_scenario": "Upload Scenario",
     "toggle_grid": "Toggle Grid",
     "add_consumer": "Add Consumer",
     "add_energy_source": "Add Energy Source",
