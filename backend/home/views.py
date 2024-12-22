@@ -123,38 +123,49 @@ def save_slider_data(request):
             print(reset)
             print([v.get("value") for v in sliders])
             
-        matrixData = [[None for _ in range(6)] for _ in range(6)]
-        chartsData = [None for _ in range(26)]
 
         
+        data = [[{
+            "matrixData": None,
+            "chartsData": {
+                "lineChartData": [None for _ in range(26)],
+                "barChartData": {
+                    "purchased_power": [None for _ in range(26)],
+                    "pv_production": [None for _ in range(26)],
+                    "pv_curtailment": [None for _ in range(26)],
+                    "storage_charge": [None for _ in range(26)],
+                    "storage_discharge": [None for _ in range(26)],
+                    "demand": [None for _ in range(26)],
+                },
+            },
+        } for _ in range(6)] for _ in range(6)]
+
+        
+        def fill_data(data, sliderVals):
+            cell = data[sliderVals[1]][sliderVals[0]] #matrix row (first index) is y, matrix column (second index) is x
+            cell["chartsData"]["barChartData"] = {
+                "purchased_power": [math.floor(random.random() * 100) for _ in range(26)],
+                "pv_production": [math.floor(random.random() * 100) for _ in range(26)],
+                "pv_curtailment": [math.floor(random.random() * 100) for _ in range(26)],
+                "storage_charge": [math.floor(random.random() * 100) for _ in range(26)],
+                "storage_discharge": [math.floor(random.random() * 100) for _ in range(26)],
+                "demand": [math.floor(random.random() * -100) for _ in range(26)]
+                }
+            cell["chartsData"]["lineChartData"] = [math.floor(random.random() * 100) for _ in range(26)]
+            cell["matrixData"] = math.floor(random.uniform(-100, 100)) 
+
             
         if not reset: 
-            chartsData = [math.floor(random.random() * 100) for _ in range(26)]
             if autoSimulate:
-                matrixData = [
-                            [math.floor(random.uniform(-100, 100)) for v in range(6)] for _ in range(6)
-                            ]
+                for row in range(6):
+                    for col in range(6):
+                        fill_data(data, [col, row])
             else:
-                sliderVals = [v.get("value") for v in sliders] 
-                matrixData[sliderVals[1]][sliderVals[0]] = math.floor(random.uniform(-100, 100)) #matrix row (first index) is y, matrix column (second index) is x
+               sliderVals = [v.get("value") for v in sliders] 
+               fill_data(data, sliderVals)
 
-
-        response = {
-          "matrixData": matrixData,
-          "chartsData": {
-            "lineChartData": chartsData,
-            "barChartData": {
-              "purchased_power": chartsData,
-              "pv_production": chartsData,
-              "pv_curtailment": chartsData,
-              "storage_charge": chartsData,
-              "storage_discharge": chartsData,
-              "demand": [- 4 * el for el in chartsData if el is not None]
-            },
-          },
-        }
-
-        return JsonResponse(response, status=200)
+        print(data)
+        return JsonResponse({"data": data}, status=200)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 @csrf_exempt  

@@ -118,7 +118,7 @@ export default {
         const simData = await axios
           .get(url)
           .then((res) => {
-            return res.data;
+            return res.data.data;
           })
           .catch((e) => console.error("GET did not work:", e));
 

@@ -60,6 +60,7 @@ export default {
       matrixData: undefined,
       chartsData: undefined,
       isAutoSimulating: false,
+      stopAutoSimulate: false,
     };
   },
   setup() {
@@ -179,9 +180,13 @@ export default {
       }
     },
     handleSimulationData(propagateChange) {
+      if (propagateChange.reset) {
+        this.isAutoSimulating = false;
+        this.stopAutoSimulate = true;
+      }
       if (!this.isAutoSimulating) {
-        this.isAutoSimulating = true;
         if (propagateChange.autoSimulate) {
+          this.isAutoSimulating = true;
           this.autoSimulateData(propagateChange);
         } else {
           const currentSliderVals = propagateChange.sliderVals.map((el) => {
@@ -195,23 +200,28 @@ export default {
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
         for (let colIndex = 0; colIndex < 6; colIndex++) {
+          if (this.stopAutoSimulate) {
+            this.stopAutoSimulate = false;
+            return;
+          }
           let currentSliderVals = [colIndex, rowIndex];
           this.simulateData(propagateChange, currentSliderVals);
-          await sleep(200);
+          await sleep(700);
         }
       }
       this.isAutoSimulating = false;
     },
     simulateData(propagateChange, currentSliderVals) {
       console.log("happens");
+      const cell =
+        propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];
       this.sliderVals = currentSliderVals;
       this.matrixData = {
         reset: propagateChange.reset,
         autoSimulate: propagateChange.autoSimulate,
-        matrixValues: propagateChange.simData.matrixData,
+        matrixValues: cell.matrixData,
       };
-      console.log(this.matrixData.matrixValues);
-      this.chartsData = propagateChange.simData.chartsData;
+      this.chartsData = cell.chartsData;
     },
   },
 };

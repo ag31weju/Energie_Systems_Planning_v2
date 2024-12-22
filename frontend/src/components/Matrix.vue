@@ -56,9 +56,7 @@ export default {
         return {
           reset: false,
           autoSimulate: false,
-          matrixValues: Array.from({ length: 6 }, (_, rowIndex) =>
-            Array.from({ length: 6 }, () => null)
-          ),
+          matrixValues: null,
         };
       },
     },
@@ -82,7 +80,9 @@ export default {
     };
   },
   mounted() {
-    this.z = this.matrixData.matrixValues;
+    this.z = Array.from({ length: 6 }, (_, rowIndex) =>
+      Array.from({ length: 6 }, () => null)
+    );
     this.outlinePosition = this.sliderVals;
 
     this.layout = {
@@ -177,7 +177,7 @@ export default {
   },
   methods: {
     updateHeatmap(newVals, colIndex, rowIndex) {
-      this.z[rowIndex][colIndex] = newVals[rowIndex][colIndex];
+      this.z[rowIndex][colIndex] = newVals;
     },
     resetHeatmap() {
       this.z = Array.from({ length: 6 }, () =>
