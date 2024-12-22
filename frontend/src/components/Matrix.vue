@@ -55,8 +55,7 @@ export default {
       default: () => {
         return {
           reset: false,
-          autoSimulate: false,
-          matrixValues: null,
+          matrixValue: null,
         };
       },
     },
@@ -134,7 +133,7 @@ export default {
           if (!newVal.reset) {
             const colIndex = this.sliderVals[0];
             const rowIndex = this.sliderVals[1];
-            this.updateHeatmap(newVal.matrixValues, colIndex, rowIndex);
+            this.updateHeatmap(newVal.matrixValue, colIndex, rowIndex);
           } else {
             this.resetHeatmap();
           }
@@ -176,8 +175,8 @@ export default {
     },
   },
   methods: {
-    updateHeatmap(newVals, colIndex, rowIndex) {
-      this.z[rowIndex][colIndex] = newVals;
+    updateHeatmap(newVal, colIndex, rowIndex) {
+      this.z[rowIndex][colIndex] = newVal;
     },
     resetHeatmap() {
       this.z = Array.from({ length: 6 }, () =>

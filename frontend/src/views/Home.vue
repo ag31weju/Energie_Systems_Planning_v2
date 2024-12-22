@@ -218,8 +218,7 @@ export default {
       this.sliderVals = currentSliderVals;
       this.matrixData = {
         reset: propagateChange.reset,
-        autoSimulate: propagateChange.autoSimulate,
-        matrixValues: cell.matrixData,
+        matrixValue: cell.matrixData,
       };
       this.chartsData = cell.chartsData;
     },

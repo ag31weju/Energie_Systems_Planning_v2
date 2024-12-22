@@ -164,7 +164,6 @@ def save_slider_data(request):
                sliderVals = [v.get("value") for v in sliders] 
                fill_data(data, sliderVals)
 
-        print(data)
         return JsonResponse({"data": data}, status=200)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
