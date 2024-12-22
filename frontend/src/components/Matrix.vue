@@ -55,6 +55,7 @@ export default {
       default: () => {
         return {
           reset: false,
+          autoSimulate: false,
           matrixValues: Array.from({ length: 6 }, (_, rowIndex) =>
             Array.from({ length: 6 }, () => null)
           ),
@@ -131,7 +132,11 @@ export default {
       handler(newVal) {
         if (newVal && Object.keys(newVal).length > 0) {
           if (!newVal.reset) {
-            this.updateHeatmap(newVal.matrixValues);
+            if (newVal.autoSimulate) {
+              this.updateWholeHeatmap(newVal.matrixValues);
+            } else {
+              this.updateHeatmap(newVal.matrixValues);
+            }
           } else {
             this.resetHeatmap();
           }
@@ -173,13 +178,12 @@ export default {
     },
   },
   methods: {
+    updateWholeHeatmap(newVals) {},
+
     updateHeatmap(newVals) {
-      this.z = this.z.map((row, rowIndex) => {
-        return row.map((cell, colIndex) => {
-          const newVal = newVals[rowIndex][colIndex];
-          return newVal !== null ? newVal : cell;
-        });
-      });
+      const colIndex = this.sliderVals[0];
+      const rowIndex = this.sliderVals[1];
+      this.z[rowIndex][colIndex] = newVals[rowIndex][colIndex];
     },
     resetHeatmap() {
       this.z = Array.from({ length: 6 }, () =>

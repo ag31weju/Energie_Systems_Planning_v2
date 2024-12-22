@@ -185,6 +185,7 @@ export default {
       });
       this.matrixData = {
         reset: propagateChange.reset,
+        autoSimulate: propagateChange.autoSimulate,
         matrixValues: propagateChange.simData.matrixData,
       };
       this.chartsData = propagateChange.simData.chartsData;
