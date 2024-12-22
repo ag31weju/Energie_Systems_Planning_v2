@@ -43,7 +43,7 @@
 
 <script>
 import axios from "axios";
-import { ref } from "vue";
+import { provide, ref } from "vue";
 import Chart from "primevue/chart";
 import Sliders from "../components/Sliders.vue";
 import Playfield from "../components/PlayfieldStudent.vue";
@@ -59,6 +59,7 @@ export default {
       sliderVals: undefined,
       matrixData: undefined,
       chartsData: undefined,
+      isAutoSimulating: false,
     };
   },
   setup() {
@@ -178,16 +179,38 @@ export default {
       }
     },
     handleSimulationData(propagateChange) {
-      console.log("Hello");
-      console.log();
-      this.sliderVals = propagateChange.sliderVals.map((el) => {
-        return el.value;
-      });
+      if (!this.isAutoSimulating) {
+        this.isAutoSimulating = true;
+        if (propagateChange.autoSimulate) {
+          this.autoSimulateData(propagateChange);
+        } else {
+          const currentSliderVals = propagateChange.sliderVals.map((el) => {
+            return el.value;
+          });
+          this.simulateData(propagateChange, currentSliderVals);
+        }
+      }
+    },
+    async autoSimulateData(propagateChange) {
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
+        for (let colIndex = 0; colIndex < 6; colIndex++) {
+          let currentSliderVals = [colIndex, rowIndex];
+          this.simulateData(propagateChange, currentSliderVals);
+          await sleep(200);
+        }
+      }
+      this.isAutoSimulating = false;
+    },
+    simulateData(propagateChange, currentSliderVals) {
+      console.log("happens");
+      this.sliderVals = currentSliderVals;
       this.matrixData = {
         reset: propagateChange.reset,
         autoSimulate: propagateChange.autoSimulate,
         matrixValues: propagateChange.simData.matrixData,
       };
+      console.log(this.matrixData.matrixValues);
       this.chartsData = propagateChange.simData.chartsData;
     },
   },
