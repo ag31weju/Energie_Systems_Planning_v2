@@ -169,7 +169,9 @@ export default {
   },
   methods: {
     updateMatrixTheme(darkMode) {
-      this.matrixTheme = darkMode ? "rgb(39, 39, 39)" : "white";
+      this.matrixTheme = darkMode
+        ? { backgroundColor: "rgb(39, 39, 39)", gridColor: "white" }
+        : { backgroundColor: "white", gridColor: "black" };
     },
     async fetchMessage() {
       try {

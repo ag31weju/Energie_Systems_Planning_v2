@@ -6,8 +6,6 @@
           z: z,
           x: axisDimension,
           y: axisDimension,
-          xgap: 3,
-          ygap: 3,
           type: 'heatmap',
           text:
             z !== null
@@ -60,9 +58,9 @@ export default {
       },
     },
     matrixTheme: {
-      type: String,
+      type: Object,
       required: false,
-      default: "white",
+      default: { backgroundColor: "white", gridColor: "black" },
     },
     sliderVals: {
       type: Array,
@@ -75,6 +73,8 @@ export default {
       outlinePosition: null,
       z: null,
       layout: null,
+      gridSize: 6,
+      gridColor: "black",
       axisDimension: Array.from({ length: 6 }, (_, i) => i),
     };
   },
@@ -83,6 +83,35 @@ export default {
       Array.from({ length: 6 }, () => null)
     );
     this.outlinePosition = this.sliderVals;
+
+    const gridLines = [];
+    for (let i = 0; i <= this.gridSize; i++) {
+      // Horizontal lines
+      gridLines.push({
+        type: "line",
+        x0: -0.5,
+        x1: this.gridSize - 0.5,
+        y0: i - 0.5,
+        y1: i - 0.5,
+        line: {
+          color: "black",
+          width: 1,
+        },
+      });
+
+      // Vertical lines
+      gridLines.push({
+        type: "line",
+        x0: i - 0.5,
+        x1: i - 0.5,
+        y0: -0.5,
+        y1: this.gridSize - 0.5,
+        line: {
+          color: "black",
+          width: 1,
+        },
+      });
+    }
 
     this.layout = {
       xaxis: {
@@ -108,6 +137,7 @@ export default {
       paper_bgcolor: "white", // Background color outside the plotting area
       plot_bgcolor: "white",
       shapes: [
+        ...gridLines,
         {
           type: "rect",
           x0: this.outlinePosition[0] - 0.5, // Left boundary of the cell
@@ -147,28 +177,113 @@ export default {
       handler(newVal) {
         this.outlinePosition = newVal;
         console.log(this.outlinePosition);
-        this.layout = this.layout = {
-          ...this.layout, // Spread the existing layout properties
+
+        const gridLines = [];
+        for (let i = 0; i <= this.gridSize; i++) {
+          // Horizontal lines
+          gridLines.push({
+            type: "line",
+            x0: -0.5,
+            x1: this.gridSize - 0.5,
+            y0: i - 0.5,
+            y1: i - 0.5,
+            line: {
+              color: this.gridColor,
+              width: 1,
+            },
+          });
+
+          // Vertical lines
+          gridLines.push({
+            type: "line",
+            x0: i - 0.5,
+            x1: i - 0.5,
+            y0: -0.5,
+            y1: this.gridSize - 0.5,
+            line: {
+              color: this.gridColor,
+              width: 1,
+            },
+          });
+        }
+        this.layout = {
+          ...this.layout,
           shapes: [
+            ...gridLines,
             {
-              ...this.layout.shapes[0],
+              type: "rect",
               x0: this.outlinePosition[0] - 0.5, // Left boundary of the cell
               x1: this.outlinePosition[0] + 0.48, // Right boundary of the cell
               y0: this.outlinePosition[1] - 0.45, // Bottom boundary of the cell
               y1: this.outlinePosition[1] + 0.45, // Top boundary of the cell
+              xref: "x",
+              yref: "y",
+              line: {
+                color: "green",
+                width: 3,
+              },
+              fillcolor: "rgba(0,0,0,0)",
             },
           ],
         };
 
         console.log(this.layout);
       },
+      deep: true,
     },
     matrixTheme: {
-      handler(newVal) {
+      handler(newVals) {
+        this.gridColor = newVals.gridColor;
+        const gridLines = [];
+        for (let i = 0; i <= this.gridSize; i++) {
+          // Horizontal lines
+          gridLines.push({
+            type: "line",
+            x0: -0.5,
+            x1: this.gridSize - 0.5,
+            y0: i - 0.5,
+            y1: i - 0.5,
+            line: {
+              color: newVals.gridColor,
+              width: 1,
+            },
+          });
+
+          // Vertical lines
+          gridLines.push({
+            type: "line",
+            x0: i - 0.5,
+            x1: i - 0.5,
+            y0: -0.5,
+            y1: this.gridSize - 0.5,
+            line: {
+              color: newVals.gridColor,
+              width: 1,
+            },
+          });
+        }
+
         this.layout = {
           ...this.layout,
-          paper_bgcolor: newVal,
-          plot_bgcolor: newVal,
+          paper_bgcolor: newVals.backgroundColor,
+          plot_bgcolor: newVals.backgroundColor,
+          shapes: [
+            ...gridLines,
+            {
+              type: "rect",
+              x0: this.outlinePosition[0] - 0.5, // Left boundary of the cell
+              x1: this.outlinePosition[0] + 0.48, // Right boundary of the cell
+              y0: this.outlinePosition[1] - 0.45, // Bottom boundary of the cell
+              y1: this.outlinePosition[1] + 0.45, // Top boundary of the cell
+              xref: "x",
+              yref: "y",
+              line: {
+                color: "green",
+                width: 3,
+              },
+              fillcolor: "rgba(0,0,0,0)",
+            },
+          ],
         };
         console.log("Handler worked");
       },
