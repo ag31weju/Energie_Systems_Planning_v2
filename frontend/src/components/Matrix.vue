@@ -78,6 +78,7 @@ export default {
       outlinePosition: null,
       z: null,
       layout: null,
+      isSimulating: false,
       axisDimension: Array.from({ length: 6 }, (_, i) => i),
     };
   },
@@ -131,14 +132,19 @@ export default {
     matrixData: {
       handler(newVal) {
         if (newVal && Object.keys(newVal).length > 0) {
-          if (!newVal.reset) {
-            if (newVal.autoSimulate) {
-              this.updateWholeHeatmap(newVal.matrixValues);
+          if (!this.isSimulating) {
+            this.isSimulating = true;
+            if (!newVal.reset) {
+              if (newVal.autoSimulate) {
+                this.updateWholeHeatmap(newVal.matrixValues);
+              } else {
+                const colIndex = this.sliderVals[0];
+                const rowIndex = this.sliderVals[1];
+                this.updateHeatmap(newVal.matrixValues, colIndex, rowIndex);
+              }
             } else {
-              this.updateHeatmap(newVal.matrixValues);
+              this.resetHeatmap();
             }
-          } else {
-            this.resetHeatmap();
           }
         } else {
           console.error("Not good, matrix is not receiving data");
@@ -178,11 +184,19 @@ export default {
     },
   },
   methods: {
-    updateWholeHeatmap(newVals) {},
+    async updateWholeHeatmap(newVals) {
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    updateHeatmap(newVals) {
-      const colIndex = this.sliderVals[0];
-      const rowIndex = this.sliderVals[1];
+      for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
+        for (let colIndex = 0; colIndex < 6; colIndex++) {
+          this.updateHeatmap(newVals, colIndex, rowIndex);
+          await sleep(200);
+        }
+      }
+      this.isSimulating = false;
+    },
+
+    updateHeatmap(newVals, colIndex, rowIndex) {
       this.z[rowIndex][colIndex] = newVals[rowIndex][colIndex];
     },
     resetHeatmap() {
