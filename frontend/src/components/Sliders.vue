@@ -102,6 +102,10 @@ export default {
     },
     async postAndGet(url, data) {
       try {
+        const autoSimulate = data.autoSimulate;
+        const reset = data.reset;
+        const sliderVals = data.sliders;
+
         const response = await axios
           .post(url, data, {
             headers: {
@@ -110,13 +114,21 @@ export default {
           })
           .catch((e) => console.error("POST did not work", e));
         //if response is ok, then do GET function
+
         const simData = await axios
           .get(url)
           .then((res) => {
             return res.data;
           })
           .catch((e) => console.error("GET did not work:", e));
-        this.$emit("getSimulationData", simData);
+
+        const propagateChange = {
+          simData: simData,
+          reset: reset,
+          autoSimulate: autoSimulate,
+          sliderVals: sliderVals,
+        };
+        this.$emit("getSimulationData", propagateChange);
       } catch (error) {
         console.error("Error sending data to backend:", error);
         throw error; // Re-throw the error to handle it in the calling method

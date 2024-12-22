@@ -1,14 +1,14 @@
 {
+    "autoSimulate": false,
     "reset": false,
-    "autoSimulate": true,
     "sliders": [
         {
             "type": "test1",
-            "value": 2
+            "value": 0
         },
         {
             "type": "test2",
-            "value": 3
+            "value": 0
         }
     ]
 }

@@ -123,7 +123,7 @@ def save_slider_data(request):
             print(reset)
             print([v.get("value") for v in sliders])
             
-        matrixValues = [[None for _ in range(6)] for _ in range(6)]
+        matrixData = [[None for _ in range(6)] for _ in range(6)]
         chartsData = [None for _ in range(26)]
 
         
@@ -131,17 +131,16 @@ def save_slider_data(request):
         if not reset: 
             chartsData = [math.floor(random.random() * 100) for _ in range(26)]
             if autoSimulate:
-                matrixValues = [
+                matrixData = [
                             [math.floor(random.uniform(-100, 100)) for v in range(6)] for _ in range(6)
                             ]
             else:
                 sliderVals = [v.get("value") for v in sliders] 
-                matrixValues[sliderVals[1]][sliderVals[0]] = math.floor(random.uniform(-100, 100)) #matrix row (first index) is y, matrix column (second index) is x
+                matrixData[sliderVals[1]][sliderVals[0]] = math.floor(random.uniform(-100, 100)) #matrix row (first index) is y, matrix column (second index) is x
 
 
         response = {
-          "sliderVals": [v.get("value") for v in sliders],
-          "matrixData": {"reset": reset, "matrixValues": matrixValues},
+          "matrixData": matrixData,
           "chartsData": {
             "lineChartData": chartsData,
             "barChartData": {

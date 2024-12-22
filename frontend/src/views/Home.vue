@@ -177,10 +177,17 @@ export default {
         console.error("Error fetching data:", error);
       }
     },
-    handleSimulationData(simData) {
-      this.sliderVals = simData.sliderVals;
-      this.matrixData = simData.matrixData;
-      this.chartsData = simData.chartsData;
+    handleSimulationData(propagateChange) {
+      console.log("Hello");
+      console.log();
+      this.sliderVals = propagateChange.sliderVals.map((el) => {
+        return el.value;
+      });
+      this.matrixData = {
+        reset: propagateChange.reset,
+        matrixValues: propagateChange.simData.matrixData,
+      };
+      this.chartsData = propagateChange.simData.chartsData;
     },
   },
 };

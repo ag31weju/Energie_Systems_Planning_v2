@@ -50,7 +50,7 @@ export default {
   },
   props: {
     matrixData: {
-      type: Array,
+      type: Object,
       required: false,
       default: () => {
         return {
