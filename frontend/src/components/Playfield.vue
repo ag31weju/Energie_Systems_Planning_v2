@@ -106,6 +106,24 @@
       accept=".json"
       style="display: none"
     />
+    <!-- File Inputs (Hidden) -->
+    <!-- File Inputs (Hidden) -->
+    <input
+      type="file"
+      id="imageInput"
+      ref="imageInput"
+      @change="handleFileChange('image', $event)"
+      accept="image/*"
+      style="display: none"
+    />
+    <input
+      type="file"
+      id="jsonInput"
+      ref="jsonInput"
+      @change="handleFileChange('json', $event)"
+      accept=".json"
+      style="display: none"
+    />
   </Panel>
 </template>
 
@@ -141,7 +159,6 @@ export default {
       edges: [], // Edges for Vue Flow
       customNodeTypes: {
         consumer: ConsumerNode,
-        consumer: ConsumerNode,
       }, // Define custom node types if needed
       nodeIdCounter: 1, // Counter for unique IDs
       connectionMode: "strict", // Connection mode for the graph
@@ -149,26 +166,20 @@ export default {
       selectedNodeId: null, // Track the selected node for edge creation
       edgeProps: {
         // Default edge properties (adjustable)
-        edgeProps: {
-          // Default edge properties (adjustable)
-          color: "#000000", // Edge color
-          animated: true, // Edge animation
-          style: { strokeWidth: 5 }, // Edge style
-        },
-        locked: false, // Lock flag
-
-        jsonUrl: null,
-        coordinateExtent: [
-          [0, 0],
-          [0, 0],
-        ],
-        coordinateExtent: [
-          [0, 0],
-          [0, 0],
-        ],
+        color: "#000000", // Edge color
+        animated: true, // Edge animation
+        style: { strokeWidth: 5 }, // Edge style
       },
+      locked: false, // Lock flag
+
+      jsonUrl: null,
+      coordinateExtent: [
+        [0, 0],
+        [0, 0],
+      ],
     };
   },
+
   methods: {
     toggleLock() {
       this.locked = !this.locked;
@@ -250,15 +261,7 @@ export default {
         position: { x: width * 5, y: height * 4 },
         data: {
           label: "consumer",
-          position: { x: width * 5, y: height * 4 },
-          data: {
-            label: "consumer",
-            icon: ConsumerIcon,
-            inputs: [0],
-            outputs: [0, 1],
-          },
-          targetPosition: "left",
-          sourcePosition: "right",
+          icon: ConsumerIcon,
           inputs: [0],
           outputs: [0, 1],
         },
@@ -286,12 +289,6 @@ export default {
           padding: "10px",
           borderRadius: "5px",
         },
-        style: {
-          backgroundColor: "#33FF57",
-          color: "#000000",
-          padding: "10px",
-          borderRadius: "5px",
-        },
       };
       this.nodes.push(newNode);
     },
@@ -310,6 +307,7 @@ export default {
       this.nodes = [];
       this.edges = [];
     },
+
     onConnect(connection) {
       if (this.edgeMode) {
         const newEdge = {

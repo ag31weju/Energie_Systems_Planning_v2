@@ -203,7 +203,7 @@ export default {
     }
 
     function handleMatrixTheme(newVal) {
-      gridColor = newVal.gridColor;
+      gridColor.value = newVal.gridColor;
       gridLines.value = [];
       for (let i = 0; i <= gridSize.value; i++) {
         // Horizontal lines

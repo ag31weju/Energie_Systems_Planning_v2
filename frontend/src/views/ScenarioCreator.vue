@@ -23,4 +23,7 @@ export default {
   },
 };
 </script>
-<style></style>
+
+<style>
+@import "../assets/main.css";
+</style>
