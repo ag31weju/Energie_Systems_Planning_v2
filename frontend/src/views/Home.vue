@@ -64,6 +64,63 @@ export default {
     };
   },
   setup() {
+    const sliderVals = ref(undefined);
+    const matrixData = ref(undefined);
+    const chartsData = ref(undefined);
+    const isAutoSimulating = ref(false);
+    const stopAutoSimulate = ref(false);
+
+    const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
+
+    function updateMatrixTheme(darkMode) {
+      matrixTheme.value = darkMode
+        ? { backgroundColor: "rgb(39, 39, 39)", gridColor: "white" }
+        : { backgroundColor: "white", gridColor: "black" };
+    }
+
+    function handleSimulationData(propagateChange) {
+      if (propagateChange.reset) {
+        isAutoSimulating.value = false;
+        stopAutoSimulate.value = true;
+      }
+      if (!isAutoSimulating.value) {
+        if (propagateChange.autoSimulate) {
+          isAutoSimulating.value = true;
+          autoSimulateData(propagateChange);
+        } else {
+          const currentSliderVals = propagateChange.sliderVals.map((el) => {
+            return el.value;
+          });
+          simulateData(propagateChange, currentSliderVals);
+        }
+      }
+    }
+    async function autoSimulateData(propagateChange) {
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
+        for (let colIndex = 0; colIndex < 6; colIndex++) {
+          if (stopAutoSimulate.value) {
+            stopAutoSimulate.value = false;
+            return;
+          }
+          let currentSliderVals = [colIndex, rowIndex];
+          simulateData(propagateChange, currentSliderVals);
+          await sleep(700);
+        }
+      }
+      isAutoSimulating.value = false;
+    }
+    function simulateData(propagateChange, currentSliderVals) {
+      const newValues =
+        propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];
+      sliderVals.value = currentSliderVals;
+      matrixData.value = {
+        reset: propagateChange.reset,
+        matrixValue: newValues.matrixData,
+      };
+      chartsData.value = newValues.chartsData;
+    }
+
     const currentLang = ref("EN");
     let currentLangJSON = ENLang;
     let capacity = ref(currentLangJSON.capacity);
@@ -129,11 +186,15 @@ export default {
       add_energy_source.value = currentLangJSON.add_energy_source;
       clear_nodes.value = currentLangJSON.clear_nodes;
     }
-    const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
 
     return {
       updateLanguage,
+      updateMatrixTheme,
+      handleSimulationData,
       matrixTheme,
+      sliderVals,
+      matrixData,
+      chartsData,
       capacity,
       cost,
       battery,
@@ -166,63 +227,6 @@ export default {
     Matrix,
     Charts,
     Drawerbox,
-  },
-  methods: {
-    updateMatrixTheme(darkMode) {
-      this.matrixTheme = darkMode
-        ? { backgroundColor: "rgb(39, 39, 39)", gridColor: "white" }
-        : { backgroundColor: "white", gridColor: "black" };
-    },
-    async fetchMessage() {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/");
-        this.message = response.data.message;
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    },
-    handleSimulationData(propagateChange) {
-      if (propagateChange.reset) {
-        this.isAutoSimulating = false;
-        this.stopAutoSimulate = true;
-      }
-      if (!this.isAutoSimulating) {
-        if (propagateChange.autoSimulate) {
-          this.isAutoSimulating = true;
-          this.autoSimulateData(propagateChange);
-        } else {
-          const currentSliderVals = propagateChange.sliderVals.map((el) => {
-            return el.value;
-          });
-          this.simulateData(propagateChange, currentSliderVals);
-        }
-      }
-    },
-    async autoSimulateData(propagateChange) {
-      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-      for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
-        for (let colIndex = 0; colIndex < 6; colIndex++) {
-          if (this.stopAutoSimulate) {
-            this.stopAutoSimulate = false;
-            return;
-          }
-          let currentSliderVals = [colIndex, rowIndex];
-          this.simulateData(propagateChange, currentSliderVals);
-          await sleep(700);
-        }
-      }
-      this.isAutoSimulating = false;
-    },
-    simulateData(propagateChange, currentSliderVals) {
-      const newValues =
-        propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];
-      this.sliderVals = currentSliderVals;
-      this.matrixData = {
-        reset: propagateChange.reset,
-        matrixValue: newValues.matrixData,
-      };
-      this.chartsData = newValues.chartsData;
-    },
   },
 };
 </script>
