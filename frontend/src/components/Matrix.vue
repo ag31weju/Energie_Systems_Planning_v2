@@ -79,8 +79,8 @@ export default {
     };
   },
   mounted() {
-    this.z = Array.from({ length: 6 }, (_, rowIndex) =>
-      Array.from({ length: 6 }, () => null)
+    this.z = Array.from({ length: this.gridSize }, (_, rowIndex) =>
+      Array.from({ length: this.gridSize }, () => null)
     );
     this.outlinePosition = this.sliderVals;
 
@@ -115,7 +115,7 @@ export default {
 
     this.layout = {
       xaxis: {
-        range: [-0.55, 5.55],
+        range: [-0.55, this.gridSize - 0.45],
         tickmode: "array",
         ticks: "outside",
         showgrid: false,
@@ -125,7 +125,7 @@ export default {
         tickvals: [0, 1, 2, 3, 4, 5],
       },
       yaxis: {
-        range: [-0.55, 5.55], //-0.5 to 5.5 in order to display the cells with their axis values centered
+        range: [-0.55, this.gridSize - 0.45], //-0.5 to 5.5 in order to display the cells with their axis values centered
         tickmode: "array",
         gridcolor: "black",
         gridwidth: 5,

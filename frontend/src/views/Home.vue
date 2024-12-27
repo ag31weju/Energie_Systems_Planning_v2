@@ -214,15 +214,14 @@ export default {
       this.isAutoSimulating = false;
     },
     simulateData(propagateChange, currentSliderVals) {
-      console.log("happens");
-      const cell =
+      const newValues =
         propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];
       this.sliderVals = currentSliderVals;
       this.matrixData = {
         reset: propagateChange.reset,
-        matrixValue: cell.matrixData,
+        matrixValue: newValues.matrixData,
       };
-      this.chartsData = cell.chartsData;
+      this.chartsData = newValues.chartsData;
     },
   },
 };

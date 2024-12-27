@@ -176,21 +176,14 @@ export default {
   },
   methods: {
     updateChart(data) {
-      this.chartset.datasets[0].data = data.lineChartData || [];
-      this.chartset2.datasets[0].data = data.barChartData.purchased_power || [];
-      this.chartset2.datasets[1].data = data.barChartData.demand || [];
-      this.chartset2.datasets[2].data = data.barChartData.pv_prodcution || [];
-      this.chartset2.datasets[3].data = data.barChartData.pv_curtailment || [];
-      this.chartset2.datasets[4].data = data.barChartData.storage_charge || [];
-      this.chartset2.datasets[5].data =
-        data.barChartData.storage_discharge || [];
+      this.chartset.datasets[0].data = data.lineChartData;
+      this.chartset2.datasets[0].data = data.barChartData.purchased_power;
+      this.chartset2.datasets[1].data = data.barChartData.demand;
+      this.chartset2.datasets[2].data = data.barChartData.pv_prodcution;
+      this.chartset2.datasets[3].data = data.barChartData.pv_curtailment;
+      this.chartset2.datasets[4].data = data.barChartData.storage_charge;
+      this.chartset2.datasets[5].data = data.barChartData.storage_discharge;
     },
-    /*resetChartData() {
-      this.chartset.datasets[0].data = [];
-      this.chartset2.datasets.forEach((dataset) => {
-        dataset.data = [];
-      });
-    },*/
   },
 };
 </script>
