@@ -42,7 +42,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { provide, ref } from "vue";
 import Chart from "primevue/chart";
 import Sliders from "../components/Sliders.vue";
@@ -54,15 +53,6 @@ import ENLang from "@/assets/languages/en.json";
 import DELang from "@/assets/languages/de.json";
 
 export default {
-  data() {
-    return {
-      sliderVals: undefined,
-      matrixData: undefined,
-      chartsData: undefined,
-      isAutoSimulating: false,
-      stopAutoSimulate: false,
-    };
-  },
   setup() {
     const sliderVals = ref(undefined);
     const matrixData = ref(undefined);
