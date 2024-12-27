@@ -129,7 +129,7 @@ export default {
       add_energy_source.value = currentLangJSON.add_energy_source;
       clear_nodes.value = currentLangJSON.clear_nodes;
     }
-    const matrixTheme = ref("white");
+    const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
 
     return {
       updateLanguage,

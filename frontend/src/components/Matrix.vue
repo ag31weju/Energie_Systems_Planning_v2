@@ -37,15 +37,11 @@
 
 <script>
 import { Panel } from "primevue";
+import { ref, watch, onMounted } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import { VuePlotly } from "vue3-plotly";
 
 export default {
-  components: {
-    Panel,
-    apexchart: VueApexCharts,
-    VuePlotly,
-  },
   props: {
     matrixData: {
       type: Object,
@@ -68,208 +64,230 @@ export default {
       default: [0, 0],
     },
   },
-  data() {
-    return {
-      outlinePosition: null,
-      z: null,
-      layout: null,
-      gridSize: 6,
-      gridColor: "black",
-      gridLines: [],
-      axisDimension: Array.from({ length: 6 }, (_, i) => i),
-    };
-  },
-  mounted() {
-    this.z = Array.from({ length: this.gridSize }, (_, rowIndex) =>
-      Array.from({ length: this.gridSize }, () => null)
-    );
-    this.outlinePosition = this.sliderVals;
+  setup(props) {
+    const outLinePosition = ref(null);
+    const z = ref(null);
+    const layout = ref(null);
+    const gridSize = ref(6);
+    const gridColor = ref("black");
+    const gridLines = ref([]);
+    const axisDimension = ref(Array.from({ length: 6 }, (_, i) => i));
 
-    for (let i = 0; i <= this.gridSize; i++) {
-      // Horizontal lines
-      this.gridLines.push({
-        type: "line",
-        x0: -0.5,
-        x1: this.gridSize - 0.5,
-        y0: i - 0.5,
-        y1: i - 0.5,
-        line: {
-          color: "black",
-          width: 1,
-        },
-      });
-
-      // Vertical lines
-      this.gridLines.push({
-        type: "line",
-        x0: i - 0.5,
-        x1: i - 0.5,
-        y0: -0.5,
-        y1: this.gridSize - 0.5,
-        line: {
-          color: "black",
-          width: 1,
-        },
-      });
+    function updateHeatmap(newVal, colIndex, rowIndex) {
+      const updatedZ = [...z.value]; // Clone the array
+      updatedZ[rowIndex][colIndex] = newVal;
+      z.value = updatedZ; // Reassign to trigger reactivity
     }
-
-    this.layout = {
-      xaxis: {
-        range: [-0.55, this.gridSize - 0.45],
-        tickmode: "array",
-        ticks: "outside",
-        showgrid: false,
-        zeroline: false,
-        gridcolor: "black",
-        gridwidth: 5,
-        tickvals: [0, 1, 2, 3, 4, 5],
-      },
-      yaxis: {
-        range: [-0.55, this.gridSize - 0.45], //-0.5 to 5.5 in order to display the cells with their axis values centered
-        tickmode: "array",
-        gridcolor: "black",
-        gridwidth: 5,
-        ticks: "outside", //for the - at the numbers at the axis baselines
-        showgrid: false, //for the grid lines inside the coordinate system
-        zeroline: false, //for the baseline of an x axis (the thick one)
-        tickvals: [0, 1, 2, 3, 4, 5], //values where the ticks should be located
-      },
-      paper_bgcolor: "white", // Background color outside the plotting area
-      plot_bgcolor: "white",
-      shapes: [
-        ...this.gridLines,
-        {
-          type: "rect",
-          x0: this.outlinePosition[0] - 0.5, // Left boundary of the cell
-          x1: this.outlinePosition[0] + 0.48, // Right boundary of the cell
-          y0: this.outlinePosition[1] - 0.45, // Bottom boundary of the cell
-          y1: this.outlinePosition[1] + 0.45, // Top boundary of the cell
-          xref: "x",
-          yref: "y",
-          line: {
-            color: "green", // Outline color
-            width: 3, // Outline width
-          },
-          fillcolor: "rgba(0,0,0,0)", // Transparent fill
-        },
-      ],
-    };
-    console.log("mounted data", this.data);
-  },
-  watch: {
-    matrixData: {
-      handler(newVal) {
-        if (newVal && Object.keys(newVal).length > 0) {
-          if (!newVal.reset) {
-            const colIndex = this.sliderVals[0];
-            const rowIndex = this.sliderVals[1];
-            this.updateHeatmap(newVal.matrixValue, colIndex, rowIndex);
-          } else {
-            this.resetHeatmap();
-          }
-        } else {
-          console.error("Not good, matrix is not receiving data");
-        }
-      },
-      deep: true,
-    },
-    sliderVals: {
-      handler(newVal) {
-        this.outlinePosition = newVal;
-        console.log(this.outlinePosition);
-
-        this.layout = {
-          ...this.layout,
-          shapes: [
-            ...this.gridLines,
-            {
-              type: "rect",
-              x0: this.outlinePosition[0] - 0.5, // Left boundary of the cell
-              x1: this.outlinePosition[0] + 0.48, // Right boundary of the cell
-              y0: this.outlinePosition[1] - 0.45, // Bottom boundary of the cell
-              y1: this.outlinePosition[1] + 0.45, // Top boundary of the cell
-              xref: "x",
-              yref: "y",
-              line: {
-                color: "green",
-                width: 3,
-              },
-              fillcolor: "rgba(0,0,0,0)",
-            },
-          ],
-        };
-
-        console.log(this.layout);
-      },
-      deep: true,
-    },
-    matrixTheme: {
-      handler(newVals) {
-        this.gridColor = newVals.gridColor;
-        this.gridLines = [];
-        for (let i = 0; i <= this.gridSize; i++) {
-          // Horizontal lines
-          this.gridLines.push({
-            type: "line",
-            x0: -0.5,
-            x1: this.gridSize - 0.5,
-            y0: i - 0.5,
-            y1: i - 0.5,
-            line: {
-              color: newVals.gridColor,
-              width: 1,
-            },
-          });
-
-          // Vertical lines
-          this.gridLines.push({
-            type: "line",
-            x0: i - 0.5,
-            x1: i - 0.5,
-            y0: -0.5,
-            y1: this.gridSize - 0.5,
-            line: {
-              color: newVals.gridColor,
-              width: 1,
-            },
-          });
-        }
-
-        this.layout = {
-          ...this.layout,
-          paper_bgcolor: newVals.backgroundColor,
-          plot_bgcolor: newVals.backgroundColor,
-          shapes: [
-            ...this.gridLines,
-            {
-              type: "rect",
-              x0: this.outlinePosition[0] - 0.5, // Left boundary of the cell
-              x1: this.outlinePosition[0] + 0.48, // Right boundary of the cell
-              y0: this.outlinePosition[1] - 0.45, // Bottom boundary of the cell
-              y1: this.outlinePosition[1] + 0.45, // Top boundary of the cell
-              xref: "x",
-              yref: "y",
-              line: {
-                color: "green",
-                width: 3,
-              },
-              fillcolor: "rgba(0,0,0,0)",
-            },
-          ],
-        };
-        console.log("Handler worked");
-      },
-    },
-  },
-  methods: {
-    updateHeatmap(newVal, colIndex, rowIndex) {
-      this.z[rowIndex][colIndex] = newVal;
-    },
-    resetHeatmap() {
-      this.z = Array.from({ length: 6 }, () =>
+    function resetHeatmap() {
+      z.value = Array.from({ length: 6 }, () =>
         Array.from({ length: 6 }, () => null)
       );
-    },
+    }
+
+    onMounted(() => {
+      z.value = Array.from({ length: gridSize.value }, (_, rowIndex) =>
+        Array.from({ length: gridSize.value }, () => null)
+      );
+      outLinePosition.value = props.sliderVals;
+
+      for (let i = 0; i <= gridSize.value; i++) {
+        // Horizontal lines
+        gridLines.value.push({
+          type: "line",
+          x0: -0.5,
+          x1: gridSize.value - 0.5,
+          y0: i - 0.5,
+          y1: i - 0.5,
+          line: {
+            color: "black",
+            width: 1,
+          },
+        });
+
+        // Vertical lines
+        gridLines.value.push({
+          type: "line",
+          x0: i - 0.5,
+          x1: i - 0.5,
+          y0: -0.5,
+          y1: gridSize.value - 0.5,
+          line: {
+            color: "black",
+            width: 1,
+          },
+        });
+      }
+
+      console.log(gridLines.value);
+
+      layout.value = {
+        xaxis: {
+          range: [-0.55, gridSize.value - 0.45],
+          tickmode: "array",
+          ticks: "outside",
+          showgrid: false,
+          zeroline: false,
+          gridcolor: "black",
+          gridwidth: 5,
+          tickvals: [0, 1, 2, 3, 4, 5],
+        },
+        yaxis: {
+          range: [-0.55, gridSize.value - 0.45], //-0.5 to 5.5 in order to display the cells with their axis values centered
+          tickmode: "array",
+          gridcolor: "black",
+          gridwidth: 5,
+          ticks: "outside", //for the - at the numbers at the axis baselines
+          showgrid: false, //for the grid lines inside the coordinate system
+          zeroline: false, //for the baseline of an x axis (the thick one)
+          tickvals: [0, 1, 2, 3, 4, 5], //values where the ticks should be located
+        },
+        paper_bgcolor: "white", // Background color outside the plotting area
+        plot_bgcolor: "white",
+        shapes: [
+          ...gridLines.value,
+          {
+            type: "rect",
+            x0: outLinePosition.value[0] - 0.5, // Left boundary of the cell
+            x1: outLinePosition.value[0] + 0.48, // Right boundary of the cell
+            y0: outLinePosition.value[1] - 0.45, // Bottom boundary of the cell
+            y1: outLinePosition.value[1] + 0.45, // Top boundary of the cell
+            xref: "x",
+            yref: "y",
+            line: {
+              color: "green", // Outline color
+              width: 3, // Outline width
+            },
+            fillcolor: "rgba(0,0,0,0)", // Transparent fill
+          },
+        ],
+      };
+    });
+
+    function handleMatrixData(newVal) {
+      if (newVal && Object.keys(newVal).length > 0) {
+        if (!newVal.reset) {
+          const colIndex = props.sliderVals[0];
+          const rowIndex = props.sliderVals[1];
+          updateHeatmap(newVal.matrixValue, colIndex, rowIndex);
+        } else {
+          resetHeatmap();
+        }
+      } else {
+        console.error("Not good, matrix is not receiving data");
+      }
+    }
+
+    function handleSliderVals(newVal) {
+      outLinePosition.value = newVal;
+
+      layout.value = {
+        ...layout.value,
+        shapes: [
+          ...gridLines.value,
+          {
+            type: "rect",
+            x0: outLinePosition.value[0] - 0.5, // Left boundary of the cell
+            x1: outLinePosition.value[0] + 0.48, // Right boundary of the cell
+            y0: outLinePosition.value[1] - 0.45, // Bottom boundary of the cell
+            y1: outLinePosition.value[1] + 0.45, // Top boundary of the cell
+            xref: "x",
+            yref: "y",
+            line: {
+              color: "green",
+              width: 3,
+            },
+            fillcolor: "rgba(0,0,0,0)",
+          },
+        ],
+      };
+    }
+
+    function handleMatrixTheme(newVal) {
+      gridColor = newVal.gridColor;
+      gridLines.value = [];
+      for (let i = 0; i <= gridSize.value; i++) {
+        // Horizontal lines
+        gridLines.value.push({
+          type: "line",
+          x0: -0.5,
+          x1: gridSize.value - 0.5,
+          y0: i - 0.5,
+          y1: i - 0.5,
+          line: {
+            color: newVal.gridColor,
+            width: 1,
+          },
+        });
+
+        // Vertical lines
+        gridLines.value.push({
+          type: "line",
+          x0: i - 0.5,
+          x1: i - 0.5,
+          y0: -0.5,
+          y1: gridSize.value - 0.5,
+          line: {
+            color: newVal.gridColor,
+            width: 1,
+          },
+        });
+      }
+
+      layout.value = {
+        ...layout.value,
+        paper_bgcolor: newVal.backgroundColor,
+        plot_bgcolor: newVal.backgroundColor,
+        shapes: [
+          ...gridLines.value,
+          {
+            type: "rect",
+            x0: outLinePosition.value[0] - 0.5, // Left boundary of the cell
+            x1: outLinePosition.value[0] + 0.48, // Right boundary of the cell
+            y0: outLinePosition.value[1] - 0.45, // Bottom boundary of the cell
+            y1: outLinePosition.value[1] + 0.45, // Top boundary of the cell
+            xref: "x",
+            yref: "y",
+            line: {
+              color: "green",
+              width: 3,
+            },
+            fillcolor: "rgba(0,0,0,0)",
+          },
+        ],
+      };
+    }
+
+    //watchers
+    watch(
+      () => props.matrixData,
+      (newVal) => handleMatrixData(newVal),
+      { deep: true }
+    );
+    watch(
+      () => props.sliderVals,
+      (newVal) => handleSliderVals(newVal),
+      { deep: true }
+    );
+    watch(
+      () => props.matrixTheme,
+      (newVal) => handleMatrixTheme(newVal),
+      { deep: true }
+    );
+
+    return {
+      outLinePosition,
+      z,
+      layout,
+      gridSize,
+      gridColor,
+      gridLines,
+      axisDimension,
+    };
+  },
+  components: {
+    Panel,
+    apexchart: VueApexCharts,
+    VuePlotly,
   },
 };
 </script>
