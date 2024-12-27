@@ -292,9 +292,6 @@ export default {
 };
 </script>
 
-<style scoped>
-.matrix-plotly {
-  height: 100%;
-  width: 100%;
-}
+<style>
+@import "../assets/main.css";
 </style>

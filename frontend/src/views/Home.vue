@@ -8,15 +8,31 @@
   <div id="rootdiv" class="grid-row">
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
-        <Playfield></Playfield>
+        <Playfield
+          v-bind:load_scenario="load_scenario"
+          v-bind:upload_scenario="upload_scenario"
+          v-bind:toggle_grid="toggle_grid"
+          v-bind:add_consumer="add_consumer"
+          v-bind:add_energy_source="add_energy_source"
+          v-bind:clear_nodes="clear_nodes"
+        ></Playfield>
       </div>
       <div id="slider-box">
-        <Sliders @getSimulationData="handleSimulationData"></Sliders>
+        <Sliders
+          v-bind:reset_text="reset_text"
+          v-bind:simulate="simulate"
+          v-bind:auto="auto"
+          @getSimulationData="handleSimulationData"
+        ></Sliders>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
       <div id="matrix-box" class="grid-column">
-        <Matrix></Matrix>
+        <Matrix
+          :matrixData="matrixData"
+          :matrixTheme="matrixTheme"
+          :sliderVals="sliderVals"
+        ></Matrix>
       </div>
       <div id="charts-box" class="grid-column">
         <Charts :chartsData="chartsData"></Charts>

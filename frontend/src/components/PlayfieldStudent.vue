@@ -121,14 +121,6 @@ import ConsumerNode from "./cusotmNodes/Consumer.vue";
 import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico";
 
 export default {
-  props: [
-    "load_scenario",
-    "toggle_grid",
-    "add_consumer",
-    "add_energy_source",
-    "clear_nodes",
-    "add_edge",
-  ],
   components: {
     Panel,
     Button,
