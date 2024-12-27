@@ -1,6 +1,7 @@
 <template>
   <Panel id="playfield">
     <!-- Image Box -->
+
     <div id="image_box" ref="imageBox">
       <!-- Display Image -->
       <img
@@ -10,6 +11,30 @@
       />
 
       <!-- Canvas for Grid Overlay -->
+      <canvas
+        v-if="showGrid"
+        ref="gridCanvas"
+        id="grid_overlay"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          pointer-events: none;
+          z-index: 1;
+        "
+      ></canvas>
+      <canvas
+        v-if="showGrid"
+        ref="gridCanvas"
+        id="grid_overlay"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          pointer-events: none;
+          z-index: 1;
+        "
+      ></canvas>
       <canvas
         v-if="showGrid"
         ref="gridCanvas"
@@ -67,66 +92,8 @@
       </div>
     </div>
 
-    <!-- Buttons at the Bottom -->
-    <div id="buttons_container">
-      <Button
-        @click="loadRequest"
-        type="submit"
-        class="slider-button"
-        v-bind:label="load_scenario"
-      ></Button>
-      <Button
-        @click="triggerImageUpload"
-        type="submit"
-        class="slider-button"
-        v-bind:label="upload_scenario"
-        >img</Button
-      >
-      <Button
-        @click="triggerJsonUpload"
-        type="submit"
-        class="slider-button"
-        v-bind:label="Upload_JaySON"
-        >js</Button
-      >
-      <Button
-        @click="toggleGridOverlay"
-        type="submit"
-        class="slider-button"
-        v-bind:label="toggle_grid"
-      ></Button>
-      <Button
-        @click="addConsumerNode"
-        type="submit"
-        class="slider-button"
-        v-bind:label="add_consumer"
-      ></Button>
-      <Button
-        @click="addEnergySourceNode"
-        type="submit"
-        class="slider-button"
-        v-bind:label="add_energy_source"
-      ></Button>
-      <Button
-        @click="toggleEdgeMode"
-        type="submit"
-        class="slider-button"
-        v-bind:label="add_edge"
-        >Edge mode</Button
-      >
-      <Button
-        @click="clearNodes"
-        type="submit"
-        class="slider-button"
-        v-bind:label="clear_nodes"
-      ></Button>
-      <Button
-        @click="saveData"
-        type="submit"
-        class="slider-button"
-        v-bind:label="'Save'"
-      ></Button>
-    </div>
+    <!-- File Inputs (Hidden) -->
+    <!-- File Inputs (Hidden) -->
     <input
       type="file"
       id="imageInput"
@@ -154,6 +121,8 @@ import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 import ConsumerNode from "./cusotmNodes/Consumer.vue";
 import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico";
+import ConsumerNode from "./cusotmNodes/Consumer.vue";
+import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico";
 
 export default {
   props: [
@@ -167,7 +136,6 @@ export default {
   components: {
     Panel,
     Button,
-
     VueFlow,
   },
   data() {
@@ -179,11 +147,14 @@ export default {
       edges: [], // Edges for Vue Flow
       customNodeTypes: {
         consumer: ConsumerNode,
+        consumer: ConsumerNode,
       }, // Define custom node types if needed
       nodeIdCounter: 1, // Counter for unique IDs
       connectionMode: "strict", // Connection mode for the graph
       edgeMode: false, // Flag to track if edge creation mode is activated
       selectedNodeId: null, // Track the selected node for edge creation
+      edgeProps: {
+        // Default edge properties (adjustable)
       edgeProps: {
         // Default edge properties (adjustable)
         color: "#000000", // Edge color
@@ -192,7 +163,12 @@ export default {
       },
       locked: false, // Lock flag
 
+
       jsonUrl: null,
+      coordinateExtent: [
+        [0, 0],
+        [0, 0],
+      ],
       coordinateExtent: [
         [0, 0],
         [0, 0],
@@ -275,6 +251,8 @@ export default {
 
       const width = imgElement.offsetWidth / this.gridSize;
       const height = imgElement.offsetHeight / this.gridSize;
+      const width = imgElement.offsetWidth / this.gridSize;
+      const height = imgElement.offsetHeight / this.gridSize;
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
@@ -282,7 +260,15 @@ export default {
         position: { x: width * 5, y: height * 4 },
         data: {
           label: "consumer",
+        position: { x: width * 5, y: height * 4 },
+        data: {
+          label: "consumer",
           icon: ConsumerIcon,
+          inputs: [0],
+          outputs: [0, 1],
+        },
+        targetPosition: "left",
+        sourcePosition: "right",
           inputs: [0],
           outputs: [0, 1],
         },
@@ -303,6 +289,12 @@ export default {
         type: "energySource",
         position: { x: (2 * width) / 3, y: (2 * height) / 3 },
         data: { label: `EnergySource` },
+        style: {
+          backgroundColor: "#33FF57",
+          color: "#000000",
+          padding: "10px",
+          borderRadius: "5px",
+        },
         style: {
           backgroundColor: "#33FF57",
           color: "#000000",
@@ -347,11 +339,13 @@ export default {
         // Get node and edge data
         const dataToSave = {
           nodes: this.nodes.map((node) => ({
+          nodes: this.nodes.map((node) => ({
             id: node.id,
             position: node.position,
             type: node.type,
             label: node.data.label,
           })),
+          edges: this.edges.map((edge) => ({
           edges: this.edges.map((edge) => ({
             id: edge.id,
             source: edge.source,
@@ -366,9 +360,15 @@ export default {
 
         // Send to backend (Django)
 
+
         // Send to backend (Django)
 
         const url = "http://127.0.0.1:8000/api/save-scenario/";
+        const response = await axios.post(
+          url,
+          {
+            data: dataToSave,
+          },
         const response = await axios.post(
           url,
           {
@@ -378,6 +378,8 @@ export default {
             headers: {
               "Content-Type": "application/json", // Ensures JSON format
             },
+          }
+        );
           }
         );
 
@@ -403,6 +405,7 @@ export default {
         imageLink.click();
 
         alert("Files downloaded locally!");
+      } catch (error) {
       } catch (error) {
         console.error("Error saving data:", error);
         alert(`Error: ${error.message}`);
@@ -459,5 +462,6 @@ export default {
 </script>
 
 <style>
+@import "../assets/main.css";
 @import "../assets/main.css";
 </style>
