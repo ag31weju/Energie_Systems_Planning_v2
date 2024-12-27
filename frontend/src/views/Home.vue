@@ -8,31 +8,15 @@
   <div id="rootdiv" class="grid-row">
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
-        <Playfield
-          v-bind:load_scenario="load_scenario"
-          v-bind:upload_scenario="upload_scenario"
-          v-bind:toggle_grid="toggle_grid"
-          v-bind:add_consumer="add_consumer"
-          v-bind:add_energy_source="add_energy_source"
-          v-bind:clear_nodes="clear_nodes"
-        ></Playfield>
+        <Playfield></Playfield>
       </div>
       <div id="slider-box">
-        <Sliders
-          v-bind:reset_text="reset_text"
-          v-bind:simulate="simulate"
-          v-bind:auto="auto"
-          @getSimulationData="handleSimulationData"
-        ></Sliders>
+        <Sliders @getSimulationData="handleSimulationData"></Sliders>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
       <div id="matrix-box" class="grid-column">
-        <Matrix
-          :matrixData="matrixData"
-          :matrixTheme="matrixTheme"
-          :sliderVals="sliderVals"
-        ></Matrix>
+        <Matrix></Matrix>
       </div>
       <div id="charts-box" class="grid-column">
         <Charts :chartsData="chartsData"></Charts>
@@ -49,8 +33,6 @@ import Playfield from "../components/PlayfieldStudent.vue";
 import Matrix from "../components/Matrix.vue";
 import Charts from "../components/Charts.vue";
 import Drawerbox from "../components/Drawerbox.vue";
-import ENLang from "@/assets/languages/en.json";
-import DELang from "@/assets/languages/de.json";
 
 export default {
   setup() {
@@ -179,12 +161,7 @@ export default {
 
     return {
       updateLanguage,
-      updateMatrixTheme,
-      handleSimulationData,
       matrixTheme,
-      sliderVals,
-      matrixData,
-      chartsData,
       capacity,
       cost,
       battery,

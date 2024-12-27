@@ -3,44 +3,146 @@
     <!-- Image Box -->
     <div id="image_box" ref="imageBox">
       <!-- Display Image -->
-      <img :src="imgUrl" style="max-width: 100%; max-height: 100%; object-fit: cover;" ref="imageElement" />
+      <img
+        :src="imgUrl"
+        style="max-width: 100%; max-height: 100%; object-fit: cover"
+        ref="imageElement"
+      />
 
       <!-- Canvas for Grid Overlay -->
-      <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"
-        style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"></canvas>
-      <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"
-        style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"></canvas>
+      <canvas
+        v-if="showGrid"
+        ref="gridCanvas"
+        id="grid_overlay"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          pointer-events: none;
+          z-index: 1;
+        "
+      ></canvas>
+      <canvas
+        v-if="showGrid"
+        ref="gridCanvas"
+        id="grid_overlay"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          pointer-events: none;
+          z-index: 1;
+        "
+      ></canvas>
 
       <!-- Vue Flow Container -->
-      <div id="vueflow_container" ref="vueFlowContainer"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
-        <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false"
-        :zoomOnPinch="false"  :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true"
-        :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
-          :nodes-draggable="!locked" :edges-connectable="edgeMode" @connect="onConnect" />
+      <div
+        id="vueflow_container"
+        ref="vueFlowContainer"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 2;
+        "
+      >
+        <vue-flow
+          v-model:nodes="nodes"
+          v-model:edges="edges"
+          :fit-view="true"
+          :zoomOnScroll="false"
+          :zoomOnPinch="false"
+          :panOnDrag="false"
+          :pan-on-scroll="false"
+          :preventScrolling="true"
+          :coordinateExtent="coordinateExtent"
+          :connection-mode="connectionMode"
+          :node-types="customNodeTypes"
+          :nodes-draggable="!locked"
+          :edges-connectable="edgeMode"
+          @connect="onConnect"
+        />
       </div>
     </div>
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container">
-      <Button @click="loadRequest" type="submit" class="slider-button" v-bind:label="load_scenario"></Button>
-      <Button @click="triggerImageUpload" type="submit" class="slider-button"
-        v-bind:label="upload_scenario">img</Button>
-      <Button @click="triggerJsonUpload" type="submit" class="slider-button" v-bind:label="Upload_JaySON">js</Button>
-      <Button @click="toggleGridOverlay" type="submit" class="slider-button" v-bind:label="toggle_grid"></Button>
-      <Button @click="addConsumerNode" type="submit" class="slider-button" v-bind:label="add_consumer"></Button>
-      <Button @click="addEnergySourceNode" type="submit" class="slider-button"
-        v-bind:label="add_energy_source"></Button>
-      <Button @click="toggleEdgeMode" type="submit" class="slider-button" v-bind:label="add_edge">Edge mode</Button>
-      <Button @click="clearNodes" type="submit" class="slider-button" v-bind:label="clear_nodes"></Button>
-      <Button @click="saveData" type="submit" class="slider-button" v-bind:label="'Save'"></Button>
-
-
+      <Button
+        @click="loadRequest"
+        type="submit"
+        class="slider-button"
+        v-bind:label="load_scenario"
+      ></Button>
+      <Button
+        @click="triggerImageUpload"
+        type="submit"
+        class="slider-button"
+        v-bind:label="upload_scenario"
+        >img</Button
+      >
+      <Button
+        @click="triggerJsonUpload"
+        type="submit"
+        class="slider-button"
+        v-bind:label="Upload_JaySON"
+        >js</Button
+      >
+      <Button
+        @click="toggleGridOverlay"
+        type="submit"
+        class="slider-button"
+        v-bind:label="toggle_grid"
+      ></Button>
+      <Button
+        @click="addConsumerNode"
+        type="submit"
+        class="slider-button"
+        v-bind:label="add_consumer"
+      ></Button>
+      <Button
+        @click="addEnergySourceNode"
+        type="submit"
+        class="slider-button"
+        v-bind:label="add_energy_source"
+      ></Button>
+      <Button
+        @click="toggleEdgeMode"
+        type="submit"
+        class="slider-button"
+        v-bind:label="add_edge"
+        >Edge mode</Button
+      >
+      <Button
+        @click="clearNodes"
+        type="submit"
+        class="slider-button"
+        v-bind:label="clear_nodes"
+      ></Button>
+      <Button
+        @click="saveData"
+        type="submit"
+        class="slider-button"
+        v-bind:label="'Save'"
+      ></Button>
     </div>
-    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
-      style="display: none;" />
-    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
-      style="display: none;" />
+    <input
+      type="file"
+      id="imageInput"
+      ref="imageInput"
+      @change="handleFileChange('image', $event)"
+      accept="image/*"
+      style="display: none"
+    />
+    <input
+      type="file"
+      id="jsonInput"
+      ref="jsonInput"
+      @change="handleFileChange('json', $event)"
+      accept=".json"
+      style="display: none"
+    />
   </Panel>
 </template>
 
@@ -50,11 +152,8 @@ import Panel from "primevue/panel";
 import axios from "axios";
 import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
-import ConsumerNode from "./cusotmNodes/Consumer.vue"; 
-import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico"; 
-
-
-
+import ConsumerNode from "./cusotmNodes/Consumer.vue";
+import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico";
 
 export default {
   props: [
@@ -79,29 +178,29 @@ export default {
       nodes: [], // Nodes for Vue Flow
       edges: [], // Edges for Vue Flow
       customNodeTypes: {
-        consumer: ConsumerNode
+        consumer: ConsumerNode,
       }, // Define custom node types if needed
       nodeIdCounter: 1, // Counter for unique IDs
       connectionMode: "strict", // Connection mode for the graph
       edgeMode: false, // Flag to track if edge creation mode is activated
       selectedNodeId: null, // Track the selected node for edge creation
-      edgeProps: { // Default edge properties (adjustable)
+      edgeProps: {
+        // Default edge properties (adjustable)
         color: "#000000", // Edge color
         animated: true, // Edge animation
         style: { strokeWidth: 5 }, // Edge style
       },
       locked: false, // Lock flag
-   
+
       jsonUrl: null,
-      coordinateExtent: [[0, 0], [0, 0]],
+      coordinateExtent: [
+        [0, 0],
+        [0, 0],
+      ],
     };
   },
 
-
-
-
   methods: {
-   
     toggleLock() {
       this.locked = !this.locked;
     },
@@ -122,7 +221,6 @@ export default {
         }
 
         this.imgUrl = URL.createObjectURL(imgResponse.data);
-
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
@@ -175,22 +273,21 @@ export default {
       const imgElement = this.$refs.imageElement;
       if (!imgElement) return;
 
-      const width= imgElement.offsetWidth/this.gridSize;
-      const height = imgElement.offsetHeight/this.gridSize;
+      const width = imgElement.offsetWidth / this.gridSize;
+      const height = imgElement.offsetHeight / this.gridSize;
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
         type: "consumer",
-        position: { x: width*5, y: height*4 },
-        data: { label: "consumer",
+        position: { x: width * 5, y: height * 4 },
+        data: {
+          label: "consumer",
           icon: ConsumerIcon,
-          inputs: [0], 
-          outputs: [0, 1], 
-
-         },
-         targetPosition: "left",
-         sourcePosition: "right",
-      
+          inputs: [0],
+          outputs: [0, 1],
+        },
+        targetPosition: "left",
+        sourcePosition: "right",
       };
       this.nodes.push(newNode);
     },
@@ -206,7 +303,12 @@ export default {
         type: "energySource",
         position: { x: (2 * width) / 3, y: (2 * height) / 3 },
         data: { label: `EnergySource` },
-        style: { backgroundColor: "#33FF57", color: "#000000", padding: "10px", borderRadius: "5px" },
+        style: {
+          backgroundColor: "#33FF57",
+          color: "#000000",
+          padding: "10px",
+          borderRadius: "5px",
+        },
       };
       this.nodes.push(newNode);
     },
@@ -226,7 +328,6 @@ export default {
       this.edges = [];
     },
 
-
     onConnect(connection) {
       if (this.edgeMode) {
         const newEdge = {
@@ -242,17 +343,16 @@ export default {
       }
     },
     async saveData() {
-      
       try {
         // Get node and edge data
         const dataToSave = {
-          nodes: this.nodes.map(node => ({
+          nodes: this.nodes.map((node) => ({
             id: node.id,
             position: node.position,
             type: node.type,
             label: node.data.label,
           })),
-          edges: this.edges.map(edge => ({
+          edges: this.edges.map((edge) => ({
             id: edge.id,
             source: edge.source,
             target: edge.target,
@@ -262,25 +362,24 @@ export default {
           imageUrl: this.imgUrl,
         };
 
-        
-
         // Convert to JSON
-
 
         // Send to backend (Django)
 
-          
         // Send to backend (Django)
 
         const url = "http://127.0.0.1:8000/api/save-scenario/";
-        const response = await axios.post(url, {
-          data: dataToSave,
-        },
+        const response = await axios.post(
+          url,
+          {
+            data: dataToSave,
+          },
           {
             headers: {
               "Content-Type": "application/json", // Ensures JSON format
             },
-          });
+          }
+        );
 
         if (response.status === 200) {
           alert("Data saved successfully!");
@@ -304,14 +403,11 @@ export default {
         imageLink.click();
 
         alert("Files downloaded locally!");
-      }
-      catch (error) {
+      } catch (error) {
         console.error("Error saving data:", error);
         alert(`Error: ${error.message}`);
       }
     },
-
-
 
     // Handle file changes for both image and JSON
     triggerImageUpload() {
@@ -338,7 +434,6 @@ export default {
       }
     },
 
-
     // Load and parse the JSON file
     loadScenarioData() {
       if (!this.imageFile || !this.jsonFile) {
@@ -360,60 +455,9 @@ export default {
       reader.readAsText(this.jsonFile);
     },
   },
-
 };
 </script>
 
 <style>
-/* Playfield Styles */
-#playfield {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  width: 100%;
-  height: 100%;
-  background-color: var(--primary-background-color);
-  border: var(--primary-border);
-  position: relative;
-}
-
-#grid_overlay {
-  position: relative;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-#buttons_container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: auto;
-  position: absolute;
-  bottom: 0;
-  padding: 10px;
-  background-color: var(--primary-background-color);
-}
-
-.slider-button {
-  margin-bottom: 5px;
-}
-
-.slider-button .p-button-label {
-  color: black;
-}
-
-#vueflow_container {
-  position: relative;
-  top: 0;
-  left: 0;
-  pointer-events: auto;
-  z-index: 2;
-  overflow: hidden;
-}
-
+@import "../assets/main.css";
 </style>
