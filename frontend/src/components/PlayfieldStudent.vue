@@ -44,7 +44,7 @@
   import axios from "axios";
   import { VueFlow } from "@vue-flow/core";
   import "@vue-flow/core/dist/style.css";
-  import ConsumerNode from "./cusotmNodes/Consumer.vue"; 
+  import ConsumerNode from "./customNodes/Consumer.vue"; 
   import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico"; 
   
   

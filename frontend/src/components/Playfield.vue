@@ -15,10 +15,11 @@
       <div id="vueflow_container" ref="vueFlowContainer"
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
         <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false"
-        :zoomOnPinch="false"  :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true"
-        :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
-          :nodes-draggable="!locked" :edges-connectable="edgeMode" @connect="onConnect" />
+          :zoomOnPinch="false" :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true"
+          :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
+          :nodes-draggable="!locked" :edges-connectable="edgeMode" :zoomOnDoubleClick="false" @connect="onConnect" />
       </div>
+
     </div>
 
     <!-- Buttons at the Bottom -->
@@ -35,6 +36,18 @@
       <Button @click="clearNodes" type="submit" class="slider-button" v-bind:label="clear_nodes"></Button>
       <Button @click="saveData" type="submit" class="slider-button" v-bind:label="'Save'"></Button>
 
+      <select v-model="selectedConsumer">
+        <option disabled value="">Please select consumer type</option>
+        <option v-for="option in optionsConsumer" :key="option" :value="option">{{ option }}</option>
+      </select>
+
+      <select v-model="selectedProducer">
+        <option disabled value="">Please select producer type</option>
+        <option v-for="option in optionsProducers" :key="option" :value="option">{{ option }}</option>
+      </select>
+
+
+
 
     </div>
     <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
@@ -50,8 +63,16 @@ import Panel from "primevue/panel";
 import axios from "axios";
 import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
-import ConsumerNode from "./cusotmNodes/Consumer.vue"; 
-import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico"; 
+import ConsumerNode from "./customNodes/Consumer.vue";
+import ProducerNode from "./customNodes/Producer.vue";
+import ConsumerIcon from "@/assets/node_images/consumer/commercial2.png";
+import Commercial from "@/assets/node_images/consumer/commercial.png";
+import ResidentialLarge from "@/assets/node_images/consumer/residentialLarge.png";
+import ResidentialSmall from "@/assets/node_images/consumer/residentialSmall.png";
+import Nuclear from "@/assets/node_images/producer/nuclear.png";
+import Coal from "@/assets/node_images/producer/coal.png";
+import Solar from "@/assets/node_images/producer/solarPanel.png";
+import Wind from "@/assets/node_images/producer/windmill.png";
 
 
 
@@ -79,7 +100,8 @@ export default {
       nodes: [], // Nodes for Vue Flow
       edges: [], // Edges for Vue Flow
       customNodeTypes: {
-        consumer: ConsumerNode
+        consumer: ConsumerNode,
+        producer: ProducerNode,
       }, // Define custom node types if needed
       nodeIdCounter: 1, // Counter for unique IDs
       connectionMode: "strict", // Connection mode for the graph
@@ -91,9 +113,15 @@ export default {
         style: { strokeWidth: 5 }, // Edge style
       },
       locked: false, // Lock flag
-   
+
       jsonUrl: null,
       coordinateExtent: [[0, 0], [0, 0]],
+
+      selectedConsumer: '', // Selected value for consumers
+      optionsConsumer: ['Commercial', 'Residential Large', 'Residential Small'], // Initial consumer options
+
+      selectedProducer: '', // Selected value for producers
+      optionsProducers: ['Nuclear', 'Coal', 'Solar', 'Wind'], // Initial producer options
     };
   },
 
@@ -101,7 +129,7 @@ export default {
 
 
   methods: {
-   
+
     toggleLock() {
       this.locked = !this.locked;
     },
@@ -171,30 +199,89 @@ export default {
         context.stroke();
       }
     },
-    addConsumerNode() {
+
+
+    addEnergySourceNode() {
       const imgElement = this.$refs.imageElement;
       if (!imgElement) return;
 
-      const width= imgElement.offsetWidth/this.gridSize;
-      const height = imgElement.offsetHeight/this.gridSize;
+      const width = imgElement.offsetWidth / this.gridSize;
+      const height = imgElement.offsetHeight / this.gridSize;
+
+      if (!this.selectedProducer) {
+        alert("Please select an energy source type before adding a node.");
+        return;
+      }
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
-        type: "consumer",
-        position: { x: width*5, y: height*4 },
-        data: { label: "consumer",
-          icon: ConsumerIcon,
-          inputs: [0], 
-          outputs: [0, 1], 
-
-         },
-         targetPosition: "left",
-         sourcePosition: "right",
-      
+        type: "producer",
+        position: { x: width * 5, y: height * 4 },
+        data: {}, // To be filled based on producer type
+        targetPosition: "left",
+        sourcePosition: "right",
       };
+
+      // Use switch to configure the data property
+      switch (this.selectedProducer) {
+        case "Nuclear":
+          newNode.data = {
+            label: "Nuclear Power",
+            icon: Nuclear, // Add an icon path if available
+            inputs: [1], // Example configuration for inputs
+            outputs: [0],
+            description: "Provides large-scale base power with low carbon emissions.",
+          };
+          break;
+
+        case "Coal":
+          newNode.data = {
+            label: "Coal Power",
+            icon: Coal, // Add an icon path if available
+            inputs: [1],
+            outputs: [0],
+            description: "Traditional fossil fuel energy source.",
+          };
+          break;
+
+        case "Solar":
+          newNode.data = {
+            label: "Solar Power",
+            icon: Solar, // Add an icon path if available
+            inputs: [],
+            outputs: [0],
+            description: "Generates renewable energy from sunlight.",
+          };
+          break;
+
+        case "Wind":
+          newNode.data = {
+            label: "Wind Power",
+            icon: Wind, // Add an icon path if available
+            inputs: [],
+            outputs: [0],
+            description: "Generates renewable energy from wind.",
+          };
+          break;
+
+        default:
+          alert("Unknown producer type selected.");
+          return;
+      }
+
       this.nodes.push(newNode);
     },
-    addEnergySourceNode() {
+
+
+
+
+
+    addConsumerNode() {
+      if (!this.selectedConsumer) {
+        alert("Please select an option before adding a node.");
+        return;
+      }
+
       const imgElement = this.$refs.imageElement;
       if (!imgElement) return;
 
@@ -203,13 +290,54 @@ export default {
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
-        type: "energySource",
+        type: "consumer",
         position: { x: (2 * width) / 3, y: (2 * height) / 3 },
-        data: { label: `EnergySource` },
-        style: { backgroundColor: "#33FF57", color: "#000000", padding: "10px", borderRadius: "5px" },
+        data: {}, // To be populated by switch case
       };
+
+      // Use switch to set the data field based on the selected producer
+      switch (this.selectedConsumer) {
+        case "Commercial":
+          newNode.data = {
+            label: "Commercial",
+            icon: Commercial,
+            inputs: [0],
+            outputs: [0, 1],
+          };
+          break;
+
+        case "Residential Large":
+          newNode.data = {
+            label: "Residential Large",
+            icon: ResidentialLarge,
+            inputs: [0],
+            outputs: [0, 1],
+          };
+          break;
+
+        case "Residential Small":
+          newNode.data = {
+            label: "Residential Small",
+            icon: ResidentialSmall,
+            inputs: [0],
+            outputs: [0, 1],
+          };
+          break;
+
+        default:
+          alert("Unknown producer type selected.");
+          return;
+      }
+
       this.nodes.push(newNode);
     },
+
+
+
+
+
+
+
     toggleEdgeMode() {
       // Toggle edge creation mode
       this.locked = !this.locked;
@@ -242,7 +370,7 @@ export default {
       }
     },
     async saveData() {
-      
+
       try {
         // Get node and edge data
         const dataToSave = {
@@ -262,14 +390,14 @@ export default {
           imageUrl: this.imgUrl,
         };
 
-        
+
 
         // Convert to JSON
 
 
         // Send to backend (Django)
 
-          
+
         // Send to backend (Django)
 
         const url = "http://127.0.0.1:8000/api/save-scenario/";
@@ -415,5 +543,4 @@ export default {
   z-index: 2;
   overflow: hidden;
 }
-
 </style>
