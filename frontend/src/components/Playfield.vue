@@ -8,15 +8,13 @@
       <!-- Canvas for Grid Overlay -->
       <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"
         style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"></canvas>
-      <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"
-        style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"></canvas>
 
       <!-- Vue Flow Container -->
       <div id="vueflow_container" ref="vueFlowContainer"
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
         <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false"
-          :zoomOnPinch="false" :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true"
-          :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
+          :zoomOnPinch="false" :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="[50,50]" :snap-to-grid="true"
+          :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes" :auto-pan-on-node-drag="false"
           :nodes-draggable="!locked" :edges-connectable="edgeMode" :zoomOnDoubleClick="false" @connect="onConnect" />
       </div>
 
