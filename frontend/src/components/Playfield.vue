@@ -2,78 +2,146 @@
   <Panel id="playfield">
     <!-- Image Box -->
 
-  
-    
-
     <!-- Vue Flow Container -->
-    <div id="vueflow_container" ref="vueFlowContainer"
-  :style="{ backgroundImage: 'url(' + imgUrl + ')', backgroundSize: 'contain', backgroundPosition: 'center' }"
-  style="position: absolute; top: 0; left: 0; width: 100%; height: 43rem; z-index: 2;">
+    <div
+      id="vueflow_container"
+      ref="vueFlowContainer"
+      :style="{
+        backgroundImage: 'url(' + imgUrl + ')',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+      }"
+      style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 43rem;
+        z-index: 2;
+      "
+    >
+      <vue-flow
+        v-model:nodes="nodes"
+        v-model:edges="edges"
+        :fit-view="true"
+        :zoomOnScroll="false"
+        :zoomOnPinch="false"
+        :panOnDrag="false"
+        :pan-on-scroll="false"
+        :preventScrolling="true"
+        :snap-grid="snapGrid"
+        :snap-to-grid="true"
+        :coordinateExtent="coordinateExtent"
+        :connection-mode="connectionMode"
+        :node-types="customNodeTypes"
+        :auto-pan-on-node-drag="false"
+        :nodes-draggable="!locked"
+        :edges-connectable="edgeMode"
+        :zoomOnDoubleClick="false"
+        @connect="onConnect"
+      />
+    </div>
 
-  <vue-flow 
-    v-model:nodes="nodes"
-    v-model:edges="edges"
-    :fit-view="true"
-    :zoomOnScroll="false"
-    :zoomOnPinch="false"
-    :panOnDrag="false"
-    :pan-on-scroll="false"
-    :preventScrolling="true"
-    :snap-grid="snapGrid"
-    :snap-to-grid="true"
-    :coordinateExtent="coordinateExtent"
-    :connection-mode="connectionMode"
-    :node-types="customNodeTypes"
-    :auto-pan-on-node-drag="false"
-    :nodes-draggable="!locked"
-    :edges-connectable="edgeMode"
-    :zoomOnDoubleClick="false"
-    @connect="onConnect"
-  />
-</div>
-
-    
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
-
-   
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container">
-      <Button @click="loadRequest" type="submit" class="slider-button" v-bind:label="load_scenario">LS</Button>
-      <Button @click="triggerImageUpload" type="submit" class="slider-button"
-        v-bind:label="upload_scenario">img</Button>
-      <Button @click="triggerJsonUpload" type="submit" class="slider-button" v-bind:label="Upload_JaySON">js</Button>
-      <Button @click="toggleGridOverlay" type="submit" class="slider-button" v-bind:label="toggle_grid">TG</Button>
-      <Button @click="addConsumerNode" type="submit" class="slider-button" v-bind:label="add_consumer">AC</Button>
-      <Button @click="addEnergySourceNode" type="submit" class="slider-button"
-        v-bind:label="add_energy_source"></Button>
-      <Button @click="toggleEdgeMode" type="submit" class="slider-button" v-bind:label="add_edge">Edge mode</Button>
-      <Button @click="clearNodes" type="submit" class="slider-button" v-bind:label="clear_nodes"></Button>
-      <Button @click="saveData" type="submit" class="slider-button" v-bind:label="'Save'"></Button>
+      <Button
+        @click="loadRequest"
+        type="submit"
+        class="slider-button"
+        v-bind:label="load_scenario"
+        ></Button
+      >
+      <Button
+        @click="triggerImageUpload"
+        type="submit"
+        class="slider-button"
+        v-bind:label="upload_scenario"
+        ></Button
+      >
+      <Button
+        @click="triggerJsonUpload"
+        type="submit"
+        class="slider-button"
+        v-bind:label="upload_json"
+        ></Button
+      >
+      <Button
+        @click="toggleGridOverlay"
+        type="submit"
+        class="slider-button"
+        v-bind:label="toggle_grid"
+        ></Button
+      >
+      <Button
+        @click="addConsumerNode"
+        type="submit"
+        class="slider-button"
+        v-bind:label="add_consumer"
+        ></Button
+      >
+      <Button
+        @click="addEnergySourceNode"
+        type="submit"
+        class="slider-button"
+        v-bind:label="add_energy_source"
+      ></Button>
+      <Button
+        @click="toggleEdgeMode"
+        type="submit"
+        class="slider-button"
+        v-bind:label="add_edge"
+        ></Button
+      >
+      <Button
+        @click="clearNodes"
+        type="submit"
+        class="slider-button"
+        v-bind:label="clear_nodes"
+      ></Button>
+      <Button
+        @click="saveData"
+        type="submit"
+        class="slider-button"
+        v-bind:label="save_text"
+      ></Button>
 
-      <select v-model="selectedConsumer">
-        <option disabled value="">Please select consumer type</option>
-        <option v-for="option in optionsConsumer" :key="option" :value="option">{{ option }}</option>
-      </select>
+      <Select
+        v-model="selectedConsumer"
+        :options="optionsConsumer"
+        placeholder="Please select consumer type"
+      >
+      </Select>
 
-      <select v-model="selectedProducer">
-        <option disabled value="">Please select producer type</option>
-        <option v-for="option in optionsProducers" :key="option" :value="option">{{ option }}</option>
-      </select>
-
-
-
-
+      <Select
+        v-model="selectedProducer"
+        :options="optionsProducers"
+        placeholder="Please select producer type"
+      >
+      </Select>
     </div>
-    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
-      style="display: none;" />
-    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
-      style="display: none;" />
+    <input
+      type="file"
+      id="imageInput"
+      ref="imageInput"
+      @change="handleFileChange('image', $event)"
+      accept="image/*"
+      style="display: none"
+    />
+    <input
+      type="file"
+      id="jsonInput"
+      ref="jsonInput"
+      @change="handleFileChange('json', $event)"
+      accept=".json"
+      style="display: none"
+    />
   </Panel>
 </template>
 
 <script>
-import { Button } from "primevue";
+import { Button, Select } from "primevue";
 import Panel from "primevue/panel";
 import axios from "axios";
 import { VueFlow } from "@vue-flow/core";
@@ -88,30 +156,43 @@ import Nuclear from "@/assets/node_images/producer/nuclear.png";
 import Coal from "@/assets/node_images/producer/coal.png";
 import Solar from "@/assets/node_images/producer/solarPanel.png";
 import Wind from "@/assets/node_images/producer/windmill.png";
-
-
-
+import { inject } from 'vue';
 
 export default {
-  props: [
-    "load_scenario",
-    "toggle_grid",
-    "add_consumer",
-    "add_energy_source",
-    "clear_nodes",
-    "add_edge",
-  ],
   components: {
     Panel,
     Button,
+    Select,
     VueFlow,
+  },
+  setup() {
+    let load_scenario = inject('load_scenario');
+    let upload_scenario = inject('upload_scenario');
+    let upload_json = inject('upload_json');
+    let toggle_grid = inject('toggle_grid');
+    let add_consumer = inject('add_consumer');
+    let add_energy_source = inject('add_energy_source');
+    let add_edge = inject('add_edge');
+    let clear_nodes = inject('clear_nodes');
+    let save_text = inject('save_text');
+    return {
+      load_scenario,
+      upload_scenario,
+      upload_json,
+      toggle_grid,
+      add_consumer,
+      add_energy_source,
+      add_edge,
+      clear_nodes,
+      save_text
+    };
   },
   data() {
     return {
       imgUrl: null, // URL for the image
       showGrid: false, // Flag for showing grid
       gridSize: 15, // Grid size (number of cells per row/column)
-      snapGrid: [50,50],
+      snapGrid: [50, 50],
       nodes: [], // Nodes for Vue Flow
       edges: [], // Edges for Vue Flow
       customNodeTypes: {
@@ -131,44 +212,45 @@ export default {
       locked: false, // Lock flag
 
       jsonUrl: null,
-      coordinateExtent: [[0, 0], [0, 0]],
+      coordinateExtent: [
+        [0, 0],
+        [0, 0],
+      ],
 
-      selectedConsumer: '', // Selected value for consumers
-      optionsConsumer: ['Commercial', 'Residential Large', 'Residential Small'], // Initial consumer options
+      selectedConsumer: "", // Selected value for consumers
+      optionsConsumer: ["Commercial", "Residential Large", "Residential Small"], // Initial consumer options
 
-      selectedProducer: '', // Selected value for producers
-      optionsProducers: ['Nuclear', 'Coal', 'Solar', 'Wind'], // Initial producer options
+      selectedProducer: "", // Selected value for producers
+      optionsProducers: ["Nuclear", "Coal", "Solar", "Wind"], // Initial producer options
     };
   },
 
   methods: {
-
     toggleLock() {
       this.locked = !this.locked;
     },
     async loadRequest() {
-        // Fetch the image URL
-        try {
-          const url = "http://127.0.0.1:8000/api/process-scenario/";
-          const id = 1;
-  
-          const imgResponse = await axios.get(url, {
-            params: { id: id, filetype: "png" },
-            responseType: "blob",
-          });
-  
-          if (this.imgUrl) {
-            URL.revokeObjectURL(this.imgUrl);
-          }
-  
-          this.imgUrl = URL.createObjectURL(imgResponse.data);
-  
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          alert(`Error: ${error.message}`);
+      // Fetch the image URL
+      try {
+        const url = "http://127.0.0.1:8000/api/process-scenario/";
+        const id = 1;
+
+        const imgResponse = await axios.get(url, {
+          params: { id: id, filetype: "png" },
+          responseType: "blob",
+        });
+
+        if (this.imgUrl) {
+          URL.revokeObjectURL(this.imgUrl);
         }
-      },
-      toggleGridOverlay() {
+
+        this.imgUrl = URL.createObjectURL(imgResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        alert(`Error: ${error.message}`);
+      }
+    },
+    toggleGridOverlay() {
       this.showGrid = !this.showGrid;
       if (this.showGrid) {
         this.$nextTick(() => {
@@ -178,53 +260,52 @@ export default {
     },
 
     drawGrid() {
-  const canvas = this.$refs.gridCanvas;
-  const vueFlowContainer = this.$refs.vueFlowContainer;       
+      const canvas = this.$refs.gridCanvas;
+      const vueFlowContainer = this.$refs.vueFlowContainer;
 
-  if (!canvas || !vueFlowContainer) return;
+      if (!canvas || !vueFlowContainer) return;
 
-  // Match canvas dimensions to the VueFlow container
-  const width = vueFlowContainer.offsetWidth;
-  const height = vueFlowContainer.offsetHeight;
+      // Match canvas dimensions to the VueFlow container
+      const width = vueFlowContainer.offsetWidth;
+      const height = vueFlowContainer.offsetHeight;
 
-  canvas.width = width;
-  canvas.height = height;
+      canvas.width = width;
+      canvas.height = height;
 
-  const cellWidth = width / this.gridSize;
-  const cellHeight = height / this.gridSize;
+      const cellWidth = width / this.gridSize;
+      const cellHeight = height / this.gridSize;
 
-  // Set the snapGrid based on cell width/height
-  this.snapGrid = [cellWidth, cellHeight]; // Update snapGrid
+      // Set the snapGrid based on cell width/height
+      this.snapGrid = [cellWidth, cellHeight]; // Update snapGrid
 
-  const context = canvas.getContext("2d");
-  context.clearRect(0, 0, width, height); // Clear the canvas
-  context.strokeStyle = "#000000"; // Set grid line color
-  context.lineWidth = 1; // Set grid line width
+      const context = canvas.getContext("2d");
+      context.clearRect(0, 0, width, height); // Clear the canvas
+      context.strokeStyle = "#000000"; // Set grid line color
+      context.lineWidth = 1; // Set grid line width
 
-  // Draw vertical lines
-  for (let x = 0; x <= width; x += cellWidth) {
-    context.beginPath();
-    context.moveTo(x, 0);
-    context.lineTo(x, height);
-    context.stroke();
-  }
+      // Draw vertical lines
+      for (let x = 0; x <= width; x += cellWidth) {
+        context.beginPath();
+        context.moveTo(x, 0);
+        context.lineTo(x, height);
+        context.stroke();
+      }
 
-  // Draw horizontal lines
-  for (let y = 0; y <= height; y += cellHeight) {
-    context.beginPath();
-    context.moveTo(0, y);
-    context.lineTo(width, y);
-    context.stroke();
-  }
-},
+      // Draw horizontal lines
+      for (let y = 0; y <= height; y += cellHeight) {
+        context.beginPath();
+        context.moveTo(0, y);
+        context.lineTo(width, y);
+        context.stroke();
+      }
+    },
 
     addEnergySourceNode() {
       const vueFlowContainer = this.$refs.vueFlowContainer;
-  if (!vueFlowContainer) return;
+      if (!vueFlowContainer) return;
 
-  const width = vueFlowContainer.offsetWidth / this.gridSize;
-  const height = vueFlowContainer.offsetHeight / this.gridSize;
-
+      const width = vueFlowContainer.offsetWidth / this.gridSize;
+      const height = vueFlowContainer.offsetHeight / this.gridSize;
 
       if (!this.selectedProducer) {
         alert("Please select an energy source type before adding a node.");
@@ -248,7 +329,8 @@ export default {
             icon: Nuclear, // Add an icon path if available
             inputs: [1], // Example configuration for inputs
             outputs: [0],
-            description: "Provides large-scale base power with low carbon emissions.",
+            description:
+              "Provides large-scale base power with low carbon emissions.",
           };
           break;
 
@@ -290,10 +372,6 @@ export default {
       this.nodes.push(newNode);
     },
 
-
-
-
-
     addConsumerNode() {
       if (!this.selectedConsumer) {
         alert("Please select an option before adding a node.");
@@ -301,10 +379,10 @@ export default {
       }
 
       const vueFlowContainer = this.$refs.vueFlowContainer;
-  if (!vueFlowContainer) return;
+      if (!vueFlowContainer) return;
 
-  const width = vueFlowContainer.offsetWidth;
-  const height = vueFlowContainer.offsetHeight;
+      const width = vueFlowContainer.offsetWidth;
+      const height = vueFlowContainer.offsetHeight;
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
@@ -350,12 +428,6 @@ export default {
       this.nodes.push(newNode);
     },
 
-
-
-
-
-
-
     toggleEdgeMode() {
       // Toggle edge creation mode
       this.locked = !this.locked;
@@ -386,10 +458,8 @@ export default {
         this.edges.push(newEdge);
       }
     },
-  
- 
-    async saveData() {
 
+    async saveData() {
       try {
         // Get node and edge data
         const dataToSave = {
@@ -409,12 +479,9 @@ export default {
           imageUrl: this.imgUrl,
         };
 
-
-
         // Convert to JSON
 
         // Send to backend (Django)
-
 
         // Send to backend (Django)
 
@@ -505,11 +572,11 @@ export default {
       reader.readAsText(this.jsonFile);
     },
   },
-  
 };
 </script>
 
 <style>
+@import "../assets/main.css";
 /* Playfield Styles */
 #playfield {
   display: flex;
@@ -523,7 +590,6 @@ export default {
   position: relative;
 }
 
-
 #buttons_container {
   display: flex;
   flex-direction: row;
@@ -535,7 +601,7 @@ export default {
   bottom: 0;
   padding: 10px;
   background-color: var(--primary-background-color);
-  z-index: 3
+  z-index: 3;
 }
 
 .slider-button {
@@ -552,7 +618,7 @@ export default {
   left: 0;
   width: 100%;
   height: 43rem;
-  z-index: 2; 
+  z-index: 2;
   overflow: hidden;
 }
 
@@ -560,12 +626,9 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  pointer-events: none; 
-  z-index: 3; 
+  pointer-events: none;
+  z-index: 3;
   width: 100%;
-  height: 91.85%
+  height: 91.85%;
 }
-
-
-
 </style>

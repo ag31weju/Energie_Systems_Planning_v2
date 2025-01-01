@@ -1,13 +1,11 @@
 <template>
-  <div id="Drawerbox">
+  <div id="drawerbox">
     <Drawerbox @changeLanguage="updateLanguage"></Drawerbox>
   </div>
   <div id="rootdiv" class="grid-row">
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
-        <Playfield v-bind:load_scenario="load_scenario" v-bind:upload_scenario="upload_scenario"
-          v-bind:toggle_grid="toggle_grid" v-bind:add_consumer="add_consumer"
-          v-bind:add_energy_source="add_energy_source" v-bind:clear_nodes="clear_nodes" />
+        <Playfield></Playfield>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
@@ -23,6 +21,7 @@
 import { ref } from "vue";
 import Playfield from "../components/Playfield.vue";
 import NodeSelector from "@/components/NodeSelector.vue";
+import Drawerbox from "@/components/Drawerbox.vue";
 import ENLang from "@/assets/languages/en.json";
 import DELang from "@/assets/languages/de.json";
 
@@ -33,6 +32,7 @@ export default {
   components: {
     Playfield,
     NodeSelector,
+    Drawerbox,
   },
   methods: {
 
@@ -40,6 +40,7 @@ export default {
 };
 </script>
 <style>
+@import "../assets/main.css";
 #nodebox {
   display: flex;
   /* Use flexbox for alignment */

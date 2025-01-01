@@ -405,6 +405,8 @@ body {
 #buttons_container {
   display: flex;
   width: 100%;
+  background-color: var(--primary-panel-color);
+  border-radius: var(--primary-panel-radius);
 }
 
 .matrix-plotly {

@@ -30,11 +30,15 @@ import Slider from "primevue/slider";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import axios from "axios";
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, inject } from "vue";
 
 export default {
   props: ["auto", "simulate", "reset_text"],
   setup(props, context) {
+    let auto = inject('auto')
+    let simulate = inject('simulate')
+    let reset_text = inject('reset_text')
+
     const propData = ref(["test1", "test2"]);
     const step = ref(1);
     const sliderList = ref([]);
@@ -137,6 +141,9 @@ export default {
       reset,
       autoSimulateRequest,
       simulateRequest,
+      auto,
+      simulate,
+      reset_text
     };
   },
   components: {

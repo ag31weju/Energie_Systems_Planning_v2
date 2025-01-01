@@ -39,7 +39,7 @@ import Charts from "../components/Charts.vue";
 import Drawerbox from "../components/Drawerbox.vue";
 
 export default {
-  setup() {
+  setup(props, context) {
     const sliderVals = ref(undefined);
     const matrixData = ref(undefined);
     const chartsData = ref(undefined);
@@ -47,6 +47,10 @@ export default {
     const stopAutoSimulate = ref(false);
 
     const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
+
+    function updateLanguage() {
+      console.log('Emit the event!');
+    }
 
     function updateMatrixTheme(darkMode) {
       matrixTheme.value = darkMode
@@ -104,6 +108,7 @@ export default {
       sliderVals,
       matrixData,
       chartsData,
+      updateLanguage
     };
   },
   components: {

@@ -48,6 +48,7 @@ export default {
     provide("lock_text", currentLangJSON.lock_text);
     provide("unlock_text", currentLangJSON.unlock_text);
     provide("add_edge", currentLangJSON.add_edge);
+    provide("upload_json", currentLangJSON.upload_json)
 
     // Updates displayed language
     function updateLanguage(language) {
