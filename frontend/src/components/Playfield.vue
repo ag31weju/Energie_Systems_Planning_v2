@@ -2,33 +2,49 @@
   <Panel id="playfield">
     <!-- Image Box -->
 
-    <div id="image_box" ref="imageBox">
-      <!-- Display Image -->
-      <img :src="imgUrl" ref="imageElement" />
+  
+    
 
-      <!-- Canvas for Grid Overlay -->
-      <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"
-        style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1;"></canvas>
+    <!-- Vue Flow Container -->
+    <div id="vueflow_container" ref="vueFlowContainer"
+  :style="{ backgroundImage: 'url(' + imgUrl + ')', backgroundSize: 'contain', backgroundPosition: 'center' }"
+  style="position: absolute; top: 0; left: 0; width: 100%; height: 43rem; z-index: 2;">
 
-      <!-- Vue Flow Container -->
-      <div id="vueflow_container" ref="vueFlowContainer"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;">
-        <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false"
-          :zoomOnPinch="false" :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="[50,50]" :snap-to-grid="true"
-          :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes" :auto-pan-on-node-drag="false"
-          :nodes-draggable="!locked" :edges-connectable="edgeMode" :zoomOnDoubleClick="false" @connect="onConnect" />
-      </div>
+  <vue-flow 
+    v-model:nodes="nodes"
+    v-model:edges="edges"
+    :fit-view="true"
+    :zoomOnScroll="false"
+    :zoomOnPinch="false"
+    :panOnDrag="false"
+    :pan-on-scroll="false"
+    :preventScrolling="true"
+    :snap-grid="snapGrid"
+    :snap-to-grid="true"
+    :coordinateExtent="coordinateExtent"
+    :connection-mode="connectionMode"
+    :node-types="customNodeTypes"
+    :auto-pan-on-node-drag="false"
+    :nodes-draggable="!locked"
+    :edges-connectable="edgeMode"
+    :zoomOnDoubleClick="false"
+    @connect="onConnect"
+  />
+</div>
 
-    </div>
+    
+    <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
+
+   
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container">
-      <Button @click="loadRequest" type="submit" class="slider-button" v-bind:label="load_scenario"></Button>
+      <Button @click="loadRequest" type="submit" class="slider-button" v-bind:label="load_scenario">LS</Button>
       <Button @click="triggerImageUpload" type="submit" class="slider-button"
         v-bind:label="upload_scenario">img</Button>
       <Button @click="triggerJsonUpload" type="submit" class="slider-button" v-bind:label="Upload_JaySON">js</Button>
-      <Button @click="toggleGridOverlay" type="submit" class="slider-button" v-bind:label="toggle_grid"></Button>
-      <Button @click="addConsumerNode" type="submit" class="slider-button" v-bind:label="add_consumer"></Button>
+      <Button @click="toggleGridOverlay" type="submit" class="slider-button" v-bind:label="toggle_grid">TG</Button>
+      <Button @click="addConsumerNode" type="submit" class="slider-button" v-bind:label="add_consumer">AC</Button>
       <Button @click="addEnergySourceNode" type="submit" class="slider-button"
         v-bind:label="add_energy_source"></Button>
       <Button @click="toggleEdgeMode" type="submit" class="slider-button" v-bind:label="add_edge">Edge mode</Button>
@@ -94,7 +110,8 @@ export default {
     return {
       imgUrl: null, // URL for the image
       showGrid: false, // Flag for showing grid
-      gridSize: 10, // Grid size (number of cells per row/column)
+      gridSize: 15, // Grid size (number of cells per row/column)
+      snapGrid: [50,50],
       nodes: [], // Nodes for Vue Flow
       edges: [], // Edges for Vue Flow
       customNodeTypes: {
@@ -130,77 +147,84 @@ export default {
       this.locked = !this.locked;
     },
     async loadRequest() {
-      // Fetch the image URL
-      try {
-        const url = "http://127.0.0.1:8000/api/process-scenario/";
-        const id = 1;
-
-        const imgResponse = await axios.get(url, {
-          params: { id: id, filetype: "png" },
-          responseType: "blob",
-        });
-
-        if (this.imgUrl) {
-          URL.revokeObjectURL(this.imgUrl);
+        // Fetch the image URL
+        try {
+          const url = "http://127.0.0.1:8000/api/process-scenario/";
+          const id = 1;
+  
+          const imgResponse = await axios.get(url, {
+            params: { id: id, filetype: "png" },
+            responseType: "blob",
+          });
+  
+          if (this.imgUrl) {
+            URL.revokeObjectURL(this.imgUrl);
+          }
+  
+          this.imgUrl = URL.createObjectURL(imgResponse.data);
+  
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          alert(`Error: ${error.message}`);
         }
-
-        this.imgUrl = URL.createObjectURL(imgResponse.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        alert(`Error: ${error.message}`);
-      }
-    },
-    toggleGridOverlay() {
+      },
+      toggleGridOverlay() {
       this.showGrid = !this.showGrid;
       if (this.showGrid) {
         this.$nextTick(() => {
-          this.drawGrid();
+          this.drawGrid(); // Ensure grid is drawn when visible
         });
       }
     },
+
     drawGrid() {
-      const canvas = this.$refs.gridCanvas;
-      const imgElement = this.$refs.imageElement;
-      if (!canvas || !imgElement) return;
+  const canvas = this.$refs.gridCanvas;
+  const vueFlowContainer = this.$refs.vueFlowContainer;       
 
-      const width = imgElement.offsetWidth;
-      const height = imgElement.offsetHeight;
-      canvas.width = width;
-      canvas.height = height;
+  if (!canvas || !vueFlowContainer) return;
 
-      const context = canvas.getContext("2d");
-      const cellWidth = width / this.gridSize;
-      const cellHeight = height / this.gridSize;
+  // Match canvas dimensions to the VueFlow container
+  const width = vueFlowContainer.offsetWidth;
+  const height = vueFlowContainer.offsetHeight;
 
-      context.clearRect(0, 0, width, height);
-      context.strokeStyle = "#000000";
-      context.strokeStyle = "#000000";
-      context.lineWidth = 1;
+  canvas.width = width;
+  canvas.height = height;
 
-      for (let x = 0; x <= this.gridSize; x++) {
-        const xPos = x * cellWidth;
-        context.beginPath();
-        context.moveTo(xPos, 0);
-        context.lineTo(xPos, height);
-        context.stroke();
-      }
+  const cellWidth = width / this.gridSize;
+  const cellHeight = height / this.gridSize;
 
-      for (let y = 0; y <= this.gridSize; y++) {
-        const yPos = y * cellHeight;
-        context.beginPath();
-        context.moveTo(0, yPos);
-        context.lineTo(width, yPos);
-        context.stroke();
-      }
-    },
+  // Set the snapGrid based on cell width/height
+  this.snapGrid = [cellWidth, cellHeight]; // Update snapGrid
 
+  const context = canvas.getContext("2d");
+  context.clearRect(0, 0, width, height); // Clear the canvas
+  context.strokeStyle = "#000000"; // Set grid line color
+  context.lineWidth = 1; // Set grid line width
+
+  // Draw vertical lines
+  for (let x = 0; x <= width; x += cellWidth) {
+    context.beginPath();
+    context.moveTo(x, 0);
+    context.lineTo(x, height);
+    context.stroke();
+  }
+
+  // Draw horizontal lines
+  for (let y = 0; y <= height; y += cellHeight) {
+    context.beginPath();
+    context.moveTo(0, y);
+    context.lineTo(width, y);
+    context.stroke();
+  }
+},
 
     addEnergySourceNode() {
-      const imgElement = this.$refs.imageElement;
-      if (!imgElement) return;
+      const vueFlowContainer = this.$refs.vueFlowContainer;
+  if (!vueFlowContainer) return;
 
-      const width = imgElement.offsetWidth / this.gridSize;
-      const height = imgElement.offsetHeight / this.gridSize;
+  const width = vueFlowContainer.offsetWidth / this.gridSize;
+  const height = vueFlowContainer.offsetHeight / this.gridSize;
+
 
       if (!this.selectedProducer) {
         alert("Please select an energy source type before adding a node.");
@@ -276,11 +300,11 @@ export default {
         return;
       }
 
-      const imgElement = this.$refs.imageElement;
-      if (!imgElement) return;
+      const vueFlowContainer = this.$refs.vueFlowContainer;
+  if (!vueFlowContainer) return;
 
-      const width = imgElement.offsetWidth;
-      const height = imgElement.offsetHeight;
+  const width = vueFlowContainer.offsetWidth;
+  const height = vueFlowContainer.offsetHeight;
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
@@ -362,8 +386,8 @@ export default {
         this.edges.push(newEdge);
       }
     },
-  },
-  methods: {
+  
+ 
     async saveData() {
 
       try {
@@ -481,6 +505,7 @@ export default {
       reader.readAsText(this.jsonFile);
     },
   },
+  
 };
 </script>
 
@@ -498,13 +523,6 @@ export default {
   position: relative;
 }
 
-#grid_overlay {
-  position: relative;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 1;
-}
 
 #buttons_container {
   display: flex;
@@ -517,6 +535,7 @@ export default {
   bottom: 0;
   padding: 10px;
   background-color: var(--primary-background-color);
+  z-index: 3
 }
 
 .slider-button {
@@ -528,11 +547,25 @@ export default {
 }
 
 #vueflow_container {
-  position: relative;
+  position: absolute;
   top: 0;
   left: 0;
-  pointer-events: auto;
-  z-index: 2;
+  width: 100%;
+  height: 43rem;
+  z-index: 2; 
   overflow: hidden;
 }
+
+#grid_overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none; 
+  z-index: 3; 
+  width: 100%;
+  height: 91.85%
+}
+
+
+
 </style>

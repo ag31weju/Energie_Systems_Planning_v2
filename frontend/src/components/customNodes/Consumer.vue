@@ -79,8 +79,8 @@ export default {
 }
 
 .consumer-icon {
-  width: 64px;
-  height: 64px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;

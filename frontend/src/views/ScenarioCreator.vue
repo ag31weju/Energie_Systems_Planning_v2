@@ -1,5 +1,5 @@
 <template>
-  <div id="drawerbox">
+  <div id="Drawerbox">
     <Drawerbox @changeLanguage="updateLanguage"></Drawerbox>
   </div>
   <div id="rootdiv" class="grid-row">

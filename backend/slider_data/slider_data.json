@@ -4,11 +4,11 @@
     "sliders": [
         {
             "type": "test1",
-            "value": 0
+            "value": 2
         },
         {
             "type": "test2",
-            "value": 0
+            "value": 3
         }
     ]
 }
