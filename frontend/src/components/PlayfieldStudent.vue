@@ -1,75 +1,55 @@
 <template>
   <Panel id="playfieldS">
-    <!-- Image Box -->
-    <div id="image_box" ref="imageBox">
-      <!-- Display Image -->
-      <img
-        :src="imgUrl"
-        style="max-width: 100%; max-height: 100%; object-fit: cover"
-        ref="imageElement"
+     <div
+      id="vueflow_container"
+      ref="vueFlowContainer"
+      :style="{
+        backgroundImage: 'url(' + imgUrl + ')',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }"
+      style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 43rem;
+        z-index: 2;
+      "
+    >
+      <vue-flow
+        v-model:nodes="nodes"
+        v-model:edges="edges"
+        :fit-view="true"
+        :zoomOnScroll="false"
+        :zoomOnPinch="false"
+        :panOnDrag="false"
+        :pan-on-scroll="false"
+        :preventScrolling="true"
+        :snap-grid="snapGrid"
+        :snap-to-grid="true"
+      
+        :connection-mode="connectionMode"
+        :node-types="customNodeTypes"
+        :auto-pan-on-node-drag="false"
+        :nodes-draggable="!locked"
+        :edges-connectable="edgeMode"
+        :zoomOnDoubleClick="false"
+        @connect="onConnect"
       />
-
-      <!-- Canvas for Grid Overlay -->
-      <canvas
-        v-if="showGrid"
-        ref="gridCanvas"
-        id="grid_overlay"
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          pointer-events: none;
-          z-index: 1;
-        "
-      ></canvas>
-      <canvas
-        v-if="showGrid"
-        ref="gridCanvas"
-        id="grid_overlay"
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          pointer-events: none;
-          z-index: 1;
-        "
-      ></canvas>
-
-      <!-- Vue Flow Container -->
-      <div
-        id="vueflow_container"
-        ref="vueFlowContainer"
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 2;
-        "
-      >
-        <vue-flow
-          v-model:nodes="nodes"
-          v-model:edges="edges"
-          :fit-view="true"
-          :zoomOnScroll="false"
-          :zoomOnPinch="false"
-          :panOnDrag="false"
-          :pan-on-scroll="false"
-          :preventScrolling="true"
-          :coordinateExtent="coordinateExtent"
-          :connection-mode="connectionMode"
-          :node-types="customNodeTypes"
-          :nodes-draggable="false"
-          :edges-connectable="false"
-          :zoomOnDoubleClick="false"
-          @connect="onConnect"
-        />
-      </div>
     </div>
 
+    <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
+
     <!-- Buttons at the Bottom -->
+
     <div id="buttons_container">
+      <Select
+        v-model="selectedProducer"
+        :options="scenarios"
+        class="slider-button"
+        placeholder="Choose Scenario"
+      ></Select>
       <Button
         @click="loadRequest"
         type="submit"
@@ -117,7 +97,7 @@
 </template>
 
 <script>
-import { Button } from "primevue";
+import { Button,Select } from "primevue";
 import Panel from "primevue/panel";
 import axios from "axios";
 import { VueFlow } from "@vue-flow/core";
@@ -131,6 +111,7 @@ export default {
     Panel,
     Button,
     VueFlow,
+    Select,
   },
   setup() {
     let load_scenario = inject("load_scenario");
@@ -148,7 +129,7 @@ export default {
     return {
       imgUrl: null, // URL for the image
       showGrid: false, // Flag for showing grid
-      gridSize: 10, // Grid size (number of cells per row/column)
+      gridSize: 15, // Grid size (number of cells per row/column)
       nodes: [], // Nodes for Vue Flow
       edges: [], // Edges for Vue Flow
       customNodeTypes: {
@@ -167,10 +148,9 @@ export default {
       locked: false, // Lock flag
 
       jsonUrl: null,
-      coordinateExtent: [
-        [0, 0],
-        [0, 0],
-      ],
+      scenarios:["Scene 1", "Scene 2", "Scene 3"]
+      
+      
     };
   },
 
@@ -200,42 +180,48 @@ export default {
       this.showGrid = !this.showGrid;
       if (this.showGrid) {
         this.$nextTick(() => {
-          this.drawGrid();
+          this.drawGrid(); // Ensure grid is drawn when visible
         });
       }
     },
+
     drawGrid() {
       const canvas = this.$refs.gridCanvas;
-      const imgElement = this.$refs.imageElement;
-      if (!canvas || !imgElement) return;
+      const vueFlowContainer = this.$refs.vueFlowContainer;
 
-      const width = imgElement.offsetWidth;
-      const height = imgElement.offsetHeight;
+      if (!canvas || !vueFlowContainer) return;
+
+      // Match canvas dimensions to the VueFlow container
+      const width = vueFlowContainer.offsetWidth;
+      const height = vueFlowContainer.offsetHeight;
+
       canvas.width = width;
       canvas.height = height;
 
-      const context = canvas.getContext("2d");
       const cellWidth = width / this.gridSize;
       const cellHeight = height / this.gridSize;
 
-      context.clearRect(0, 0, width, height);
-      context.strokeStyle = "#000000";
-      context.strokeStyle = "#000000";
-      context.lineWidth = 1;
+      // Set the snapGrid based on cell width/height
+      this.snapGrid = [cellWidth, cellHeight]; // Update snapGrid
 
-      for (let x = 0; x <= this.gridSize; x++) {
-        const xPos = x * cellWidth;
+      const context = canvas.getContext("2d");
+      context.clearRect(0, 0, width, height); // Clear the canvas
+      context.strokeStyle = "#000000"; // Set grid line color
+      context.lineWidth = 1; // Set grid line width
+
+      // Draw vertical lines
+      for (let x = 0; x <= width; x += cellWidth) {
         context.beginPath();
-        context.moveTo(xPos, 0);
-        context.lineTo(xPos, height);
+        context.moveTo(x, 0);
+        context.lineTo(x, height);
         context.stroke();
       }
 
-      for (let y = 0; y <= this.gridSize; y++) {
-        const yPos = y * cellHeight;
+      // Draw horizontal lines
+      for (let y = 0; y <= height; y += cellHeight) {
         context.beginPath();
-        context.moveTo(0, yPos);
-        context.lineTo(width, yPos);
+        context.moveTo(0, y);
+        context.lineTo(width, y);
         context.stroke();
       }
     },
@@ -357,5 +343,63 @@ export default {
 </script>
 
 <style>
-@import "../assets/main.css";
+
+/* Playfield Styles */
+#playfieldS {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-background-color);
+  border: var(--primary-border);
+  position: relative;
+}
+
+#buttons_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: 2rem;
+  position: absolute;
+  bottom: 0;
+
+  background-color: var(--primary-background-color);
+  z-index: 3;
+}
+
+ .p-button-label {
+  color: black;
+}
+.slider-button {
+  margin-bottom: 10px;
+  margin-right: 5px;
+}
+
+
+
+#vueflow_container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 42rem;
+  z-index: 2;
+  overflow: hidden;
+}
+
+#grid_overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 3;
+  width: 100%;
+  height: 91.85%;
+}
 </style>
+
+

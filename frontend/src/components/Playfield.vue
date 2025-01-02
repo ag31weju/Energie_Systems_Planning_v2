@@ -8,7 +8,7 @@
       ref="vueFlowContainer"
       :style="{
         backgroundImage: 'url(' + imgUrl + ')',
-        backgroundSize: 'contain',
+        backgroundSize: 'cover',
         backgroundPosition: 'center',
       }"
       style="
@@ -110,14 +110,14 @@
       <Select
         v-model="selectedConsumer"
         :options="optionsConsumer"
-        placeholder="Please select consumer type"
+        placeholder="Select consumer type"
       >
       </Select>
 
       <Select
         v-model="selectedProducer"
         :options="optionsProducers"
-        placeholder="Please select producer type"
+        placeholder="Select producer type"
       >
       </Select>
     </div>
@@ -212,10 +212,7 @@ export default {
       locked: false, // Lock flag
 
       jsonUrl: null,
-      coordinateExtent: [
-        [0, 0],
-        [0, 0],
-      ],
+  
 
       selectedConsumer: "", // Selected value for consumers
       optionsConsumer: ["Commercial", "Residential Large", "Residential Small"], // Initial consumer options
@@ -576,7 +573,6 @@ export default {
 </script>
 
 <style>
-@import "../assets/main.css";
 /* Playfield Styles */
 #playfield {
   display: flex;
@@ -595,29 +591,30 @@ export default {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: auto;
+  width: auto;
+  height: 2rem;
   position: absolute;
   bottom: 0;
-  padding: 10px;
+
   background-color: var(--primary-background-color);
   z-index: 3;
 }
 
-.slider-button {
-  margin-bottom: 5px;
-}
-
-.slider-button .p-button-label {
+ .p-button-label {
   color: black;
 }
+.slider-button {
+  margin-bottom: 10px;
+  margin-right: 5px;
+}
+
 
 #vueflow_container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 43rem;
+  height: 42rem;
   z-index: 2;
   overflow: hidden;
 }
