@@ -8,6 +8,7 @@
   "pv_curtailment": "PV Curtailment",
   "demand": "Demand",
   "purchased_power": "Purchased Power",
+  "storage_text": "Storage",
   "storage_charge": "Storage Charge",
   "storage_discharge": "Storage Discharge",
   "storage_level": "Storage Level",
@@ -25,5 +26,7 @@
   "clear_nodes": "Clear Nodes",
   "upload_json": "Upload JSON",
   "save_text": "Save",
-  "add_edge": "Add Edge"
+  "add_edge": "Add Edge",
+  "selector_text_consumer": "Please select consumer type",
+  "selector_text_producer": "Please select producer type"
 }

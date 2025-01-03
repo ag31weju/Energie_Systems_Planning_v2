@@ -39,6 +39,7 @@ export const usedLanguage = defineStore("usedLanguage", {
     let pv_curtailment = currLangFile.pv_curtailment;
     let demand = currLangFile.demand;
     let purchased_power = currLangFile.purchased_power;
+    let storage_text = currLangFile.storage_text;
     let storage_charge = currLangFile.storage_charge;
     let storage_discharge = currLangFile.storage_discharge;
     let storage_level = currLangFile.storage_level;
@@ -59,6 +60,8 @@ export const usedLanguage = defineStore("usedLanguage", {
     let unlock_text = currLangFile.unlock_text;
     let add_edge = currLangFile.add_edge;
     let upload_json = currLangFile.upload_json;
+    let selector_text_consumer = currLangFile.selector_text_consumer;
+    let selector_text_producer = currLangFile.selector_text_producer;
 
     return {
       currLang,
@@ -91,6 +94,9 @@ export const usedLanguage = defineStore("usedLanguage", {
       unlock_text,
       add_edge,
       upload_json,
+      selector_text_consumer,
+      selector_text_producer,
+      storage_text
     };
   },
   actions: {
@@ -118,6 +124,7 @@ export const usedLanguage = defineStore("usedLanguage", {
       this.pv_curtailment = this.currLangFile.pv_curtailment;
       this.demand = this.currLangFile.demand;
       this.purchased_power = this.currLangFile.purchased_power;
+      this.storage_text = this.currLangFile.storage_text;
       this.storage_charge = this.currLangFile.storage_charge;
       this.storage_discharge = this.currLangFile.storage_discharge;
       this.storage_level = this.currLangFile.storage_level;
@@ -137,6 +144,9 @@ export const usedLanguage = defineStore("usedLanguage", {
       this.lock_text = this.currLangFile.lock_text;
       this.unlock_text = this.currLangFile.unlock_text;
       this.add_edge = this.currLangFile.add_edge;
-    }
+      this.upload_json = this.currLangFile.upload_json;
+      this.selector_text_consumer = this.currLangFile.selector_text_consumer;
+      this.selector_text_producer = this.currLangFile.selector_text_producer;
+    },
   },
 });
