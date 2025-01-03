@@ -73,27 +73,25 @@
       <Button
         @click="loadRequest"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="load_scenario"
       ></Button>
       <Button
         @click="triggerImageUpload"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="upload_scenario"
-        ></Button
-      >
+      ></Button>
       <Button
         @click="triggerJsonUpload"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="upload_json"
-        ></Button
-      >
+      ></Button>
       <Button
         @click="toggleGridOverlay"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="toggle_grid"
       ></Button>
     </div>
@@ -124,7 +122,8 @@ import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 import ConsumerNode from "./customNodes/Consumer.vue";
 import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico";
-import { inject } from "vue";
+import { inject, ref } from "vue";
+import { usedLanguage, usedTheme } from "../assets/stores/pageSettings";
 
 export default {
   components: {

@@ -12,93 +12,41 @@ folder */
 <script>
 import { ref, provide } from "vue";
 import Chart from "primevue/chart";
-import ENLang from "@/assets/languages/en.json";
-import DELang from "@/assets/languages/de.json";
+import { usedLanguage } from "./assets/stores/pageSettings";
 
 export default {
   setup() {
-    const currentLang = ref("EN");
-    let currentLangJSON = ENLang;
-
+    const usedLang = usedLanguage();
     // Initial setting of values
-    provide("capacity", currentLangJSON.capacity);
-    provide("cost", currentLangJSON.cost);
-    provide("battery", currentLangJSON.battery);
-    provide("pv", currentLangJSON.pv);
-    provide("pv_production", currentLangJSON.pv_production);
-    provide("pv_curtailment", currentLangJSON.pv_curtailment);
-    provide("demand", currentLangJSON.demand);
-    provide("purchased_power", currentLangJSON.purchased_power);
-    provide("storage_charge", currentLangJSON.storage_charge);
-    provide("storage_discharge", currentLangJSON.storage_discharge);
-    provide("storage_level", currentLangJSON.storage_level);
-    provide("simulate", currentLangJSON.simulate);
-    provide("reset_text", currentLangJSON.reset_text);
-    provide("auto", currentLangJSON.auto);
-    provide("title_upper_plot", currentLangJSON.title_upper_plot);
-    provide("title_middle_plot", currentLangJSON.title_middle_plot);
-    provide("title_lower_plot", currentLangJSON.title_lower_plot);
-    provide("load_scenario", currentLangJSON.load_scenario);
-    provide("upload_scenario", currentLangJSON.upload_scenario);
-    provide("toggle_grid", currentLangJSON.toggle_grid);
-    provide("add_consumer", currentLangJSON.add_consumer);
-    provide("add_energy_source", currentLangJSON.add_energy_source);
-    provide("clear_nodes", currentLangJSON.clear_nodes);
-    provide("save_text", currentLangJSON.save_text);
-    provide("lock_text", currentLangJSON.lock_text);
-    provide("unlock_text", currentLangJSON.unlock_text);
-    provide("add_edge", currentLangJSON.add_edge);
-    provide("upload_json", currentLangJSON.upload_json)
-
-    // Updates displayed language
-    function updateLanguage(language) {
-      if (currentLang.value == language) {
-        return;
-      }
-
-      if (language == "EN") {
-        currentLangJSON = ENLang;
-        currentLang.value = "EN";
-      }
-
-      if (language == "DE") {
-        currentLangJSON = DELang;
-        currentLang.value = "DE";
-      }
-      provide("capacity", currentLangJSON.capacity);
-      provide("cost", currentLangJSON.cost);
-      provide("battery", currentLangJSON.battery);
-      provide("pv", currentLangJSON.pv);
-      provide("pv_production", currentLangJSON.pv_production);
-      provide("pv_curtailment", currentLangJSON.pv_curtailment);
-      provide("demand", currentLangJSON.demand);
-      provide("purchased_power", currentLangJSON.purchased_power);
-      provide("storage_charge", currentLangJSON.storage_charge);
-      provide("storage_discharge", currentLangJSON.storage_discharge);
-      provide("storage_level", currentLangJSON.storage_level);
-      provide("simulate", currentLangJSON.simulate);
-      provide("reset_text", currentLangJSON.reset_text);
-      provide("auto", currentLangJSON.auto);
-      provide("title_upper_plot", currentLangJSON.title_upper_plot);
-      provide("title_middle_plot", currentLangJSON.title_middle_plot);
-      provide("title_lower_plot", currentLangJSON.title_lower_plot);
-      provide("load_scenario", currentLangJSON.load_scenario);
-      provide("upload_scenario", currentLangJSON.upload_scenario);
-      provide("toggle_grid", currentLangJSON.toggle_grid);
-      provide("add_consumer", currentLangJSON.add_consumer);
-      provide("add_energy_source", currentLangJSON.add_energy_source);
-      provide("clear_nodes", currentLangJSON.clear_nodes);
-      provide("save_text", currentLangJSON.save_text);
-      provide("lock_text", currentLangJSON.lock_text);
-      provide("unlock_text", currentLangJSON.unlock_text);
-      provide("add_edge", currentLangJSON.add_edge);
-    }
-
-    provide("updageLanguage", updateLanguage(currentLang.value));
-
-    return {
-      updateLanguage,
-    };
+    provide("capacity", usedLang.capacity);
+    provide("cost", usedLang.cost);
+    provide("battery", usedLang.battery);
+    provide("pv", usedLang.pv);
+    provide("pv_production", usedLang.pv_production);
+    provide("pv_curtailment", usedLang.pv_curtailment);
+    provide("demand", usedLang.demand);
+    provide("purchased_power", usedLang.purchased_power);
+    provide("storage_charge", usedLang.storage_charge);
+    provide("storage_discharge", usedLang.storage_discharge);
+    provide("storage_level", usedLang.storage_level);
+    provide("simulate", usedLang.simulate);
+    provide("reset_text", usedLang.reset_text);
+    provide("auto", usedLang.auto);
+    provide("title_upper_plot", usedLang.title_upper_plot);
+    provide("title_middle_plot", usedLang.title_middle_plot);
+    provide("title_lower_plot", usedLang.title_lower_plot);
+    provide("load_scenario", usedLang.load_scenario);
+    provide("upload_scenario", usedLang.upload_scenario);
+    provide("toggle_grid", usedLang.toggle_grid);
+    provide("add_consumer", usedLang.add_consumer);
+    provide("add_energy_source", usedLang.add_energy_source);
+    provide("clear_nodes", usedLang.clear_nodes);
+    provide("save_text", usedLang.save_text);
+    provide("lock_text", usedLang.lock_text);
+    provide("unlock_text", usedLang.unlock_text);
+    provide("add_edge", usedLang.add_edge);
+    provide("upload_json", usedLang.upload_json);
+    return {};
   },
   components: {
     Chart,

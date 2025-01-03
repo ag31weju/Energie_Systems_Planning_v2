@@ -21,6 +21,7 @@
     "chartjs-chart-matrix": "^2.0.1",
     "frontend": "file:",
     "graphology": "^0.25.4",
+    "pinia": "^2.3.0",
     "plotly.js-dist": "^2.35.3",
     "primevue": "^4.2.3",
     "sigma": "^3.0.0",

@@ -49,61 +49,61 @@
       <Button
         @click="loadRequest"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="load_scenario"
         ></Button
       >
       <Button
         @click="triggerImageUpload"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="upload_scenario"
         ></Button
       >
       <Button
         @click="triggerJsonUpload"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="upload_json"
         ></Button
       >
       <Button
         @click="toggleGridOverlay"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="toggle_grid"
         ></Button
       >
       <Button
         @click="addConsumerNode"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="add_consumer"
         ></Button
       >
       <Button
         @click="addEnergySourceNode"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="add_energy_source"
       ></Button>
       <Button
         @click="toggleEdgeMode"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="add_edge"
         ></Button
       >
       <Button
         @click="clearNodes"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="clear_nodes"
       ></Button>
       <Button
         @click="saveData"
         type="submit"
-        class="slider-button"
+        class="button"
         v-bind:label="save_text"
       ></Button>
 
@@ -604,11 +604,11 @@ export default {
   z-index: 3;
 }
 
-.slider-button {
+.button {
   margin-bottom: 5px;
 }
 
-.slider-button .p-button-label {
+.button .p-button-label {
   color: black;
 }
 

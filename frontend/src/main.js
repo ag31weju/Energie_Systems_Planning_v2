@@ -3,11 +3,11 @@ import { createRouter, createWebHistory } from "vue-router";
 import App from "./App.vue";
 import ScenarioCreator from "./views/ScenarioCreator.vue";
 import Home from "./views/Home.vue"; //main page
-
 import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura/";
 import VueApexCharts from "vue3-apexcharts";
 import "./assets/main.css";
+import { createPinia } from "pinia";
 
 // Hardcoded password
 const PASSWORD = "password";
@@ -49,5 +49,7 @@ app.use(PrimeVue, {
 });
 app.use(VueApexCharts);
 
+// Creates a pinia instance for us so that stores can be used
+app.use(createPinia());
 app.use(router);
 app.mount("#app");
