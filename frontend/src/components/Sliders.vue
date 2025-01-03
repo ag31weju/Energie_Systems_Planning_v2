@@ -39,7 +39,8 @@ export default {
     let simulate = inject("simulate");
     let reset_text = inject("reset_text");
 
-    const propData = ref(["test1", "test2"]);
+    let selectedNodes = inject("selectedNodes");
+
     const step = ref(1);
     const sliderList = ref([]);
 
@@ -124,21 +125,15 @@ export default {
     }
 
     onMounted(() => {
-      sliderList.value = Array.from(
-        { length: propData.value.length },
-        (_, index) => {
-          return {
-            value: 0,
-            type: propData.value[index],
-          };
-        }
-      );
+      sliderList.value = [
+        { value: 0, nodeID: selectedNodes[0] },
+        { value: 0, nodeID: selectedNodes[1] },
+      ];
     });
 
     return {
       sliderList,
       step,
-      propData,
       reset,
       autoSimulateRequest,
       simulateRequest,

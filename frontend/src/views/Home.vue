@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import Chart from "primevue/chart";
 import Sliders from "../components/Sliders.vue";
 import Playfield from "../components/PlayfieldStudent.vue";
@@ -45,6 +45,9 @@ export default {
     const chartsData = ref(undefined);
     const isAutoSimulating = ref(false);
     const stopAutoSimulate = ref(false);
+    const selectedNodes = ref([0, 1]);
+
+    provide("selectedNodes", selectedNodes);
 
     const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
 
@@ -59,6 +62,9 @@ export default {
     }
 
     function handleSimulationData(propagateChange) {
+      if (selectedNodes.value[0] === -1 || selectedNodes.value[1] === -1)
+        return;
+
       if (propagateChange.reset) {
         isAutoSimulating.value = false;
         stopAutoSimulate.value = true;
@@ -101,6 +107,8 @@ export default {
       };
       chartsData.value = newValues.chartsData;
     }
+
+    function handleNodeSelection() {}
 
     return {
       updateMatrixTheme,

@@ -37,7 +37,7 @@
 
 <script>
 import { Panel } from "primevue";
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, inject, onMounted } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import { VuePlotly } from "vue3-plotly";
 
@@ -65,6 +65,7 @@ export default {
     },
   },
   setup(props) {
+    const heatmapCollection = [];
     const outLinePosition = ref(null);
     const z = ref(null);
     const layout = ref(null);
@@ -72,6 +73,8 @@ export default {
     const gridColor = ref("black");
     const gridLines = ref([]);
     const axisDimension = ref(Array.from({ length: 6 }, (_, i) => i));
+
+    let selectedNodes = inject("selectedNodes");
 
     function updateHeatmap(newVal, colIndex, rowIndex) {
       const updatedZ = [...z.value]; // Clone the array
@@ -84,12 +87,7 @@ export default {
       );
     }
 
-    onMounted(() => {
-      z.value = Array.from({ length: gridSize.value }, (_, rowIndex) =>
-        Array.from({ length: gridSize.value }, () => null)
-      );
-      outLinePosition.value = props.sliderVals;
-
+    function initHeatmap() {
       for (let i = 0; i <= gridSize.value; i++) {
         // Horizontal lines
         gridLines.value.push({
@@ -117,8 +115,6 @@ export default {
           },
         });
       }
-
-      console.log(gridLines.value);
 
       layout.value = {
         xaxis: {
@@ -161,7 +157,34 @@ export default {
           },
         ],
       };
+    }
+
+    onMounted(() => {
+      z.value = Array.from({ length: gridSize.value }, (_, rowIndex) =>
+        Array.from({ length: gridSize.value }, () => null)
+      );
+      outLinePosition.value = props.sliderVals;
+      initHeatmap();
+      heatmapCollection.push({ selectedNodes: selectedNodes, z: z.value });
     });
+
+    function changeMatrix(newVal) {
+      let selectedHeatmap = heatmapCollection.find((el) => {
+        const nodeIDs = el.selectedNodes;
+        return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
+      });
+
+      if (!selectedHeatmap) {
+        const newHeatmap = Array.from(
+          { length: gridSize.value },
+          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
+        );
+        selectedHeatmap = newHeatmap;
+        heatmapCollection.push({ selectedNodes: newVal, z: selectedHeatmap });
+      }
+
+      z.value = selectedHeatmap;
+    }
 
     function handleMatrixData(newVal) {
       if (newVal && Object.keys(newVal).length > 0) {
@@ -273,6 +296,10 @@ export default {
       (newVal) => handleMatrixTheme(newVal),
       { deep: true }
     );
+
+    watch(selectedNodes.value, (newVal) => changeMatrix(newVal), {
+      deep: true,
+    });
 
     return {
       outLinePosition,
