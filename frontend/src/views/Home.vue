@@ -49,7 +49,7 @@ export default {
     const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
 
     function updateLanguage() {
-      console.log('Emit the event!');
+      console.log("Emit the event!");
     }
 
     function updateMatrixTheme(darkMode) {
@@ -88,6 +88,7 @@ export default {
           await sleep(700);
         }
       }
+      sliderVals.value = propagateChange.bestIdx;
       isAutoSimulating.value = false;
     }
     function simulateData(propagateChange, currentSliderVals) {
@@ -108,7 +109,7 @@ export default {
       sliderVals,
       matrixData,
       chartsData,
-      updateLanguage
+      updateLanguage,
     };
   },
   components: {

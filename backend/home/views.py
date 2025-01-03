@@ -119,13 +119,10 @@ def save_slider_data(request):
             sliders = [sliderData for sliderData in json_data.get("sliders")]
             autoSimulate = json_data.get("autoSimulate")
             reset = json_data.get("reset")
-            print(sliders)
-            print(reset)
-            print([v.get("value") for v in sliders])
             
 
         
-        data = [[{
+        data = {"mainData": [[{
             "matrixData": None,
             "chartsData": {
                 "lineChartData": [None for _ in range(26)],
@@ -138,11 +135,11 @@ def save_slider_data(request):
                     "demand": [None for _ in range(26)],
                 },
             },
-        } for _ in range(6)] for _ in range(6)]
+        } for _ in range(6)] for _ in range(6)], "bestIdx": [0, 0]}
 
         
-        def fill_data(data, sliderVals):
-            cell = data[sliderVals[1]][sliderVals[0]] #matrix row (first index) is y, matrix column (second index) is x
+        def fill_data(data, sliderVals, bestMatrixVal):
+            cell = data["mainData"][sliderVals[1]][sliderVals[0]] #matrix row (first index) is y, matrix column (second index) is x
             cell["chartsData"]["barChartData"] = {
                 "purchased_power": [math.floor(random.random() * 100) for _ in range(26)],
                 "pv_production": [math.floor(random.random() * 100) for _ in range(26)],
@@ -152,19 +149,30 @@ def save_slider_data(request):
                 "demand": [math.floor(random.random() * -100) for _ in range(26)]
                 }
             cell["chartsData"]["lineChartData"] = [math.floor(random.random() * 100) for _ in range(26)]
-            cell["matrixData"] = math.floor(random.uniform(-100, 100)) 
+            cell["matrixData"] = math.floor(random.uniform(0, 100)) 
+            print(bestMatrixVal)
+            if bestMatrixVal[0] is not None:
+                if bestMatrixVal[0] > cell["matrixData"]: 
+                    bestMatrixVal[0] = cell["matrixData"]
+                    data["bestIdx"] = [sliderVals[0], sliderVals[1]] 
+            else:                
+                bestMatrixVal[0] = cell["matrixData"]
+                
+                
 
-            
+        
         if not reset: 
             if autoSimulate:
+                bestMatrixVal = [None] #has to be inside of an array since it acts as a mutable container which does not pass the reference but the value
                 for row in range(6):
                     for col in range(6):
-                        fill_data(data, [col, row])
+                        fill_data(data, [col, row], bestMatrixVal)
             else:
                sliderVals = [v.get("value") for v in sliders] 
-               fill_data(data, sliderVals)
+               fill_data(data, sliderVals, [None])
 
-        return JsonResponse({"data": data}, status=200)
+        print(data.get("bestIdx"))
+        return JsonResponse(data, status=200)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 @csrf_exempt  

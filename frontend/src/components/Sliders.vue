@@ -35,9 +35,9 @@ import { ref, watch, onMounted, inject } from "vue";
 export default {
   props: ["auto", "simulate", "reset_text"],
   setup(props, context) {
-    let auto = inject('auto')
-    let simulate = inject('simulate')
-    let reset_text = inject('reset_text')
+    let auto = inject("auto");
+    let simulate = inject("simulate");
+    let reset_text = inject("reset_text");
 
     const propData = ref(["test1", "test2"]);
     const step = ref(1);
@@ -105,15 +105,16 @@ export default {
         const simData = await axios
           .get(url)
           .then((res) => {
-            return res.data.data;
+            return res.data;
           })
           .catch((e) => console.error("GET did not work:", e));
 
         const propagateChange = {
-          simData: simData,
+          simData: simData.mainData,
           reset: reset,
           autoSimulate: autoSimulate,
           sliderVals: sliderVals,
+          bestIdx: simData.bestIdx,
         };
         context.emit("getSimulationData", propagateChange);
       } catch (error) {
@@ -143,7 +144,7 @@ export default {
       simulateRequest,
       auto,
       simulate,
-      reset_text
+      reset_text,
     };
   },
   components: {
