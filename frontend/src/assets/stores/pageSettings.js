@@ -6,11 +6,16 @@ export const usedTheme = defineStore("usedTheme", {
   state: () => {
     let themeSymbol = "☀️";
     let currentTheme = "LIGHT";
+    let matrixTheme = {
+      backgroundColor: "white",
+      gridColor: "black",
+    };
     let body = document.body;
     return {
       themeSymbol,
       currentTheme,
       body,
+      matrixTheme,
     };
   },
   actions: {
@@ -18,9 +23,17 @@ export const usedTheme = defineStore("usedTheme", {
       if (this.currentTheme == "LIGHT") {
         this.currentTheme = "DARK";
         this.themeSymbol = "🌑";
+        this.matrixTheme = {
+          backgroundColor: "rgb(39, 39, 39)",
+          gridColor: "white",
+        };
       } else {
         this.currentTheme = "LIGHT";
         this.themeSymbol = "☀️";
+        this.matrixTheme = {
+          backgroundColor: "white",
+          gridColor: "black",
+        };
       }
       this.body.classList.toggle("dark-theme");
     },
@@ -96,7 +109,7 @@ export const usedLanguage = defineStore("usedLanguage", {
       upload_json,
       selector_text_consumer,
       selector_text_producer,
-      storage_text
+      storage_text,
     };
   },
   actions: {

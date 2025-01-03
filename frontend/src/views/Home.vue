@@ -1,9 +1,6 @@
 <template>
   <div id="drawerbox">
-    <Drawerbox
-      @changeLanguage="updateLanguage"
-      @changeMatrixTheme="updateMatrixTheme"
-    ></Drawerbox>
+    <Drawerbox></Drawerbox>
   </div>
   <div id="rootdiv" class="grid-row">
     <div id="outercolumn1" class="grid-column">
@@ -18,7 +15,7 @@
       <div id="matrix-box" class="grid-column">
         <Matrix
           :matrixData="matrixData"
-          :matrixTheme="matrixTheme"
+          :matrixTheme="currTheme.matrixTheme"
           :sliderVals="sliderVals"
         ></Matrix>
       </div>
@@ -37,9 +34,11 @@ import Playfield from "../components/PlayfieldStudent.vue";
 import Matrix from "../components/Matrix.vue";
 import Charts from "../components/Charts.vue";
 import Drawerbox from "../components/Drawerbox.vue";
+import { usedTheme } from "../assets/stores/pageSettings";
 
 export default {
   setup(props, context) {
+    const currTheme = usedTheme();
     const sliderVals = ref(undefined);
     const matrixData = ref(undefined);
     const chartsData = ref(undefined);
@@ -47,16 +46,6 @@ export default {
     const stopAutoSimulate = ref(false);
 
     const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
-
-    function updateLanguage() {
-      console.log('Emit the event!');
-    }
-
-    function updateMatrixTheme(darkMode) {
-      matrixTheme.value = darkMode
-        ? { backgroundColor: "rgb(39, 39, 39)", gridColor: "white" }
-        : { backgroundColor: "white", gridColor: "black" };
-    }
 
     function handleSimulationData(propagateChange) {
       if (propagateChange.reset) {
@@ -102,13 +91,12 @@ export default {
     }
 
     return {
-      updateMatrixTheme,
       handleSimulationData,
       matrixTheme,
       sliderVals,
       matrixData,
       chartsData,
-      updateLanguage
+      currTheme
     };
   },
   components: {
