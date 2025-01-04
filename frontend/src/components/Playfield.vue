@@ -3,43 +3,23 @@
     <!-- Image Box -->
 
     <!-- Vue Flow Container -->
-    <div
-      id="vueflow_container"
-      ref="vueFlowContainer"
-      :style="{
-        backgroundImage: 'url(' + imgUrl + ')',
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-      }"
-      style="
+    <div id="vueflow_container" ref="vueFlowContainer" :style="{
+      backgroundImage: 'url(' + imgUrl + ')',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }" style="
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 43rem;
         z-index: 2;
-      "
-    >
-      <vue-flow
-        v-model:nodes="nodes"
-        v-model:edges="edges"
-        :fit-view="true"
-        :zoomOnScroll="false"
-        :zoomOnPinch="false"
-        :panOnDrag="false"
-        :pan-on-scroll="false"
-        :preventScrolling="true"
-        :snap-grid="snapGrid"
-        :snap-to-grid="true"
-        :coordinateExtent="coordinateExtent"
-        :connection-mode="connectionMode"
-        :node-types="customNodeTypes"
-        :auto-pan-on-node-drag="false"
-        :nodes-draggable="!locked"
-        :edges-connectable="edgeMode"
-        :zoomOnDoubleClick="false"
-        @connect="onConnect"
-      />
+      ">
+      <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
+        :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
+        :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
+        :auto-pan-on-node-drag="false" :nodes-draggable="!locked" :edges-connectable="edgeMode"
+        :zoomOnDoubleClick="false" @connect="onConnect" />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
@@ -115,22 +95,10 @@
       >
       </Select>
     </div>
-    <input
-      type="file"
-      id="imageInput"
-      ref="imageInput"
-      @change="handleFileChange('image', $event)"
-      accept="image/*"
-      style="display: none"
-    />
-    <input
-      type="file"
-      id="jsonInput"
-      ref="jsonInput"
-      @change="handleFileChange('json', $event)"
-      accept=".json"
-      style="display: none"
-    />
+    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
+      style="display: none" />
+    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
+      style="display: none" />
   </Panel>
 </template>
 
@@ -162,6 +130,41 @@ export default {
   },
   setup() {
     const usedLang = usedLanguage();
+
+    //Playfield variables
+    const imgUrl = ref(null); // URL for the image
+    const showGrid = ref(false); // Flag for showing grid
+    const gridSize = ref(15); // Grid size (number of cells per row/column)
+    const snapGrid = ref([50, 50]);
+    const nodes = ref([]); // Nodes for Vue Flow
+    const edges = ref([]); // Edges for Vue Flow
+    const nodeIdCounter = ref(1); // Counter for unique IDs
+    const connectionMode = ref("strict"); // Connection mode for the graph
+    const edgeMode = ref(false); // Flag for edge creation mode
+    const selectedNodeId = ref(null); // Track the selected node for edge creation
+    const locked = ref(false); // Lock flag
+    const jsonUrl = ref(null); // JSON file URL
+
+    // Reactive object for edge properties
+    const edgeProps = reactive({
+      color: "#000000", // Edge color
+      animated: true, // Edge animation
+      style: { strokeWidth: 5 }, // Edge style
+    });
+
+    // Reactive object for custom node types
+    const customNodeTypes = reactive({
+      consumer: ConsumerNode,
+      producer: ProducerNode,
+    });
+
+    // Reactive state for selected consumer/producer and their options
+    const selectedConsumer = ref(""); // Selected value for consumers
+    const optionsConsumer = ref(["Commercial", "Residential Large", "Residential Small"]); // Consumer options
+
+    const selectedProducer = ref(""); // Selected value for producers
+    const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options
+
     return {
       usedLang,
     };
@@ -201,15 +204,43 @@ export default {
 
       selectedProducer: "", // Selected value for producers
       optionsProducers: ["Nuclear", "Coal", "Solar", "Wind"], // Initial producer options
+      load_scenario,
+      upload_scenario,
+      upload_json,
+      toggle_grid,
+      add_consumer,
+      add_energy_source,
+      add_edge,
+      clear_nodes,
+      save_text,
+      //playfield variables
+      imgUrl,
+      showGrid,
+      gridSize,
+      snapGrid,
+      nodes,
+      edges,
+      customNodeTypes,
+      nodeIdCounter,
+      connectionMode,
+      edgeMode,
+      selectedNodeId,
+      edgeProps,
+      locked,
+      jsonUrl,
+      selectedConsumer,
+      optionsConsumer,
+      selectedProducer,
+      optionsProducers
     };
   },
+
 
   methods: {
     toggleLock() {
       this.locked = !this.locked;
     },
     async loadRequest() {
-      // Fetch the image URL
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
         const id = 1;
@@ -224,16 +255,115 @@ export default {
         }
 
         this.imgUrl = URL.createObjectURL(imgResponse.data);
+
+
+        const graphResponse = await axios.get(url, {
+          params: { id: id, filetype: "json" },
+          responseType: "json",
+        });
+
+
+
+
+
+        const { nodes, edges } = graphResponse.data;
+
+
+        this.nodes = nodes.map((node) => {
+          let newNode = {
+            ...node,
+            data: {},
+          };
+
+          switch (node.label) {
+            case "Commercial":
+              newNode.data = {
+                label: "Commercial",
+                icon: Commercial,
+                inputs: [0],
+                outputs: [0, 1],
+              };
+              break;
+            case "Residential Large":
+              newNode.data = {
+                label: "Residential Large",
+                icon: ResidentialLarge,
+                inputs: [0],
+                outputs: [0, 1],
+              };
+              break;
+            case "Residential Small":
+              newNode.data = {
+                label: "Residential Small",
+                icon: ResidentialSmall,
+                inputs: [0],
+                outputs: [0, 1],
+              };
+              break;
+            case "Nuclear Power":
+              newNode.data = {
+                label: "Nuclear Power",
+                icon: Nuclear,
+                inputs: [1],
+                outputs: [0],
+                description: "Provides large-scale base power with low carbon emissions.",
+              };
+              break;
+            case "Coal Power":
+              newNode.data = {
+                label: "Coal Power",
+                icon: Coal,
+                inputs: [1],
+                outputs: [0],
+                description: "Traditional fossil fuel energy source.",
+              };
+              break;
+            case "Solar Power":
+              newNode.data = {
+                label: "Solar Power",
+                icon: Solar,
+                inputs: [1],
+                outputs: [0],
+                description: "Generates renewable energy from sunlight.",
+              };
+              break;
+            case "Wind Power":
+              newNode.data = {
+                label: "Wind Power",
+                icon: Wind,
+                inputs: [1],
+                outputs: [0],
+                description: "Generates renewable energy from wind.",
+              };
+              break;
+            default:
+              console.warn(`Unknown label: ${node.label}`);
+          }
+
+          return newNode;
+        });
+
+        this.edges = edges.map((edge) => ({
+          ...edge,
+          animated: this.edgeProps.animated,
+          style: this.edgeProps.style,
+          color: this.edgeProps.color,
+        }));
+
+
+
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
       }
     },
+
+
     toggleGridOverlay() {
       this.showGrid = !this.showGrid;
       if (this.showGrid) {
         this.$nextTick(() => {
-          this.drawGrid(); // Ensure grid is drawn when visible
+          this.drawGrid();
         });
       }
     },
@@ -327,7 +457,7 @@ export default {
           newNode.data = {
             label: "Solar Power",
             icon: Solar, // Add an icon path if available
-            inputs: [],
+            inputs: [1],
             outputs: [0],
             description: "Generates renewable energy from sunlight.",
           };
@@ -337,7 +467,7 @@ export default {
           newNode.data = {
             label: "Wind Power",
             icon: Wind, // Add an icon path if available
-            inputs: [],
+            inputs: [1],
             outputs: [0],
             description: "Generates renewable energy from wind.",
           };
@@ -455,7 +585,7 @@ export default {
             color: edge.color,
             style: edge.style,
           })),
-          imageUrl: this.imgUrl,
+
         };
 
         // Convert to JSON
@@ -510,10 +640,6 @@ export default {
       this.$refs.imageInput.click(); // Trigger image upload
     },
 
-    // Trigger the JSON file input
-    triggerJsonUpload() {
-      this.$refs.jsonInput.click(); // Trigger JSON upload
-    },
 
     handleFileChange(type, event) {
       const file = event.target.files[0];
@@ -523,7 +649,8 @@ export default {
         this.imgUrl = URL.createObjectURL(file);
 
         // Show alert for JSON upload
-        alert("Please upload the corresponding JSON file.");
+
+        this.$refs.jsonInput.click();
       } else if (type === "json") {
         this.jsonFile = file;
         this.loadScenarioData(); // Handle JSON after image upload
@@ -533,6 +660,7 @@ export default {
     // Load and parse the JSON file
     loadScenarioData() {
       if (!this.imageFile || !this.jsonFile) {
+        console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
         alert("Please upload both the image and the JSON file.");
         return;
       }
@@ -541,21 +669,118 @@ export default {
       reader.onload = (e) => {
         try {
           const data = JSON.parse(e.target.result);
-          this.nodes = data.nodes || [];
-          this.edges = data.edges || [];
+          console.log('Parsed JSON:', data);
+
+          if (!data.nodes || !Array.isArray(data.nodes)) {
+            throw new Error("Invalid JSON structure: 'nodes' must be an array.");
+          }
+
+          this.nodes = data.nodes.map((node) => {
+            const newNode = {
+              ...node,
+              data: {}, // Will be populated based on label
+            };
+
+            switch (node.label) {
+              case "Commercial":
+                newNode.data = {
+                  label: "Commercial",
+                  icon: Commercial, // Ensure Commercial is imported or defined
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Large":
+                newNode.data = {
+                  label: "Residential Large",
+                  icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Small":
+                newNode.data = {
+                  label: "Residential Small",
+                  icon: ResidentialSmall, // Ensure ResidentialSmall is imported or defined
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Nuclear Power":
+                newNode.data = {
+                  label: "Nuclear Power",
+                  icon: Nuclear, // Ensure Nuclear is imported or defined
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Provides large-scale base power with low carbon emissions.",
+                };
+                break;
+              case "Coal Power":
+                newNode.data = {
+                  label: "Coal Power",
+                  icon: Coal, // Ensure Coal is imported or defined
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Traditional fossil fuel energy source.",
+                };
+                break;
+              case "Solar Power":
+                newNode.data = {
+                  label: "Solar Power",
+                  icon: Solar, // Ensure Solar is imported or defined
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from sunlight.",
+                };
+                break;
+              case "Wind Power":
+                newNode.data = {
+                  label: "Wind Power",
+                  icon: Wind, // Ensure Wind is imported or defined
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from wind.",
+                };
+                break;
+              default:
+                console.warn(`Unknown label: ${node.label}`);
+                newNode.data = {
+                  label: node.label || "Unknown",
+                  icon: null,
+                  inputs: [],
+                  outputs: [],
+                };
+            }
+
+            return newNode;
+          });
+
+          this.edges = data.edges.map((edge) => ({
+            ...edge,
+            animated: this.edgeProps.animated,
+            style: this.edgeProps.style,
+            color: this.edgeProps.color,
+          }));
+
+
+
+          console.log("Nodes processed:", this.nodes);
+          console.log("Edges processed:", this.edges);
+
         } catch (error) {
           console.error("Error parsing JSON:", error);
-          alert("Invalid JSON file.");
+          alert(`Invalid JSON file: ${error.message}`);
         }
       };
+
       reader.readAsText(this.jsonFile);
     },
-  },
-};
+
+  }
+}
 </script>
 
 <style>
-@import "../assets/main.css";
 /* Playfield Styles */
 #playfield {
   display: flex;
@@ -574,11 +799,11 @@ export default {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: auto;
+  width: auto;
+  height: 2rem;
   position: absolute;
   bottom: 0;
-  padding: 10px;
+
   background-color: var(--primary-background-color);
   z-index: 3;
 }
@@ -591,12 +816,18 @@ export default {
   color: black;
 }
 
+.slider-button {
+  margin-bottom: 10px;
+  margin-right: 5px;
+}
+
+
 #vueflow_container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 43rem;
+  height: 42rem;
   z-index: 2;
   overflow: hidden;
 }

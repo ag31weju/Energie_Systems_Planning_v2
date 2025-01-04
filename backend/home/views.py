@@ -48,7 +48,7 @@ def process_scenario(request):
                     )  # deserializes opened json file to actual data that can be sent as a JsonResponse
                     return JsonResponse(data, status=200)
 
-            elif filetype == "png":
+            if filetype == "png":
                 img_path = f"{folder_path}/img.png"  # path for img.png
                 if not os.path.exists(img_path):
                     return JsonResponse({"error": "Image file not found"}, status=404)
