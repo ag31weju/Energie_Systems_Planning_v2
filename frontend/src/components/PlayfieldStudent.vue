@@ -159,12 +159,11 @@ export default {
 
   methods: {
     async loadRequest() {
-      // Fetch the image URL
-      try {
-        const url = "http://127.0.0.1:8000/api/process-scenario/";
-        const id = 1;
+  try {
+    const url = "http://127.0.0.1:8000/api/process-scenario/";
+    const id = 1;
 
-        const imgResponse = await axios.get(url, {
+  const imgResponse = await axios.get(url, {
           params: { id: id, filetype: "png" },
           responseType: "blob",
         });
@@ -174,20 +173,108 @@ export default {
         }
 
         this.imgUrl = URL.createObjectURL(imgResponse.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        alert(`Error: ${error.message}`);
-      }
-    },
-    toggleGridOverlay() {
-      this.showGrid = !this.showGrid;
-      if (this.showGrid) {
-        this.$nextTick(() => {
-          this.drawGrid(); // Ensure grid is drawn when visible
-        });
-      }
-    },
+      
 
+    const graphResponse = await axios.get(url, {
+          params: { id: id, filetype: "json" },
+          responseType: "json",
+        });
+
+    
+      
+
+
+    const { nodes, edges } = graphResponse.data;
+
+    
+    this.nodes = nodes.map((node) => {
+      let newNode = {
+        ...node,
+        data: {},
+      };
+
+      switch (node.label) {
+        case "Commercial":
+          newNode.data = {
+            label: "Commercial",
+            icon: Commercial,
+            inputs: [0],
+            outputs: [0, 1],
+          };
+          break;
+        case "Residential Large":
+          newNode.data = {
+            label: "Residential Large",
+            icon: ResidentialLarge,
+            inputs: [0],
+            outputs: [0, 1],
+          };
+          break;
+        case "Residential Small":
+          newNode.data = {
+            label: "Residential Small",
+            icon: ResidentialSmall,
+            inputs: [0],
+            outputs: [0, 1],
+          };
+          break;
+        case "Nuclear Power":
+          newNode.data = {
+            label: "Nuclear Power",
+            icon: Nuclear,
+            inputs: [1],
+            outputs: [0],
+            description: "Provides large-scale base power with low carbon emissions.",
+          };
+          break;
+        case "Coal Power":
+          newNode.data = {
+            label: "Coal Power",
+            icon: Coal,
+            inputs: [1],
+            outputs: [0],
+            description: "Traditional fossil fuel energy source.",
+          };
+          break;
+        case "Solar Power":
+          newNode.data = {
+            label: "Solar Power",
+            icon: Solar,
+            inputs: [1],
+            outputs: [0],
+            description: "Generates renewable energy from sunlight.",
+          };
+          break;
+        case "Wind Power":
+          newNode.data = {
+            label: "Wind Power",
+            icon: Wind,
+            inputs: [1],
+            outputs: [0],
+            description: "Generates renewable energy from wind.",
+          };
+          break;
+        default:
+          console.warn(`Unknown label: ${node.label}`);
+      }
+
+      return newNode;
+    });
+
+    this.edges = edges.map((edge) => ({
+        ...edge,
+        animated: this.edgeProps.animated,
+        style: this.edgeProps.style,
+        color: this.edgeProps.color,
+      }));
+
+    
+   
+  }catch (error) {
+    console.error("Error fetching data:", error);
+    alert(`Error: ${error.message}`);
+  }
+},
     drawGrid() {
       const canvas = this.$refs.gridCanvas;
       const vueFlowContainer = this.$refs.vueFlowContainer;
