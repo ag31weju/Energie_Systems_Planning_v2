@@ -15,7 +15,7 @@
       <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
         :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
         :connection-mode="connectionMode" :node-types="customNodeTypes" :auto-pan-on-node-drag="false"
-        :nodes-draggable="locked" :edges-connectable="edgeMode" :zoomOnDoubleClick="false" @connect="onConnect" />
+        :nodes-draggable="locked" :edges-connectable="false" :zoomOnDoubleClick="false" @connect="onConnect" />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
