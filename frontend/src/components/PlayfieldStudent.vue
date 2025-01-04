@@ -73,28 +73,26 @@
       <Button
         @click="loadRequest"
         type="submit"
-        class="slider-button"
-        v-bind:label="load_scenario"
+        class="button"
+        v-bind:label="usedLang.load_scenario"
       ></Button>
       <Button
         @click="triggerImageUpload"
         type="submit"
-        class="slider-button"
-        v-bind:label="upload_scenario"
-        ></Button
-      >
+        class="button"
+        v-bind:label="usedLang.upload_scenario"
+      ></Button>
       <Button
         @click="triggerJsonUpload"
         type="submit"
-        class="slider-button"
-        v-bind:label="upload_json"
-        ></Button
-      >
+        class="button"
+        v-bind:label="usedLang.upload_json"
+      ></Button>
       <Button
         @click="toggleGridOverlay"
         type="submit"
-        class="slider-button"
-        v-bind:label="toggle_grid"
+        class="button"
+        v-bind:label="usedLang.toggle_grid"
       ></Button>
     </div>
     <input
@@ -124,7 +122,7 @@ import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 import ConsumerNode from "./customNodes/Consumer.vue";
 import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico";
-import { inject } from "vue";
+import { usedLanguage } from "../assets/stores/pageSettings";
 
 export default {
   components: {
@@ -133,15 +131,9 @@ export default {
     VueFlow,
   },
   setup() {
-    let load_scenario = inject("load_scenario");
-    let upload_scenario = inject("upload_scenario");
-    let upload_json = inject("upload_json");
-    let toggle_grid = inject("toggle_grid");
+    const usedLang = usedLanguage();
     return {
-      load_scenario,
-      upload_scenario,
-      upload_json,
-      toggle_grid,
+      usedLang
     };
   },
   data() {

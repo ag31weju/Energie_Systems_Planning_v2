@@ -13,13 +13,21 @@
     </div>
 
     <div id="slider-buttons-container">
-      <Button @click="reset" class="button" v-bind:label="reset_text"></Button>
-      <Button @click="autoSimulateRequest" class="button" v-bind:label="auto">
+      <Button
+        @click="reset"
+        class="button"
+        v-bind:label="usedLang.reset_text"
+      ></Button>
+      <Button
+        @click="autoSimulateRequest"
+        class="button"
+        v-bind:label="usedLang.auto"
+      >
       </Button>
       <Button
         @click="simulateRequest"
         class="button"
-        v-bind:label="simulate"
+        v-bind:label="usedLang.simulate"
       ></Button>
     </div>
   </Panel>
@@ -31,13 +39,12 @@ import Button from "primevue/button";
 import Panel from "primevue/panel";
 import axios from "axios";
 import { ref, watch, onMounted, inject } from "vue";
+import { usedLanguage } from "../assets/stores/pageSettings";
 
 export default {
   props: ["auto", "simulate", "reset_text"],
   setup(props, context) {
-    let auto = inject("auto");
-    let simulate = inject("simulate");
-    let reset_text = inject("reset_text");
+    const usedLang = usedLanguage();
 
     let selectedNodes = inject("selectedNodes");
 
@@ -132,14 +139,12 @@ export default {
     });
 
     return {
+      usedLang,
       sliderList,
       step,
       reset,
       autoSimulateRequest,
       simulateRequest,
-      auto,
-      simulate,
-      reset_text,
     };
   },
   components: {

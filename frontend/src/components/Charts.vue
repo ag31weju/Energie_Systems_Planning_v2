@@ -25,6 +25,7 @@
 import Chart from "primevue/chart";
 import Panel from "primevue/panel";
 import { ref, watch, onMounted } from "vue";
+import { usedLanguage } from "../assets/stores/pageSettings";
 
 export default {
   props: {
@@ -67,11 +68,12 @@ export default {
     },
   },
   setup(props) {
+    const usedLang = usedLanguage();
     const chartset = ref({
       labels: Array.from({ length: 25 }, (_, i) => i),
       datasets: [
         {
-          label: "Storage",
+          label: usedLang.storage_text,
           backgroundColor: "rgba(153, 102, 255, 0.2)",
           borderColor: "rgba(153, 102, 255, 1)",
           borderWidth: 1,
@@ -95,42 +97,42 @@ export default {
       labels: Array.from({ length: 25 }, (_, i) => i),
       datasets: [
         {
-          label: "Purchased_Power",
+          label: usedLang.purchased_power,
           backgroundColor: "rgba(75, 192, 192, 0.2)",
           borderColor: "rgba(75, 192, 192, 1)",
           borderWidth: 1,
           data: [],
         },
         {
-          label: "Demand",
+          label: usedLang.demand,
           backgroundColor: "rgba(255, 99, 132, 0.2)",
           borderColor: "rgba(255, 99, 132, 1)",
           borderWidth: 1,
           data: [],
         },
         {
-          label: "PV Production",
+          label: usedLang.pv_production,
           backgroundColor: "rgba(34, 139, 34, 0.2)",
           borderColor: "rgba(34, 139, 34, 1)",
           borderWidth: 1,
           data: [],
         },
         {
-          label: "PV Curtailment",
+          label: usedLang.pv_curtailment,
           backgroundColor: "rgba(255, 255, 0, 0.2)",
           borderColor: "rgba(204, 204, 0, 1)",
           borderWidth: 1,
           data: [],
         },
         {
-          label: "Storage Charge",
+          label: usedLang.storage_charge,
           backgroundColor: "rgba(255, 165, 0, 0.2)",
           borderColor: "rgba(255, 140, 0, 1)",
           borderWidth: 1,
           data: [],
         },
         {
-          label: "Storage Discharge",
+          label: usedLang.storage_discharge,
           backgroundColor: "rgba(138, 43, 226, 0.2)",
           borderColor: "rgba(75, 0, 130, 1)",
           borderWidth: 1,

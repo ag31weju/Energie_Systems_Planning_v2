@@ -8,6 +8,7 @@
   "pv_curtailment": "PV Abregelung",
   "demand": "Verbrauch",
   "purchased_power": "Netzbezug",
+  "storage_text": "Speicher",
   "storage_charge": "Speicherladung",
   "storage_discharge": "Speicherentladung",
   "storage_level": "Speicherstand",
@@ -25,5 +26,7 @@
   "clear_nodes": "Alle Knoten entfernen",
   "upload_json": "JSON hochladen",
   "save_text": "Speichern",
-  "add_edge": "Kante hinzufügen"
+  "add_edge": "Kante hinzufügen",
+  "selector_text_consumer": "Bitte selektiere einen Konsumenten",
+  "selector_text_producer": "Bitte selektiere einen Produzenten"
 }

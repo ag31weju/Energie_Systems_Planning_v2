@@ -49,75 +49,69 @@
       <Button
         @click="loadRequest"
         type="submit"
-        class="slider-button"
-        v-bind:label="load_scenario"
-        ></Button
-      >
+        class="button"
+        v-bind:label="usedLang.load_scenario"
+      ></Button>
       <Button
         @click="triggerImageUpload"
         type="submit"
-        class="slider-button"
-        v-bind:label="upload_scenario"
-        ></Button
-      >
+        class="button"
+        v-bind:label="usedLang.upload_scenario"
+      ></Button>
       <Button
         @click="triggerJsonUpload"
         type="submit"
-        class="slider-button"
-        v-bind:label="upload_json"
-        ></Button
-      >
+        class="button"
+        v-bind:label="usedLang.upload_json"
+      ></Button>
       <Button
         @click="toggleGridOverlay"
         type="submit"
-        class="slider-button"
-        v-bind:label="toggle_grid"
-        ></Button
-      >
+        class="button"
+        v-bind:label="usedLang.toggle_grid"
+      ></Button>
       <Button
         @click="addConsumerNode"
         type="submit"
-        class="slider-button"
-        v-bind:label="add_consumer"
-        ></Button
-      >
+        class="button"
+        v-bind:label="usedLang.add_consumer"
+      ></Button>
       <Button
         @click="addEnergySourceNode"
         type="submit"
-        class="slider-button"
-        v-bind:label="add_energy_source"
+        class="button"
+        v-bind:label="usedLang.add_energy_source"
       ></Button>
       <Button
         @click="toggleEdgeMode"
         type="submit"
-        class="slider-button"
-        v-bind:label="add_edge"
-        ></Button
-      >
+        class="button"
+        v-bind:label="usedLang.add_edge"
+      ></Button>
       <Button
         @click="clearNodes"
         type="submit"
-        class="slider-button"
-        v-bind:label="clear_nodes"
+        class="button"
+        v-bind:label="usedLang.clear_nodes"
       ></Button>
       <Button
         @click="saveData"
         type="submit"
-        class="slider-button"
-        v-bind:label="save_text"
+        class="button"
+        v-bind:label="usedLang.save_text"
       ></Button>
 
       <Select
         v-model="selectedConsumer"
         :options="optionsConsumer"
-        placeholder="Please select consumer type"
+        :placeholder="usedLang.selector_text_consumer"
       >
       </Select>
 
       <Select
         v-model="selectedProducer"
         :options="optionsProducers"
-        placeholder="Please select producer type"
+        :placeholder="usedLang.selector_text_producer"
       >
       </Select>
     </div>
@@ -156,7 +150,8 @@ import Nuclear from "@/assets/node_images/producer/nuclear.png";
 import Coal from "@/assets/node_images/producer/coal.png";
 import Solar from "@/assets/node_images/producer/solarPanel.png";
 import Wind from "@/assets/node_images/producer/windmill.png";
-import { inject } from 'vue';
+import { usedLanguage } from "../assets/stores/pageSettings";
+import { inject } from "vue";
 
 export default {
   components: {
@@ -166,25 +161,9 @@ export default {
     VueFlow,
   },
   setup() {
-    let load_scenario = inject('load_scenario');
-    let upload_scenario = inject('upload_scenario');
-    let upload_json = inject('upload_json');
-    let toggle_grid = inject('toggle_grid');
-    let add_consumer = inject('add_consumer');
-    let add_energy_source = inject('add_energy_source');
-    let add_edge = inject('add_edge');
-    let clear_nodes = inject('clear_nodes');
-    let save_text = inject('save_text');
+    const usedLang = usedLanguage();
     return {
-      load_scenario,
-      upload_scenario,
-      upload_json,
-      toggle_grid,
-      add_consumer,
-      add_energy_source,
-      add_edge,
-      clear_nodes,
-      save_text
+      usedLang,
     };
   },
   data() {
@@ -604,11 +583,11 @@ export default {
   z-index: 3;
 }
 
-.slider-button {
+.button {
   margin-bottom: 5px;
 }
 
-.slider-button .p-button-label {
+.button .p-button-label {
   color: black;
 }
 
