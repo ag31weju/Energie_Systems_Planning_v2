@@ -4,11 +4,7 @@
     <div class="consumer-icon">
       <img :src="data.icon" alt="Consumer Icon" />
     </div>
-    <div
-      v-if="isHighlighted"
-      class="node-name"
-      :style="{ color: labelColor }"
-    >
+    <div v-if="isHighlighted" class="node-name" style="color:black; background: black"  > <!-- color of label -->
       {{ data.label || "Unnamed Node" }}
     </div>
     <div class="handles">

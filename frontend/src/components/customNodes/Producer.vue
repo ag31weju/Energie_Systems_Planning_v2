@@ -4,7 +4,7 @@
     <div class="producer-icon">
       <img :src="data.icon" alt="Producer Icon" />
     </div>
-    <div v-if="isHighlighted" class="node-name">
+    <div v-if="isHighlighted" class="node-name" style="color:crimson; background: black"  > <!-- color of label -->
       {{ data.label || "Unnamed Node" }}
     </div>
     <div class="handles">
