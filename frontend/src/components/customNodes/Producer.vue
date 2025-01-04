@@ -5,7 +5,7 @@
       <img :src="data.icon" alt="Producer Icon" />
     </div>
     <div v-if="isHighlighted" class="node-name">
-      Hello
+      {{ data.label || "Unnamed Node" }}
     </div>
     <div class="handles">
       <!-- Handles for inputs -->
@@ -24,9 +24,10 @@
 
 
 <script>
+import { ref, defineComponent } from "vue";
 import { Handle, Position } from "@vue-flow/core";
 
-export default {
+export default defineComponent({
   name: "ProducerNode",
   props: {
     data: {
@@ -37,25 +38,32 @@ export default {
   components: {
     Handle,
   },
-  data() {
+  setup() {
+    const isHighlighted = ref(false); // Tracks if the node is hovered
+
+    const handleMouseOver = () => {
+      isHighlighted.value = true; // Show "Hello" on hover
+    };
+
+    const handleMouseLeave = () => {
+      isHighlighted.value = false; // Hide "Hello" when hover ends
+    };
+
+    const handleClick = () => {
+      alert("Node clicked");
+    };
+
     return {
       Position,
-      isHighlighted: false, // Tracks if the node is hovered
+      isHighlighted,
+      handleMouseOver,
+      handleMouseLeave,
+      handleClick,
     };
   },
-  methods: {
-    handleMouseOver() {
-      this.isHighlighted = true; // Show "Hello" on hover
-    },
-    handleMouseLeave() {
-      this.isHighlighted = false; // Hide "Hello" when hover ends
-    },
-    handleClick() {
-      alert("Node clicked");
-    },
-  },
-};
+});
 </script>
+
 
 
 
