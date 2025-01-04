@@ -23,30 +23,10 @@
     <!-- Buttons at the Bottom -->
 
     <div id="buttons_container">
-      <Button
-        @click="loadRequest"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.load_scenario"
-      ></Button>
-      <Button
-        @click="triggerImageUpload"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.upload_scenario"
-      ></Button>
-      <Button
-        @click="triggerJsonUpload"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.upload_json"
-      ></Button>
-      <Button
-        @click="toggleGridOverlay"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.toggle_grid"
-      ></Button>
+      <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
+      <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario"></Button>
+      <Button @click="triggerJsonUpload" type="submit" class="button" v-bind:label="usedLang.upload_json"></Button>
+      <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
     </div>
     <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
       style="display: none" />
@@ -62,8 +42,17 @@ import axios from "axios";
 import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 import ConsumerNode from "./customNodes/Consumer.vue";
-import ConsumerIcon from "@/assets/9sg0t-5fb6x-001.ico";
+import ProducerNode from "./customNodes/Producer.vue";
+import ConsumerIcon from "@/assets/node_images/consumer/commercial2.png";
+import Commercial from "@/assets/node_images/consumer/commercial.png";
+import ResidentialLarge from "@/assets/node_images/consumer/residentialLarge.png";
+import ResidentialSmall from "@/assets/node_images/consumer/residentialSmall.png";
+import Nuclear from "@/assets/node_images/producer/nuclear.png";
+import Coal from "@/assets/node_images/producer/coal.png";
+import Solar from "@/assets/node_images/producer/solarPanel.png";
+import Wind from "@/assets/node_images/producer/windmill.png";
 import { usedLanguage } from "../assets/stores/pageSettings";
+import { ref, reactive } from "vue";
 
 export default {
   components: {
@@ -111,7 +100,8 @@ export default {
     const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options
 
     return {
-      usedLang
+      usedLang,
+
       //playfield variables
       imgUrl,
       showGrid,
@@ -254,6 +244,16 @@ export default {
         alert(`Error: ${error.message}`);
       }
     },
+
+    toggleGridOverlay() {
+      this.showGrid = !this.showGrid;
+      if (this.showGrid) {
+        this.$nextTick(() => {
+          this.drawGrid();
+        });
+      }
+    },
+
     drawGrid() {
       const canvas = this.$refs.gridCanvas;
       const vueFlowContainer = this.$refs.vueFlowContainer;
@@ -508,7 +508,6 @@ export default {
 </script>
 
 <style>
-/* Playfield Styles */
 #playfieldS {
   display: flex;
   flex-direction: column;
@@ -545,7 +544,6 @@ export default {
 }
 
 
-
 #vueflow_container {
   position: absolute;
   top: 0;
@@ -563,6 +561,6 @@ export default {
   pointer-events: none;
   z-index: 3;
   width: 100%;
-  height: 91.85%;
+  height: 42.9rem;
 }
 </style>

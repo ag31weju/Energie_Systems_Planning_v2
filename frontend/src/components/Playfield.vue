@@ -26,73 +26,21 @@
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container">
-      <Button
-        @click="loadRequest"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.load_scenario"
-      ></Button>
-      <Button
-        @click="triggerImageUpload"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.upload_scenario"
-      ></Button>
-      <Button
-        @click="triggerJsonUpload"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.upload_json"
-      ></Button>
-      <Button
-        @click="toggleGridOverlay"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.toggle_grid"
-      ></Button>
-      <Button
-        @click="addConsumerNode"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.add_consumer"
-      ></Button>
-      <Button
-        @click="addEnergySourceNode"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.add_energy_source"
-      ></Button>
-      <Button
-        @click="toggleEdgeMode"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.add_edge"
-      ></Button>
-      <Button
-        @click="clearNodes"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.clear_nodes"
-      ></Button>
-      <Button
-        @click="saveData"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.save_text"
-      ></Button>
+      <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
+      <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario"></Button>
+      <Button @click="triggerJsonUpload" type="submit" class="button" v-bind:label="usedLang.upload_json"></Button>
+      <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
+      <Button @click="addConsumerNode" type="submit" class="button" v-bind:label="usedLang.add_consumer"></Button>
+      <Button @click="addEnergySourceNode" type="submit" class="button"
+        v-bind:label="usedLang.add_energy_source"></Button>
+      <Button @click="toggleEdgeMode" type="submit" class="button" v-bind:label="usedLang.add_edge"></Button>
+      <Button @click="clearNodes" type="submit" class="button" v-bind:label="usedLang.clear_nodes"></Button>
+      <Button @click="saveData" type="submit" class="button" v-bind:label="usedLang.save_text"></Button>
 
-      <Select
-        v-model="selectedConsumer"
-        :options="optionsConsumer"
-        :placeholder="usedLang.selector_text_consumer"
-      >
+      <Select v-model="selectedConsumer" :options="optionsConsumer" :placeholder="usedLang.selector_text_consumer">
       </Select>
 
-      <Select
-        v-model="selectedProducer"
-        :options="optionsProducers"
-        :placeholder="usedLang.selector_text_producer"
-      >
+      <Select v-model="selectedProducer" :options="optionsProducers" :placeholder="usedLang.selector_text_producer">
       </Select>
     </div>
     <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
@@ -119,7 +67,7 @@ import Coal from "@/assets/node_images/producer/coal.png";
 import Solar from "@/assets/node_images/producer/solarPanel.png";
 import Wind from "@/assets/node_images/producer/windmill.png";
 import { usedLanguage } from "../assets/stores/pageSettings";
-import { inject } from "vue";
+import { inject, ref, reactive } from 'vue';
 
 export default {
   components: {
@@ -167,52 +115,6 @@ export default {
 
     return {
       usedLang,
-    };
-  },
-  data() {
-    return {
-      imgUrl: null, // URL for the image
-      showGrid: false, // Flag for showing grid
-      gridSize: 15, // Grid size (number of cells per row/column)
-      snapGrid: [50, 50],
-      nodes: [], // Nodes for Vue Flow
-      edges: [], // Edges for Vue Flow
-      customNodeTypes: {
-        consumer: ConsumerNode,
-        producer: ProducerNode,
-      }, // Define custom node types if needed
-      nodeIdCounter: 1, // Counter for unique IDs
-      connectionMode: "strict", // Connection mode for the graph
-      edgeMode: false, // Flag to track if edge creation mode is activated
-      selectedNodeId: null, // Track the selected node for edge creation
-      edgeProps: {
-        // Default edge properties (adjustable)
-        color: "#000000", // Edge color
-        animated: true, // Edge animation
-        style: { strokeWidth: 5 }, // Edge style
-      },
-      locked: false, // Lock flag
-
-      jsonUrl: null,
-      coordinateExtent: [
-        [0, 0],
-        [0, 0],
-      ],
-
-      selectedConsumer: "", // Selected value for consumers
-      optionsConsumer: ["Commercial", "Residential Large", "Residential Small"], // Initial consumer options
-
-      selectedProducer: "", // Selected value for producers
-      optionsProducers: ["Nuclear", "Coal", "Solar", "Wind"], // Initial producer options
-      load_scenario,
-      upload_scenario,
-      upload_json,
-      toggle_grid,
-      add_consumer,
-      add_energy_source,
-      add_edge,
-      clear_nodes,
-      save_text,
       //playfield variables
       imgUrl,
       showGrid,
@@ -232,8 +134,10 @@ export default {
       optionsConsumer,
       selectedProducer,
       optionsProducers
+
     };
   },
+
 
 
   methods: {
@@ -781,7 +685,6 @@ export default {
 </script>
 
 <style>
-/* Playfield Styles */
 #playfield {
   display: flex;
   flex-direction: column;
@@ -808,11 +711,7 @@ export default {
   z-index: 3;
 }
 
-.button {
-  margin-bottom: 5px;
-}
-
-.button .p-button-label {
+.p-button-label {
   color: black;
 }
 
@@ -839,6 +738,6 @@ export default {
   pointer-events: none;
   z-index: 3;
   width: 100%;
-  height: 91.85%;
+  height: 42.9rem;
 }
 </style>
