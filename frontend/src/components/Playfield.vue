@@ -60,13 +60,7 @@
         v-bind:label="upload_scenario"
         ></Button
       >
-      <Button
-        @click="triggerJsonUpload"
-        type="submit"
-        class="slider-button"
-        v-bind:label="upload_json"
-        ></Button
-      >
+      
       <Button
         @click="toggleGridOverlay"
         type="submit"
@@ -227,26 +221,120 @@ export default {
       this.locked = !this.locked;
     },
     async loadRequest() {
-      // Fetch the image URL
-      try {
-        const url = "http://127.0.0.1:8000/api/process-scenario/";
-        const id = 1;
+  try {
+    // Fetch the image URL
+    const url = "http://127.0.0.1:8000/api/process-scenario/";
+    const id = 1;
 
-        const imgResponse = await axios.get(url, {
-          params: { id: id, filetype: "png" },
-          responseType: "blob",
-        });
+    const imgResponse = await axios.get(url, {
+      params: { id: id, filetype: "png" },
+      responseType: "blob",
+    });
 
-        if (this.imgUrl) {
-          URL.revokeObjectURL(this.imgUrl);
+    if (this.imgUrl) {
+      URL.revokeObjectURL(this.imgUrl);
+    }
+
+    this.imgUrl = URL.createObjectURL(imgResponse.data);
+
+    // Read the JSON file
+    if (this.jsonFile) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          this.nodes = data.nodes.map((node) => {
+            // Match node label with predefined types and set appropriate data
+            let newNode = {
+              ...node,
+              type: node.type, // Ensure type is maintained
+              data: {}, // Populate data based on label
+            };
+
+            switch (node.label) {
+              case "Commercial":
+                newNode.data = {
+                  label: "Commercial",
+                  icon: Commercial,
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Large":
+                newNode.data = {
+                  label: "Residential Large",
+                  icon: ResidentialLarge,
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Small":
+                newNode.data = {
+                  label: "Residential Small",
+                  icon: ResidentialSmall,
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Nuclear":
+                newNode.data = {
+                  label: "Nuclear Power",
+                  icon: Nuclear,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Provides large-scale base power with low carbon emissions.",
+                };
+                break;
+              case "Coal":
+                newNode.data = {
+                  label: "Coal Power",
+                  icon: Coal,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Traditional fossil fuel energy source.",
+                };
+                break;
+              case "Solar":
+                newNode.data = {
+                  label: "Solar Power",
+                  icon: Solar,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from sunlight.",
+                };
+                break;
+              case "Wind":
+                newNode.data = {
+                  label: "Wind Power",
+                  icon: Wind,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from wind.",
+                };
+                break;
+              default:
+                console.warn(`Unknown label: ${node.label}`);
+            }
+
+            return newNode;
+          });
+
+          this.edges = data.edges || [];
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          alert("Invalid JSON file.");
         }
+      };
+      reader.readAsText(this.jsonFile);
+    } else {
+      alert("Please upload the corresponding JSON file.");
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    alert(`Error: ${error.message}`);
+  }
+},
 
-        this.imgUrl = URL.createObjectURL(imgResponse.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        alert(`Error: ${error.message}`);
-      }
-    },
     toggleGridOverlay() {
       this.showGrid = !this.showGrid;
       if (this.showGrid) {
@@ -345,7 +433,7 @@ export default {
           newNode.data = {
             label: "Solar Power",
             icon: Solar, // Add an icon path if available
-            inputs: [],
+            inputs: [1],
             outputs: [0],
             description: "Generates renewable energy from sunlight.",
           };
@@ -355,7 +443,7 @@ export default {
           newNode.data = {
             label: "Wind Power",
             icon: Wind, // Add an icon path if available
-            inputs: [],
+            inputs: [1],
             outputs: [0],
             description: "Generates renewable energy from wind.",
           };
@@ -473,7 +561,7 @@ export default {
             color: edge.color,
             style: edge.style,
           })),
-          imageUrl: this.imgUrl,
+         
         };
 
         // Convert to JSON
@@ -528,11 +616,7 @@ export default {
       this.$refs.imageInput.click(); // Trigger image upload
     },
 
-    // Trigger the JSON file input
-    triggerJsonUpload() {
-      this.$refs.jsonInput.click(); // Trigger JSON upload
-    },
-
+    
     handleFileChange(type, event) {
       const file = event.target.files[0];
       if (type === "image") {
@@ -541,7 +625,8 @@ export default {
         this.imgUrl = URL.createObjectURL(file);
 
         // Show alert for JSON upload
-        alert("Please upload the corresponding JSON file.");
+       
+        this.$refs.jsonInput.click();
       } else if (type === "json") {
         this.jsonFile = file;
         this.loadScenarioData(); // Handle JSON after image upload
@@ -550,26 +635,125 @@ export default {
 
     // Load and parse the JSON file
     loadScenarioData() {
-      if (!this.imageFile || !this.jsonFile) {
-        alert("Please upload both the image and the JSON file.");
-        return;
+  if (!this.imageFile || !this.jsonFile) {
+    console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
+    alert("Please upload both the image and the JSON file.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      console.log('Parsed JSON:', data);
+
+      if (!data.nodes || !Array.isArray(data.nodes)) {
+        throw new Error("Invalid JSON structure: 'nodes' must be an array.");
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = JSON.parse(e.target.result);
-          this.nodes = data.nodes || [];
-          this.edges = data.edges || [];
-        } catch (error) {
-          console.error("Error parsing JSON:", error);
-          alert("Invalid JSON file.");
+      this.nodes = data.nodes.map((node) => {
+        const newNode = {
+          ...node,
+          data: {}, // Will be populated based on label
+        };
+
+        switch (node.label) {
+          case "Commercial":
+            newNode.data = {
+              label: "Commercial",
+              icon: Commercial, // Ensure Commercial is imported or defined
+              inputs: [0],
+              outputs: [0, 1],
+            };
+            break;
+          case "Residential Large":
+            newNode.data = {
+              label: "Residential Large",
+              icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
+              inputs: [0],
+              outputs: [0, 1],
+            };
+            break;
+          case "Residential Small":
+            newNode.data = {
+              label: "Residential Small",
+              icon: ResidentialSmall, // Ensure ResidentialSmall is imported or defined
+              inputs: [0],
+              outputs: [0, 1],
+            };
+            break;
+          case "Nuclear Power":
+            newNode.data = {
+              label: "Nuclear Power",
+              icon: Nuclear, // Ensure Nuclear is imported or defined
+              inputs: [1],
+              outputs: [0],
+              description: "Provides large-scale base power with low carbon emissions.",
+            };
+            break;
+          case "Coal Power":
+            newNode.data = {
+              label: "Coal Power",
+              icon: Coal, // Ensure Coal is imported or defined
+              inputs: [1],
+              outputs: [0],
+              description: "Traditional fossil fuel energy source.",
+            };
+            break;
+          case "Solar Power":
+            newNode.data = {
+              label: "Solar Power",
+              icon: Solar, // Ensure Solar is imported or defined
+              inputs: [1],
+              outputs: [0],
+              description: "Generates renewable energy from sunlight.",
+            };
+            break;
+          case "Wind Power":
+            newNode.data = {
+              label: "Wind Power",
+              icon: Wind, // Ensure Wind is imported or defined
+              inputs: [1],
+              outputs: [0],
+              description: "Generates renewable energy from wind.",
+            };
+            break;
+          default:
+            console.warn(`Unknown label: ${node.label}`);
+            newNode.data = {
+              label: node.label || "Unknown",
+              icon: null,
+              inputs: [],
+              outputs: [],
+            };
         }
-      };
-      reader.readAsText(this.jsonFile);
-    },
-  },
-};
+
+        return newNode;
+      });
+
+      this.edges = data.edges.map((edge) => ({
+        ...edge,
+        animated: this.edgeProps.animated,
+        style: this.edgeProps.style,
+        color: this.edgeProps.color,
+      }));
+
+      
+
+      console.log("Nodes processed:", this.nodes);
+      console.log("Edges processed:", this.edges);
+
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      alert(`Invalid JSON file: ${error.message}`);
+    }
+  };
+
+  reader.readAsText(this.jsonFile);
+},
+
+  }
+}
 </script>
 
 <style>
