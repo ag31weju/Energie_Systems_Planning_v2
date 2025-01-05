@@ -4,8 +4,8 @@
     <div class="consumer-icon">
       <img :src="data.icon" alt="Consumer Icon" />
     </div>
-    <div v-if="isHighlighted" class="node-name">
-      Hello
+    <div v-if="isHighlighted" class="node-name" style="color:black; background: black"  > <!-- color of label -->
+      {{ data.label || "Unnamed Node" }}
     </div>
     <div class="handles">
       <!-- Handles for inputs -->
@@ -21,12 +21,11 @@
   </div>
 </template>
 
-
-
 <script>
+import { ref, defineComponent } from "vue";
 import { Handle, Position } from "@vue-flow/core";
 
-export default {
+export default defineComponent({
   name: "ConsumerNode",
   props: {
     data: {
@@ -37,26 +36,33 @@ export default {
   components: {
     Handle,
   },
-  data() {
+  setup() {
+    const isHighlighted = ref(false);
+    const labelColor = ref("#000"); // Default color
+
+    const handleMouseOver = () => {
+      isHighlighted.value = true;
+    };
+
+    const handleMouseLeave = () => {
+      isHighlighted.value = false;
+    };
+
+    const handleClick = () => {
+      alert("Node clicked");
+    };
+
     return {
       Position,
-      isHighlighted: false, // Tracks if the node is hovered
+      isHighlighted,
+      labelColor,
+      handleMouseOver,
+      handleMouseLeave,
+      handleClick,
     };
   },
-  methods: {
-    handleMouseOver() {
-      this.isHighlighted = true; // Show "Hello" on hover
-    },
-    handleMouseLeave() {
-      this.isHighlighted = false; // Hide "Hello" when hover ends
-    },
-    handleClick() {
-      alert("Node clicked");
-    },
-  },
-};
+});
 </script>
-
 
 
 

@@ -50,21 +50,43 @@ def parse_json(json_file):
         json_data = json_file.read().decode("utf-8")
         parsed_data = json.loads(json_data)
 
-        # Print parsed content
-        print("Nodes:")
+        # Graph representation using a dictionary
+        graph = {
+            "nodes": {},  # Node attributes
+            "edges": {}   # Edge list with weights
+        }
+
+        # Add nodes to the graph
         for node in parsed_data.get("nodes", []):
-            print(
-                f"  ID: {node['id']}, Type: {node['type']}, Name: {node['name']}, Position: ({node['x']}, {node['y']})"
-            )
+            node_id = node.get("id")
+            graph["nodes"][node_id] = node  # Store node attributes
 
-        print("Edges:")
+        # Add edges to the graph
         for edge in parsed_data.get("edges", []):
-            print(
-                f"  Start: {edge['start']}, End: {edge['end']}, Weight: {edge['weight']}"
-            )
+            start = edge.get("start")
+            end = edge.get("end")
+            weight = edge.get("weight", 1)
 
-        return parsed_data
+            # Add an edge as an undirected connection
+            if start not in graph["edges"]:
+                graph["edges"][start] = []
+            if end not in graph["edges"]:
+                graph["edges"][end] = []
+
+            graph["edges"][start].append({"end": end, "weight": weight})
+            graph["edges"][end].append({"end": start, "weight": weight})
+
+        output_json = "parsed_output.json"
+
+        # Save parsed data to a new JSON file
+        with open(output_json, "w") as f:
+            json.dump(parsed_data, f, indent=4)
+        print(f"Parsed data saved to {output_json}")
+
+        return graph
+
     except json.JSONDecodeError as e:
         raise ValueError(f"Invalid JSON file: {str(e)}")
     except Exception as e:
         raise RuntimeError(f"Error parsing JSON file: {str(e)}")
+
