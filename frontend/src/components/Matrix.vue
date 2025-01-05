@@ -14,7 +14,7 @@
           texttemplate: '%{text}',
           hoverongaps: false,
           colorscale: 'RdBu',
-          zmin: -100,
+          zmin: 0,
           zmax: 100,
         },
       ]"
@@ -186,6 +186,29 @@ export default {
       }
 
       z.value = selectedHeatmap;
+
+      outLinePosition.value = [0, 0];
+
+      layout.value = {
+        ...layout.value,
+        shapes: [
+          ...gridLines.value,
+          {
+            type: "rect",
+            x0: outLinePosition.value[0] - 0.5, // Left boundary of the cell
+            x1: outLinePosition.value[0] + 0.48, // Right boundary of the cell
+            y0: outLinePosition.value[1] - 0.45, // Bottom boundary of the cell
+            y1: outLinePosition.value[1] + 0.45, // Top boundary of the cell
+            xref: "x",
+            yref: "y",
+            line: {
+              color: "green",
+              width: 3,
+            },
+            fillcolor: "rgba(0,0,0,0)",
+          },
+        ],
+      };
 
       console.log(heatmapCollection);
       console.log(z.value);

@@ -39,6 +39,7 @@ import { usedTheme } from "../assets/stores/pageSettings";
 
 export default {
   setup(props, context) {
+    const first = ref(true);
     const currTheme = usedTheme();
     const sliderVals = ref(undefined);
     const matrixData = ref(undefined);
@@ -99,11 +100,22 @@ export default {
     }
 
     function handleNodeSelection() {
-      selectedNodes.value = [
-        0, 1,
-        //Math.round(Math.random() * 10),
-        //Math.round(Math.random() * 10),
-      ];
+      if (first.value) {
+        selectedNodes.value = [
+          10, 8,
+          //Math.round(Math.random() * 10),
+          //Math.round(Math.random() * 10),
+        ];
+
+        first.value = false;
+      } else {
+        selectedNodes.value = [
+          1, 2,
+          //Math.round(Math.random() * 10),
+          //Math.round(Math.random() * 10),
+        ];
+        first.value = true;
+      }
     }
 
     return {
@@ -114,6 +126,7 @@ export default {
       chartsData,
       currTheme,
       handleNodeSelection,
+      first,
     };
   },
   components: {
