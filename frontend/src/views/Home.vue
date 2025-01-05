@@ -96,25 +96,30 @@ export default {
         reset: propagateChange.reset,
         matrixValue: newValues.matrixData,
       };
-      chartsData.value = newValues.chartsData;
+      chartsData.value = {
+        reset: propagateChange.reset,
+        chartsValues: newValues.chartsData,
+      };
     }
 
     function handleNodeSelection() {
-      if (first.value) {
-        selectedNodes.value = [
-          10, 8,
-          //Math.round(Math.random() * 10),
-          //Math.round(Math.random() * 10),
-        ];
+      if (!isAutoSimulating.value) {
+        if (first.value) {
+          selectedNodes.value = [
+            10, 8,
+            //Math.round(Math.random() * 10),
+            //Math.round(Math.random() * 10),
+          ];
 
-        first.value = false;
-      } else {
-        selectedNodes.value = [
-          1, 2,
-          //Math.round(Math.random() * 10),
-          //Math.round(Math.random() * 10),
-        ];
-        first.value = true;
+          first.value = false;
+        } else {
+          selectedNodes.value = [
+            1, 2,
+            //Math.round(Math.random() * 10),
+            //Math.round(Math.random() * 10),
+          ];
+          first.value = true;
+        }
       }
     }
 

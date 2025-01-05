@@ -32,7 +32,12 @@ export default {
     chartsData: {
       type: Object,
       required: true,
-      default: () => ({}),
+      default: () => {
+        return {
+          reset: false,
+          chartsValues: null,
+        };
+      },
     },
     sliderVals: {
       type: Array,
@@ -187,13 +192,6 @@ export default {
       console.log(chartsCollection);
     });
 
-    function updateChart(newVal, colIndex, rowIndex) {
-      chartsCache.value[rowIndex][colIndex] = newVal;
-      assignAllData(newVal);
-
-      console.log(chartsCollection);
-    }
-
     function changeCharts(newVal) {
       let selectedCharts = chartsCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
@@ -219,6 +217,7 @@ export default {
     }
 
     function assignAllData(newVal) {
+      console.log(newVal);
       lineChartSet.value.datasets[0].data = newVal?.lineChartData;
       barChartSet.value.datasets[0].data =
         newVal?.barChartData?.purchased_power;
@@ -232,12 +231,38 @@ export default {
 
     function handleChartsData(newVal) {
       if (newVal && Object.keys(newVal).length > 0) {
-        const colIndex = props.sliderVals[0];
-        const rowIndex = props.sliderVals[1];
-        updateChart(newVal, colIndex, rowIndex);
-      } else {
-        console.error("Not good, charts are not receiving data");
+        if (!newVal.reset) {
+          const colIndex = props.sliderVals[0];
+          const rowIndex = props.sliderVals[1];
+          updateChart(newVal.chartsValues, colIndex, rowIndex);
+        } else {
+          resetCharts();
+        }
       }
+    }
+
+    function updateChart(newVal, colIndex, rowIndex) {
+      chartsCache.value[rowIndex][colIndex] = newVal;
+      assignAllData(newVal);
+
+      console.log(chartsCollection);
+    }
+
+    function resetCharts() {
+      assignAllData(null);
+      chartsCache.value = Array.from({ length: gridSize.value }, () =>
+        Array.from({ length: gridSize.value }, () => null)
+      );
+
+      let idx = chartsCollection.findIndex((el) => {
+        const nodeIDs = el.selectedNodes;
+        return (
+          nodeIDs[0] === selectedNodes.value[0] &&
+          nodeIDs[1] === selectedNodes.value[1]
+        );
+      });
+
+      chartsCollection[idx].chartsData = chartsCache.value;
     }
 
     watch(

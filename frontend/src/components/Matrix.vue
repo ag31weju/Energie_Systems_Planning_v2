@@ -80,9 +80,19 @@ export default {
       z.value[rowIndex][colIndex] = newVal;
     }
     function resetHeatmap() {
-      z.value = Array.from({ length: 6 }, () =>
-        Array.from({ length: 6 }, () => null)
+      z.value = Array.from({ length: gridSize.value }, () =>
+        Array.from({ length: gridSize.value }, () => null)
       );
+
+      let idx = heatmapCollection.findIndex((el) => {
+        const nodeIDs = el.selectedNodes;
+        return (
+          nodeIDs[0] === selectedNodes.value[0] &&
+          nodeIDs[1] === selectedNodes.value[1]
+        );
+      });
+
+      heatmapCollection[idx].z = z.value;
     }
 
     function initHeatmap() {
