@@ -12,6 +12,7 @@
       </div>
       <div id="slider-box">
         <Sliders @getSimulationData="handleSimulationData"></Sliders>
+        <button @click="handleNodeSelection"></button>
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
@@ -108,7 +109,13 @@ export default {
       chartsData.value = newValues.chartsData;
     }
 
-    function handleNodeSelection() {}
+    function handleNodeSelection() {
+      selectedNodes.value = [
+        0, 1,
+        //Math.round(Math.random() * 10),
+        //Math.round(Math.random() * 10),
+      ];
+    }
 
     return {
       updateMatrixTheme,
@@ -118,6 +125,7 @@ export default {
       matrixData,
       chartsData,
       updateLanguage,
+      handleNodeSelection,
     };
   },
   components: {

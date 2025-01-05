@@ -77,9 +77,7 @@ export default {
     let selectedNodes = inject("selectedNodes");
 
     function updateHeatmap(newVal, colIndex, rowIndex) {
-      const updatedZ = [...z.value]; // Clone the array
-      updatedZ[rowIndex][colIndex] = newVal;
-      z.value = updatedZ; // Reassign to trigger reactivity
+      z.value[rowIndex][colIndex] = newVal;
     }
     function resetHeatmap() {
       z.value = Array.from({ length: 6 }, () =>
@@ -165,14 +163,18 @@ export default {
       );
       outLinePosition.value = props.sliderVals;
       initHeatmap();
-      heatmapCollection.push({ selectedNodes: selectedNodes, z: z.value });
+      heatmapCollection.push({
+        selectedNodes: selectedNodes.value,
+        z: z.value,
+      });
+      console.log(heatmapCollection);
     });
 
     function changeMatrix(newVal) {
       let selectedHeatmap = heatmapCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
         return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
-      });
+      })?.z;
 
       if (!selectedHeatmap) {
         const newHeatmap = Array.from(
@@ -184,6 +186,9 @@ export default {
       }
 
       z.value = selectedHeatmap;
+
+      console.log(heatmapCollection);
+      console.log(z.value);
     }
 
     function handleMatrixData(newVal) {
@@ -198,6 +203,26 @@ export default {
       } else {
         console.error("Not good, matrix is not receiving data");
       }
+      console.log(heatmapCollection);
+
+      /*
+      let selectedHeatmap = heatmapCollection.find((el) => {
+        const nodeIDs = el.selectedNodes;
+        return nodeIDs[0] === 0 && nodeIDs[1] === 1;
+      })?.z;
+
+      console.log("z:", selectedHeatmap);
+
+      if (!selectedHeatmap) {
+        const newHeatmap = Array.from(
+          { length: gridSize.value },
+          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
+        );
+        selectedHeatmap = newHeatmap;
+        heatmapCollection.push({ selectedNodes: [2, 3], z: selectedHeatmap });
+      }
+
+      z.value = selectedHeatmap;*/
     }
 
     function handleSliderVals(newVal) {
@@ -297,9 +322,13 @@ export default {
       { deep: true }
     );
 
-    watch(selectedNodes.value, (newVal) => changeMatrix(newVal), {
-      deep: true,
-    });
+    watch(
+      () => selectedNodes.value,
+      (newVal) => changeMatrix(newVal),
+      {
+        deep: true,
+      }
+    );
 
     return {
       outLinePosition,
