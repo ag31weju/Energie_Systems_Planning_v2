@@ -131,12 +131,27 @@ export default {
       }
     }
 
+    function changeSliders(newVal) {
+      sliderList.value = [
+        { value: 0, nodeID: selectedNodes.value[0] },
+        { value: 0, nodeID: selectedNodes.value[1] },
+      ];
+    }
+
     onMounted(() => {
       sliderList.value = [
-        { value: 0, nodeID: selectedNodes[0] },
-        { value: 0, nodeID: selectedNodes[1] },
+        { value: 0, nodeID: selectedNodes.value[0] },
+        { value: 0, nodeID: selectedNodes.value[1] },
       ];
     });
+
+    watch(
+      () => selectedNodes.value,
+      (newVal) => changeSliders(newVal),
+      {
+        deep: true,
+      }
+    );
 
     return {
       usedLang,
