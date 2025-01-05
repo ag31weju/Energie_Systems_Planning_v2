@@ -167,7 +167,6 @@ export default {
         selectedNodes: selectedNodes.value,
         z: z.value,
       });
-      console.log(heatmapCollection);
     });
 
     function changeMatrix(newVal) {
@@ -209,9 +208,6 @@ export default {
           },
         ],
       };
-
-      console.log(heatmapCollection);
-      console.log(z.value);
     }
 
     function handleMatrixData(newVal) {
@@ -226,26 +222,6 @@ export default {
       } else {
         console.error("Not good, matrix is not receiving data");
       }
-      console.log(heatmapCollection);
-
-      /*
-      let selectedHeatmap = heatmapCollection.find((el) => {
-        const nodeIDs = el.selectedNodes;
-        return nodeIDs[0] === 0 && nodeIDs[1] === 1;
-      })?.z;
-
-      console.log("z:", selectedHeatmap);
-
-      if (!selectedHeatmap) {
-        const newHeatmap = Array.from(
-          { length: gridSize.value },
-          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
-        );
-        selectedHeatmap = newHeatmap;
-        heatmapCollection.push({ selectedNodes: [2, 3], z: selectedHeatmap });
-      }
-
-      z.value = selectedHeatmap;*/
     }
 
     function handleSliderVals(newVal) {

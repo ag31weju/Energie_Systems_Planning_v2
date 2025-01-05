@@ -21,7 +21,7 @@
         ></Matrix>
       </div>
       <div id="charts-box" class="grid-column">
-        <Charts :chartsData="chartsData"></Charts>
+        <Charts :chartsData="chartsData" :sliderVals="sliderVals"></Charts>
       </div>
     </div>
   </div>

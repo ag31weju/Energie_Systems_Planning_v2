@@ -78,8 +78,6 @@ export default {
     const usedLang = usedLanguage();
     let selectedNodes = inject("selectedNodes");
 
-    const chartsCache = ref(null);
-
     const gridSize = ref(6);
 
     const lineChartSet = ref({
@@ -174,21 +172,15 @@ export default {
     });
 
     onMounted(() => {
-      chartsCache.value = Array.from(
-        { length: gridSize.value },
-        (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
-      );
-
       chartsCollection.push({
         selectedNodes: selectedNodes.value,
-        chartsData: chartsCache.value,
+        chartsData: null,
       });
 
       console.log(chartsCollection);
     });
 
     function updateChart(newVal, colIndex, rowIndex) {
-      chartsCache.value[rowIndex][colIndex] = newVal;
       assignAllData(newVal);
 
       console.log(chartsCollection);
@@ -201,18 +193,12 @@ export default {
       })?.chartsData;
 
       if (!selectedCharts) {
-        const newCharts = Array.from(
-          { length: gridSize.value },
-          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
-        );
-        selectedCharts = newCharts;
+        selectedCharts = null;
         chartsCollection.push({
           selectedNodes: newVal,
           chartsData: selectedCharts,
         });
       }
-
-      chartsCache.value = selectedCharts;
       assignAllData(selectedCharts[0][0]);
 
       console.log(chartsCollection);
