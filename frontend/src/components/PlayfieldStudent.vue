@@ -9,7 +9,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 43rem;
+        height: 43.5rem;
         z-index: 2;
       ">
       <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
@@ -23,7 +23,7 @@
     <!-- Buttons at the Bottom -->
 
     <div id="buttons_container">
-      <Select v-model="selectedProducer" :options="scenarios" class="slider-button"
+      <Select v-model="selectedScenario" :options="scenarios" class="slider-button"
         placeholder="Choose Scenario"></Select>
 
       <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
@@ -42,7 +42,7 @@
 import { Button, Select } from "primevue";
 import Panel from "primevue/panel";
 import axios from "axios";
-import { VueFlow } from "@vue-flow/core";
+import { VueFlow, MarkerType } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 import ConsumerNode from "./customNodes/Consumer.vue";
 import ProducerNode from "./customNodes/Producer.vue";
@@ -81,12 +81,18 @@ export default {
     const locked = ref(false); // Lock flag
     const jsonUrl = ref(null); // JSON file URL
     const scenarios = ref(["Scene 1", "Scene 2", "Scene 3"]); // Scenario options
+    const selectedScenario=ref("")
 
     // Reactive object for edge properties
     const edgeProps = reactive({
-      color: "#000000", // Edge color
+      color: "#FA0404", // Edge color
       animated: true, // Edge animation
-      style: { strokeWidth: 5 }, // Edge style
+      style: { stroke: "#FA0404", strokeWidth: 3, opacity: 0.8 }, // Edge style
+      type: "bezier",
+      
+      markerEnd: { type: MarkerType.Arrow, width: 6, height: 6, color:
+         "#000" },
+      
     });
 
     // Reactive object for custom node types
@@ -124,7 +130,8 @@ export default {
       optionsConsumer,
       selectedProducer,
       optionsProducers,
-      scenarios
+      scenarios,
+      selectedScenario
     };
   },
 
@@ -133,7 +140,22 @@ export default {
     async loadRequest() {
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
-        const id = 1;
+        let id=null;
+        if (this.selectedScenario=="Scene 1")
+      {
+        id=1;
+
+      }
+     else if (this.selectedScenario=="Scene 2")
+      {
+        id=2;
+
+      }
+     else if (this.selectedScenario=="Scene 3")
+      {
+        id=3;
+
+      }
 
         const imgResponse = await axios.get(url, {
           params: { id: id, filetype: "png" },
@@ -233,12 +255,15 @@ export default {
           return newNode;
         });
 
-        this.edges = edges.map((edge) => ({
-          ...edge,
-          animated: this.edgeProps.animated,
-          style: this.edgeProps.style,
-          color: this.edgeProps.color,
-        }));
+        this.edges =edges.map((edge) => ({
+  ...edge,
+  color: this.edgeProps.color,
+  animated: this.edgeProps.animated, 
+  style: this.edgeProps.style, 
+  type: this.edgeProps.type, 
+ 
+  markerEnd: this.edgeProps.markerEnd
+    }));
 
 
 
@@ -487,10 +512,11 @@ reader.onload = (e) => {
     });
 
     this.edges = data.edges.map((edge) => ({
-      ...edge,
-      animated: this.edgeProps.animated,
-      style: this.edgeProps.style,
-      color: this.edgeProps.color,
+  ...edge,
+  animated: this.edgeProps.animated, // Enable edge animation
+  style: this.edgeProps.style, // Apply edge styles like stroke width
+  type: this.edgeProps.type, // Edge type
+  markerEnd: this.edgeProps.markerEnd
     }));
 
 
@@ -527,12 +553,13 @@ reader.readAsText(this.jsonFile);
 #buttons_container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-evenly;
+  align-items: baseline;
   width: auto;
   height: 2rem;
   position: absolute;
   bottom: 0;
+  margin-bottom: 10px;
 
   background-color: var(--primary-background-color);
   z-index: 3;
@@ -553,7 +580,7 @@ reader.readAsText(this.jsonFile);
   top: 0;
   left: 0;
   width: 100%;
-  height: 42rem;
+  height: 43rem;
   z-index: 2;
   overflow: hidden;
 }
@@ -565,6 +592,6 @@ reader.readAsText(this.jsonFile);
   pointer-events: none;
   z-index: 3;
   width: 100%;
-  height: 42.9rem;
+  height: 43.5rem;
 }
 </style>
