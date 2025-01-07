@@ -7,7 +7,7 @@
           :data="lineChartSet"
           :options="lineChartOptions"
           class="h-[30rem]"
-          style="height: 10rem; width: 40rem"
+          style="height: 15rem; width: 52rem"
         />
       </div>
       <Chart
@@ -15,7 +15,7 @@
         :data="barChartSet"
         :options="barChartOptions"
         class="h-[30rem]"
-        style="height: 10rem; width: 40rem"
+        style="height: 15rem; width: 52rem"
       />
     </div>
   </Panel>
@@ -284,6 +284,7 @@ export default {
       barChartSet,
       lineChartOptions,
       barChartOptions,
+      usedLang,
     };
   },
   components: {

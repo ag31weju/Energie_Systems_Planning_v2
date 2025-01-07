@@ -25,7 +25,7 @@
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
 
     <!-- Buttons at the Bottom -->
-    <div id="buttons_container">
+    <div id="buttons_container1">
       <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
       <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario"></Button>
     
@@ -686,60 +686,5 @@ reader.readAsText(this.jsonFile);
 </script>
 
 <style>
-#playfield {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  width: 100%;
-  height: 100%;
-  background-color: var(--primary-background-color);
-  border: var(--primary-border);
-  position: relative;
-}
-
-#buttons_container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: baseline;
-  width: auto;
-  height: 2rem;
-  position: absolute;
-  bottom: 0;
-  margin-bottom: 10px;
-
-  background-color: var(--primary-background-color);
-  z-index: 3;
-}
-
-.p-button-label {
-  color: black;
-}
-
-.slider-button {
-  margin-bottom: 10px;
-  margin-right: 5px;
-}
-
-
-#vueflow_container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 42rem;
-  z-index: 2;
-  overflow: hidden;
-}
-
-#grid_overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 3;
-  width: 100%;
-  height: 43.5rem;
-}
+@import "../assets/main.css";
 </style>

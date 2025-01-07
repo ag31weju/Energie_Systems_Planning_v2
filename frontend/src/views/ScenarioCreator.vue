@@ -4,7 +4,7 @@
   </div>
   <div id="rootdiv" class="grid-row">
     <div id="outercolumn1" class="grid-column">
-      <div id="imagebox" class="grid-column">
+      <div id="imagebox1" class="grid-column">
         <Playfield></Playfield>
       </div>
     </div>

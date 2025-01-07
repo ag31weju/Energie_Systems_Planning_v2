@@ -9,7 +9,7 @@
       </div>
       <div id="slider-box">
         <Sliders @getSimulationData="handleSimulationData"></Sliders>
-        <button @click="handleNodeSelection"></button>
+      
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
