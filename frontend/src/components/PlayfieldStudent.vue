@@ -433,6 +433,7 @@ export default {
 
     // Handle file changes for both image and JSON
     triggerImageUpload() {
+      if (this.isAutoSimulating) return;
       this.$refs.imageInput.click(); // Trigger image upload
     },
 
