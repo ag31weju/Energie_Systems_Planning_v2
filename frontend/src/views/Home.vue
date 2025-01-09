@@ -48,6 +48,7 @@ export default {
     const selectedNodes = ref([-1, -1]);
 
     provide("selectedNodes", selectedNodes);
+    provide("isAutoSimulating", isAutoSimulating);
 
     const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
 
@@ -104,7 +105,10 @@ export default {
     function handleNodeSelection(newNode) {
       if (!isAutoSimulating.value) {
         console.log(selectedNodes);
-        selectedNodes.value = [newNode, selectedNodes.value[0]];
+        let prevNodeAt0 = selectedNodes.value[0];
+        if (prevNodeAt0 !== newNode) {
+          selectedNodes.value = [newNode, prevNodeAt0];
+        }
         console.log(selectedNodes);
       }
     }

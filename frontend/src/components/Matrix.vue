@@ -65,7 +65,7 @@ export default {
     },
   },
   setup(props) {
-    const heatmapCollection = [];
+    let heatmapCollection = [];
     const outLinePosition = ref(null);
     const z = ref(null);
     const layout = ref(null);
@@ -92,7 +92,9 @@ export default {
         );
       });
 
-      heatmapCollection[idx].z = z.value;
+      if (idx >= 0) {
+        heatmapCollection[idx].z = z.value;
+      }
     }
 
     function initHeatmap() {
@@ -180,14 +182,17 @@ export default {
     });
 
     function changeMatrix(newVal) {
-      if (newVal[0] === -1 || newVal[1] === -1) return;
+      if (newVal[0] === -1 || newVal[1] === -1) {
+        z.value = Array.from({ length: gridSize.value }, () =>
+          Array.from({ length: gridSize.value }, () => null)
+        );
+        heatmapCollection = [];
+        return;
+      }
 
       let selectedHeatmap = heatmapCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
-        return (
-          (nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1]) ||
-          (nodeIDs[0] === newVal[1] && nodeIDs[1] === newVal[0])
-        );
+        return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
       })?.z;
 
       if (!selectedHeatmap) {
@@ -201,28 +206,7 @@ export default {
 
       z.value = selectedHeatmap;
 
-      outLinePosition.value = [0, 0];
-
-      layout.value = {
-        ...layout.value,
-        shapes: [
-          ...gridLines.value,
-          {
-            type: "rect",
-            x0: outLinePosition.value[0] - 0.5, // Left boundary of the cell
-            x1: outLinePosition.value[0] + 0.48, // Right boundary of the cell
-            y0: outLinePosition.value[1] - 0.45, // Bottom boundary of the cell
-            y1: outLinePosition.value[1] + 0.45, // Top boundary of the cell
-            xref: "x",
-            yref: "y",
-            line: {
-              color: "green",
-              width: 3,
-            },
-            fillcolor: "rgba(0,0,0,0)",
-          },
-        ],
-      };
+      handleSliderVals([0, 0]);
     }
 
     function handleMatrixData(newVal) {

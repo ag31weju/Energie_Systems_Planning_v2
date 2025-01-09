@@ -78,7 +78,7 @@ export default {
     },
   },
   setup(props) {
-    const chartsCollection = [];
+    let chartsCollection = [];
 
     const usedLang = usedLanguage();
     let selectedNodes = inject("selectedNodes");
@@ -184,21 +184,27 @@ export default {
         (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
       );
 
-      /* chartsCollection.push({
+      /*
+      chartsCollection.push({
         selectedNodes: selectedNodes.value,
         chartsData: chartsCache.value,
       });*/ //Not required at mount time since the initial selectedNode value is going to be [-1, -1]
     });
 
     function changeCharts(newVal) {
-      if (newVal[0] === -1 || newVal[1] === -1) return;
+      if (newVal[0] === -1 || newVal[1] === -1) {
+        assignAllData(null);
+        chartsCache.value = Array.from(
+          { length: gridSize.value },
+          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
+        );
+        chartsCollection = [];
+        return;
+      }
 
       let selectedCharts = chartsCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
-        return (
-          (nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1]) ||
-          (nodeIDs[0] === newVal[1] && nodeIDs[1] === newVal[0])
-        );
+        return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
       })?.chartsData;
 
       if (!selectedCharts) {
@@ -260,7 +266,9 @@ export default {
         );
       });
 
-      chartsCollection[idx].chartsData = chartsCache.value;
+      if (idx >= 0) {
+        chartsCollection[idx].chartsData = chartsCache.value;
+      }
     }
 
     watch(
