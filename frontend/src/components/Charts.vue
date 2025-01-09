@@ -184,18 +184,21 @@ export default {
         (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
       );
 
-      chartsCollection.push({
+      /* chartsCollection.push({
         selectedNodes: selectedNodes.value,
         chartsData: chartsCache.value,
-      });
-
-      console.log(chartsCollection);
+      });*/ //Not required at mount time since the initial selectedNode value is going to be [-1, -1]
     });
 
     function changeCharts(newVal) {
+      if (newVal[0] === -1 || newVal[1] === -1) return;
+
       let selectedCharts = chartsCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
-        return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
+        return (
+          (nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1]) ||
+          (nodeIDs[0] === newVal[1] && nodeIDs[1] === newVal[0])
+        );
       })?.chartsData;
 
       if (!selectedCharts) {
@@ -212,12 +215,9 @@ export default {
 
       chartsCache.value = selectedCharts;
       assignAllData(selectedCharts[0][0]);
-
-      console.log(chartsCollection);
     }
 
     function assignAllData(newVal) {
-      console.log(newVal);
       lineChartSet.value.datasets[0].data = newVal?.lineChartData;
       barChartSet.value.datasets[0].data =
         newVal?.barChartData?.purchased_power;
@@ -244,8 +244,6 @@ export default {
     function updateChart(newVal, colIndex, rowIndex) {
       chartsCache.value[rowIndex][colIndex] = newVal;
       assignAllData(newVal);
-
-      console.log(chartsCollection);
     }
 
     function resetCharts() {

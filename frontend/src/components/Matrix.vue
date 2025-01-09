@@ -173,16 +173,21 @@ export default {
       );
       outLinePosition.value = props.sliderVals;
       initHeatmap();
-      heatmapCollection.push({
+      /*heatmapCollection.push({
         selectedNodes: selectedNodes.value,
         z: z.value,
-      });
+      });*/ //Not required at mount time since the initial selectedNode value is going to be [-1, -1]
     });
 
     function changeMatrix(newVal) {
+      if (newVal[0] === -1 || newVal[1] === -1) return;
+
       let selectedHeatmap = heatmapCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
-        return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
+        return (
+          (nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1]) ||
+          (nodeIDs[0] === newVal[1] && nodeIDs[1] === newVal[0])
+        );
       })?.z;
 
       if (!selectedHeatmap) {

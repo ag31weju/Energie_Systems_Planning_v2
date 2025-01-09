@@ -1,30 +1,48 @@
 <template>
-  <div class="custom-node" :class="{ highlighted: isHighlighted }" @mouseover="handleMouseOver"
-    @mouseleave="handleMouseLeave" @click="handleClick">
+  <div
+    class="custom-node"
+    :class="{ highlighted: isHighlighted }"
+    @mouseover="handleMouseOver"
+    @mouseleave="handleMouseLeave"
+    @click="handleClick"
+  >
     <div class="producer-icon">
       <img :src="data.icon" alt="Producer Icon" />
     </div>
-    <div v-if="isHighlighted" class="node-name" style="color:crimson; background: black"  > <!-- color of label -->
+    <div
+      v-if="isHighlighted"
+      class="node-name"
+      style="color: crimson; background: black"
+    >
+      <!-- color of label -->
       {{ data.label || "Unnamed Node" }}
     </div>
     <div class="handles">
       <!-- Handles for inputs -->
       <div v-for="(input, index) in data.inputs" :key="'input_' + index">
-        <Handle type="target" :position="Position.Left" :id="input" style="background: #555" />
+        <Handle
+          type="target"
+          :position="Position.Left"
+          :id="input"
+          style="background: #555"
+        />
       </div>
 
       <!-- Handles for outputs -->
       <div v-for="(output, index) in data.outputs" :key="'output_' + index">
-        <Handle type="source" :position="Position.Right" :id="output" style="background: #555" />
+        <Handle
+          type="source"
+          :position="Position.Right"
+          :id="output"
+          style="background: #555"
+        />
       </div>
     </div>
   </div>
 </template>
 
-
-
 <script>
-import { ref, defineComponent } from "vue";
+import { ref, inject, defineComponent } from "vue";
 import { Handle, Position } from "@vue-flow/core";
 
 export default defineComponent({
@@ -38,8 +56,9 @@ export default defineComponent({
   components: {
     Handle,
   },
-  setup() {
+  setup(props, context) {
     const isHighlighted = ref(false); // Tracks if the node is hovered
+    let handleNodeSelection = inject("handleNodeSelection");
 
     const handleMouseOver = () => {
       isHighlighted.value = true; // Show "Hello" on hover
@@ -50,7 +69,8 @@ export default defineComponent({
     };
 
     const handleClick = () => {
-      alert("Node clicked");
+      //console.log(context.attrs.id.at(-1)); //id is "node_x" and x is extracted afterwards
+      handleNodeSelection(context.attrs.id.at(-1));
     };
 
     return {
@@ -63,10 +83,6 @@ export default defineComponent({
   },
 });
 </script>
-
-
-
-
 
 <style>
 .custom-node {

@@ -9,7 +9,6 @@
       </div>
       <div id="slider-box">
         <Sliders @getSimulationData="handleSimulationData"></Sliders>
-      
       </div>
     </div>
     <div id="outercolumn2" class="grid-column">
@@ -46,7 +45,7 @@ export default {
     const chartsData = ref(undefined);
     const isAutoSimulating = ref(false);
     const stopAutoSimulate = ref(false);
-    const selectedNodes = ref([0, 1]);
+    const selectedNodes = ref([-1, -1]);
 
     provide("selectedNodes", selectedNodes);
 
@@ -102,26 +101,14 @@ export default {
       };
     }
 
-    function handleNodeSelection() {
+    function handleNodeSelection(newNode) {
       if (!isAutoSimulating.value) {
-        if (first.value) {
-          selectedNodes.value = [
-            10, 8,
-            //Math.round(Math.random() * 10),
-            //Math.round(Math.random() * 10),
-          ];
-
-          first.value = false;
-        } else {
-          selectedNodes.value = [
-            1, 2,
-            //Math.round(Math.random() * 10),
-            //Math.round(Math.random() * 10),
-          ];
-          first.value = true;
-        }
+        console.log(selectedNodes);
+        selectedNodes.value = [newNode, selectedNodes.value[0]];
+        console.log(selectedNodes);
       }
     }
+    provide("handleNodeSelection", handleNodeSelection);
 
     return {
       handleSimulationData,
