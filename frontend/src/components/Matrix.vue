@@ -21,14 +21,16 @@
       :layout="layout"
       :display-mode-bar="true"
       :config="{
-        displayModeBar: true,
+        displayModeBar: false,
+        /*displaylogo: false,
         modeBarButtonsToRemove: [
           'zoomIn',
           'zoomOut',
           'zoom',
           'pan2d',
           'resetScale2d',
-        ],
+          'toImage',
+        ],*/
       }"
       class="matrix-plotly"
     ></VuePlotly>
@@ -133,18 +135,16 @@ export default {
           ticks: "outside",
           showgrid: false,
           zeroline: false,
-          gridcolor: "black",
-          gridwidth: 5,
+          fixedrange: true,
           tickvals: [0, 1, 2, 3, 4, 5],
         },
         yaxis: {
           range: [-0.55, gridSize.value - 0.45], //-0.5 to 5.5 in order to display the cells with their axis values centered
           tickmode: "array",
-          gridcolor: "black",
-          gridwidth: 5,
           ticks: "outside", //for the - at the numbers at the axis baselines
           showgrid: false, //for the grid lines inside the coordinate system
           zeroline: false, //for the baseline of an x axis (the thick one)
+          fixedrange: true,
           tickvals: [0, 1, 2, 3, 4, 5], //values where the ticks should be located
         },
         paper_bgcolor: "white", // Background color outside the plotting area
