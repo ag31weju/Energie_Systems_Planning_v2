@@ -105,11 +105,23 @@ export default {
     function handleNodeSelection(newNode) {
       if (!isAutoSimulating.value) {
         console.log(selectedNodes);
-        let prevNodeAt0 = selectedNodes.value[0];
-        if (prevNodeAt0 !== newNode) {
-          selectedNodes.value = [newNode, prevNodeAt0];
+        //LIFO-wise selection -> 0 first, 1 subsequently
+        const idx = selectedNodes.value.findIndex((el) => {
+          return el === newNode;
+        });
+        //if idx >= 0, that means that the node is supposed to be de-highlighted (shifted with idx = 0, popped with idx = 1). Otherwise, it is going to be highlighted (pushed)
+        if (idx >= 0) {
+          idx === 0
+            ? (selectedNodes.value = [selectedNodes.value[1], -1])
+            : (selectedNodes.value = [selectedNodes.value[0], -1]);
+        } else {
+          if (selectedNodes.value[0] === -1) {
+            selectedNodes.value = [newNode, -1];
+          } else {
+            selectedNodes.value = [selectedNodes.value[0], newNode];
+          }
         }
-        console.log(selectedNodes);
+        console.log(selectedNodes.value[0], selectedNodes.value[1]);
       }
     }
     provide("handleNodeSelection", handleNodeSelection);

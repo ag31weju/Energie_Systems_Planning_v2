@@ -186,7 +186,7 @@ export default {
         z.value = Array.from({ length: gridSize.value }, () =>
           Array.from({ length: gridSize.value }, () => null)
         );
-        heatmapCollection = [];
+        //heatmapCollection = [];
         return;
       }
 

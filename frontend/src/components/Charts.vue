@@ -198,7 +198,7 @@ export default {
           { length: gridSize.value },
           (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
         );
-        chartsCollection = [];
+        //chartsCollection = [];
         return;
       }
 

@@ -1,7 +1,11 @@
 <template>
   <div
     class="custom-node"
-    :class="{ highlighted: isHighlighted }"
+    :class="{
+      highlighted: isHighlighted,
+      selectedFirst: isSelectedFirst,
+      selectedSecond: isSelectedSecond,
+    }"
     @mouseover="handleMouseOver"
     @mouseleave="handleMouseLeave"
     @click="handleClick"
@@ -42,7 +46,7 @@
 </template>
 
 <script>
-import { ref, inject, defineComponent } from "vue";
+import { ref, inject, defineComponent, computed } from "vue";
 import { Handle, Position } from "@vue-flow/core";
 
 export default defineComponent({
@@ -57,8 +61,16 @@ export default defineComponent({
     Handle,
   },
   setup(props, context) {
-    const isHighlighted = ref(false); // Tracks if the node is hovered
     let handleNodeSelection = inject("handleNodeSelection");
+    let selectedNodes = inject("selectedNodes");
+    const isHighlighted = ref(false); // Tracks if the node is hovered
+    const nodeID = context.attrs.id.at(-1);
+    const isSelectedFirst = computed(() => {
+      return selectedNodes.value[0] === nodeID;
+    });
+    const isSelectedSecond = computed(() => {
+      return selectedNodes.value[1] === nodeID;
+    });
 
     const handleMouseOver = () => {
       isHighlighted.value = true; // Show "Hello" on hover
@@ -70,12 +82,14 @@ export default defineComponent({
 
     const handleClick = () => {
       //console.log(context.attrs.id.at(-1)); //id is "node_x" and x is extracted afterwards
-      handleNodeSelection(context.attrs.id.at(-1));
+      handleNodeSelection(nodeID);
     };
 
     return {
       Position,
       isHighlighted,
+      isSelectedFirst,
+      isSelectedSecond,
       handleMouseOver,
       handleMouseLeave,
       handleClick,
@@ -100,6 +114,20 @@ export default defineComponent({
   /* Enlarge the node */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   /* Add a shadow for highlighting */
+}
+
+.custom-node.selectedFirst {
+  box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.8); /* Red glow effect */
+  border: 2px solid black; /* Optional red border */
+  transform: scale(1.1); /* Slightly larger */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.custom-node.selectedSecond {
+  box-shadow: 0 0 15px 5px rgba(0, 0, 255, 0.8); /* Red glow effect */
+  border: 2px solid black; /* Optional red border */
+  transform: scale(1.1); /* Slightly larger */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .producer-icon {

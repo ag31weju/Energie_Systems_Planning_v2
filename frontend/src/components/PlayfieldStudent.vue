@@ -193,8 +193,6 @@ export default {
     async loadRequest() {
       if (this.isAutoSimulating) return;
 
-      this.selectedNodes = [-1, -1];
-
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
         let id = null;
@@ -308,6 +306,8 @@ export default {
 
           markerEnd: this.edgeProps.markerEnd,
         }));
+
+        this.selectedNodes = [-1, -1];
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
