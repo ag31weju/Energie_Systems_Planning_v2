@@ -39,7 +39,7 @@
 
 <script>
 import { Panel } from "primevue";
-import { ref, watch, inject, onMounted } from "vue";
+import { ref, watch, inject, onMounted, defineExpose } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import { VuePlotly } from "vue3-plotly";
 
@@ -98,6 +98,16 @@ export default {
         heatmapCollection[idx].z = z.value;
       }
     }
+
+    const clearMatrix = () => {
+      z.value = Array.from({ length: gridSize.value }, () =>
+        Array.from({ length: gridSize.value }, () => null)
+      );
+      heatmapCollection = [];
+      console.log(heatmapCollection);
+    };
+
+    defineExpose({ clearMatrix });
 
     function initHeatmap() {
       for (let i = 0; i <= gridSize.value; i++) {
@@ -186,7 +196,6 @@ export default {
         z.value = Array.from({ length: gridSize.value }, () =>
           Array.from({ length: gridSize.value }, () => null)
         );
-        //heatmapCollection = [];
         return;
       }
 
@@ -336,6 +345,7 @@ export default {
       gridColor,
       gridLines,
       axisDimension,
+      clearMatrix,
     };
   },
   components: {

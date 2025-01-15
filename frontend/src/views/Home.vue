@@ -14,20 +14,25 @@
     <div id="outercolumn2" class="grid-column">
       <div id="matrix-box" class="grid-column">
         <Matrix
+          ref="matrixComp"
           :matrixData="matrixData"
           :matrixTheme="currTheme.matrixTheme"
           :sliderVals="sliderVals"
         ></Matrix>
       </div>
       <div id="charts-box" class="grid-column">
-        <Charts :chartsData="chartsData" :sliderVals="sliderVals"></Charts>
+        <Charts
+          ref="chartsComp"
+          :chartsData="chartsData"
+          :sliderVals="sliderVals"
+        ></Charts>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, provide } from "vue";
+import { ref, provide, watch, useTemplateRef } from "vue";
 import Chart from "primevue/chart";
 import Sliders from "../components/Sliders.vue";
 import Playfield from "../components/PlayfieldStudent.vue";
@@ -45,10 +50,15 @@ export default {
     const chartsData = ref(undefined);
     const isAutoSimulating = ref(false);
     const stopAutoSimulate = ref(false);
+    const newScenarioLoaded = ref(false);
     const selectedNodes = ref([-1, -1]);
+
+    const matrixComp = useTemplateRef("matrixComp");
+    const chartsComp = useTemplateRef("chartsComp");
 
     provide("selectedNodes", selectedNodes);
     provide("isAutoSimulating", isAutoSimulating);
+    provide("newScenarioLoaded", newScenarioLoaded);
 
     const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
 
@@ -125,6 +135,25 @@ export default {
       }
     }
     provide("handleNodeSelection", handleNodeSelection);
+
+    function clearAll() {
+      if (newScenarioLoaded) {
+        console.log("Home");
+        console.log(matrixComp.value);
+        console.log(chartsComp.value);
+        matrixComp.value?.clearMatrix();
+        chartsComp.value?.clearCharts();
+        newScenarioLoaded.value = false;
+      }
+    }
+
+    watch(
+      () => newScenarioLoaded,
+      (newVal) => clearAll(),
+      {
+        deep: true,
+      }
+    );
 
     return {
       handleSimulationData,

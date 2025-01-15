@@ -172,5 +172,4 @@ export default {
 
 <style>
 @import "../assets/main.css";
-
 </style>

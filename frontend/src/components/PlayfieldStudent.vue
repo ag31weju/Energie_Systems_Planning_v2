@@ -106,10 +106,10 @@ import Coal from "@/assets/node_images/producer/coal.png";
 import Solar from "@/assets/node_images/producer/solarPanel.png";
 import Wind from "@/assets/node_images/producer/windmill.png";
 import { usedLanguage } from "../assets/stores/pageSettings";
-import { ref, reactive } from "vue";
+import { ref, reactive, inject } from "vue";
 
 export default {
-  inject: ["selectedNodes", "isAutoSimulating"],
+  inject: ["selectedNodes", "isAutoSimulating", "newScenarioLoaded"],
   components: {
     Panel,
     Button,
@@ -307,7 +307,9 @@ export default {
           markerEnd: this.edgeProps.markerEnd,
         }));
 
+        //new scenario loading finished
         this.selectedNodes = [-1, -1];
+        this.newScenarioLoaded = true;
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);

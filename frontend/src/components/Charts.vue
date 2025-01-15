@@ -24,7 +24,7 @@
 <script>
 import Chart from "primevue/chart";
 import Panel from "primevue/panel";
-import { ref, watch, inject, onMounted } from "vue";
+import { ref, watch, inject, onMounted, defineExpose } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
 
 export default {
@@ -191,6 +191,17 @@ export default {
       });*/ //Not required at mount time since the initial selectedNode value is going to be [-1, -1]
     });
 
+    const clearCharts = () => {
+      assignAllData(null);
+      chartsCache.value = Array.from(
+        { length: gridSize.value },
+        (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
+      );
+      chartsCollection = [];
+    };
+
+    defineExpose({ clearCharts });
+
     function changeCharts(newVal) {
       if (newVal[0] === -1 || newVal[1] === -1) {
         assignAllData(null);
@@ -198,7 +209,6 @@ export default {
           { length: gridSize.value },
           (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
         );
-        //chartsCollection = [];
         return;
       }
 
@@ -291,6 +301,7 @@ export default {
       lineChartOptions,
       barChartOptions,
       usedLang,
+      clearCharts,
     };
   },
   components: {
