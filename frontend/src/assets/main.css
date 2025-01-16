@@ -9,6 +9,8 @@
   --drawer-border-color: 2px solid #464646;
   --slider-range-color: black;
   --slider-handle-border-color: #464646;
+  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-second: blue;
   --matrix-background-color-cell: white;
   --matrix-background-color-header: lightgray;
   --matrix-text-color: black;
@@ -24,6 +26,8 @@
   --drawer-border-color: 2px solid black;
   --slider-color: #34d399;
   --slider-text-color: white;
+  --slider-handle-border-color-first: #red;
+  --slider-handle-border-color-second: blue;
   --matrix-background-color-cell: rgb(39, 39, 39);
   --matrix-background-color-header: rgb(60, 60, 60);
   --matrix-text-color: white;
@@ -333,8 +337,12 @@ body {
   background-color: var(--slider-range-color);
 }
 
-#sliders .p-slider-handle {
-  background-color: var(--slider-handle-border-color);
+#slider0 .p-slider-handle {
+  background-color: red;
+}
+
+#slider1 .p-slider-handle {
+  background-color: blue;
 }
 
 #sliders_content {

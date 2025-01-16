@@ -183,12 +183,6 @@ export default {
         { length: gridSize.value },
         (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
       );
-
-      /*
-      chartsCollection.push({
-        selectedNodes: selectedNodes.value,
-        chartsData: chartsCache.value,
-      });*/ //Not required at mount time since the initial selectedNode value is going to be [-1, -1]
     });
 
     const clearCharts = () => {

@@ -8,6 +8,7 @@
         :step="step"
         :disabled="isAutoSimulating"
         class="w-56"
+        :id="`slider${index}`"
         @change="(event) => startMoveOutline(event, index)"
         style="margin: 10px"
       ></Slider>
