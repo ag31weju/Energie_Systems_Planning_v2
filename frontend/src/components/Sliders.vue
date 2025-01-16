@@ -6,7 +6,9 @@
         :min="0"
         :max="5"
         :step="step"
+        :disabled="isAutoSimulating"
         class="w-56"
+        @change="(event) => startMoveOutline(event, index)"
         style="margin: 10px"
       ></Slider>
       {{ sliderList[index].value / step }}
@@ -47,6 +49,8 @@ export default {
     const usedLang = usedLanguage();
 
     let selectedNodes = inject("selectedNodes");
+    let moveOutline = inject("moveOutline");
+    let isAutoSimulating = inject("isAutoSimulating");
 
     const step = ref(1);
     const sliderList = ref([]);
@@ -131,6 +135,10 @@ export default {
       }
     }
 
+    function startMoveOutline(event, index) {
+      if (!isAutoSimulating.value) moveOutline(event, index);
+    }
+
     function changeSliders(newVal) {
       sliderList.value = [
         { value: 0, nodeID: selectedNodes.value[0] },
@@ -160,6 +168,8 @@ export default {
       reset,
       autoSimulateRequest,
       simulateRequest,
+      startMoveOutline,
+      isAutoSimulating,
     };
   },
   components: {

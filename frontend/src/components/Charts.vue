@@ -257,6 +257,12 @@ export default {
       }
     }
 
+    function handleSliderVals(newVal) {
+      const rowIndex = newVal[1];
+      const colIndex = newVal[0];
+      assignAllData(chartsCache.value[rowIndex][colIndex]);
+    }
+
     function updateChart(newVal, colIndex, rowIndex) {
       chartsCache.value[rowIndex][colIndex] = newVal;
       assignAllData(newVal);
@@ -284,6 +290,12 @@ export default {
     watch(
       () => props.chartsData,
       (newVal) => handleChartsData(newVal),
+      { deep: true }
+    );
+
+    watch(
+      () => props.sliderVals,
+      (newVal) => handleSliderVals(newVal),
       { deep: true }
     );
 

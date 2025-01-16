@@ -45,7 +45,7 @@ export default {
   setup(props, context) {
     const first = ref(true);
     const currTheme = usedTheme();
-    const sliderVals = ref(undefined);
+    const sliderVals = ref([0, 0]);
     const matrixData = ref(undefined);
     const chartsData = ref(undefined);
     const isAutoSimulating = ref(false);
@@ -59,6 +59,7 @@ export default {
     provide("selectedNodes", selectedNodes);
     provide("isAutoSimulating", isAutoSimulating);
     provide("newScenarioLoaded", newScenarioLoaded);
+    provide("sliderVals", sliderVals);
 
     const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
 
@@ -136,11 +137,13 @@ export default {
     }
     provide("handleNodeSelection", handleNodeSelection);
 
+    function moveOutline(newVal, idx) {
+      sliderVals.value[idx] = newVal;
+    }
+    provide("moveOutline", moveOutline);
+
     function clearAll() {
       if (newScenarioLoaded) {
-        console.log("Home");
-        console.log(matrixComp.value);
-        console.log(chartsComp.value);
         matrixComp.value?.clearMatrix();
         chartsComp.value?.clearCharts();
         newScenarioLoaded.value = false;
