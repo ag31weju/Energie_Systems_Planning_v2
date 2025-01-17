@@ -573,14 +573,22 @@ if (!this.imageFile || !this.jsonFile) {
 const reader = new FileReader();
 reader.onload = (e) => {
   try {
-    const data = JSON.parse(e.target.result);
-    console.log('Parsed JSON:', data);
+      const json = JSON.parse(e.target.result);
 
-    if (!data.nodes || !Array.isArray(data.nodes)) {
-      throw new Error("Invalid JSON structure: 'nodes' must be an array.");
-    }
+      // Check for both JSON structures
+      const nodes = json.nodes || (json.data.nodes);
+      const edges = json.edges || ( json.data.edges);
 
-    this.nodes = data.nodes.map((node) => {
+      if (!nodes || !Array.isArray(nodes)) {
+        throw new Error("Invalid JSON structure: 'nodes' must be an array.");
+      }
+
+      if (!edges || !Array.isArray(edges)) {
+        throw new Error("Invalid JSON structure: 'edges' must be an array.");
+      }
+
+
+    this.nodes = nodes.map((node) => {
       const newNode = {
         ...node,
         data: {}, // Will be populated based on label
@@ -660,7 +668,7 @@ reader.onload = (e) => {
       return newNode;
     });
 
-    this.edges = data.edges.map((edge) => ({
+    this.edges =edges.map((edge) => ({
       ...edge,
       animated: this.edgeProps.animated,
       style: this.edgeProps.style,
