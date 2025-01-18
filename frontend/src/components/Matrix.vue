@@ -21,14 +21,16 @@
       :layout="layout"
       :display-mode-bar="true"
       :config="{
-        displayModeBar: true,
+        displayModeBar: false,
+        /*displaylogo: false,
         modeBarButtonsToRemove: [
           'zoomIn',
           'zoomOut',
           'zoom',
           'pan2d',
           'resetScale2d',
-        ],
+          'toImage',
+        ],*/
       }"
       class="matrix-plotly"
     ></VuePlotly>
@@ -37,7 +39,7 @@
 
 <script>
 import { Panel } from "primevue";
-import { ref, watch, inject, onMounted } from "vue";
+import { ref, watch, inject, onMounted, defineExpose } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import { VuePlotly } from "vue3-plotly";
 
@@ -65,7 +67,7 @@ export default {
     },
   },
   setup(props) {
-    const heatmapCollection = [];
+    let heatmapCollection = [];
     const outLinePosition = ref(null);
     const z = ref(null);
     const layout = ref(null);
@@ -92,8 +94,20 @@ export default {
         );
       });
 
-      heatmapCollection[idx].z = z.value;
+      if (idx >= 0) {
+        heatmapCollection[idx].z = z.value;
+      }
     }
+
+    const clearMatrix = () => {
+      z.value = Array.from({ length: gridSize.value }, () =>
+        Array.from({ length: gridSize.value }, () => null)
+      );
+      heatmapCollection = [];
+      console.log(heatmapCollection);
+    };
+
+    defineExpose({ clearMatrix });
 
     function initHeatmap() {
       for (let i = 0; i <= gridSize.value; i++) {
@@ -131,18 +145,16 @@ export default {
           ticks: "outside",
           showgrid: false,
           zeroline: false,
-          gridcolor: "black",
-          gridwidth: 5,
+          fixedrange: true,
           tickvals: [0, 1, 2, 3, 4, 5],
         },
         yaxis: {
           range: [-0.55, gridSize.value - 0.45], //-0.5 to 5.5 in order to display the cells with their axis values centered
           tickmode: "array",
-          gridcolor: "black",
-          gridwidth: 5,
           ticks: "outside", //for the - at the numbers at the axis baselines
           showgrid: false, //for the grid lines inside the coordinate system
           zeroline: false, //for the baseline of an x axis (the thick one)
+          fixedrange: true,
           tickvals: [0, 1, 2, 3, 4, 5], //values where the ticks should be located
         },
         paper_bgcolor: "white", // Background color outside the plotting area
@@ -173,13 +185,20 @@ export default {
       );
       outLinePosition.value = props.sliderVals;
       initHeatmap();
-      heatmapCollection.push({
+      /*heatmapCollection.push({
         selectedNodes: selectedNodes.value,
         z: z.value,
-      });
+      });*/ //Not required at mount time since the initial selectedNode value is going to be [-1, -1]
     });
 
     function changeMatrix(newVal) {
+      if (newVal[0] === -1 || newVal[1] === -1) {
+        z.value = Array.from({ length: gridSize.value }, () =>
+          Array.from({ length: gridSize.value }, () => null)
+        );
+        return;
+      }
+
       let selectedHeatmap = heatmapCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
         return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
@@ -196,28 +215,7 @@ export default {
 
       z.value = selectedHeatmap;
 
-      outLinePosition.value = [0, 0];
-
-      layout.value = {
-        ...layout.value,
-        shapes: [
-          ...gridLines.value,
-          {
-            type: "rect",
-            x0: outLinePosition.value[0] - 0.5, // Left boundary of the cell
-            x1: outLinePosition.value[0] + 0.48, // Right boundary of the cell
-            y0: outLinePosition.value[1] - 0.45, // Bottom boundary of the cell
-            y1: outLinePosition.value[1] + 0.45, // Top boundary of the cell
-            xref: "x",
-            yref: "y",
-            line: {
-              color: "green",
-              width: 3,
-            },
-            fillcolor: "rgba(0,0,0,0)",
-          },
-        ],
-      };
+      handleSliderVals([0, 0]);
     }
 
     function handleMatrixData(newVal) {
@@ -347,6 +345,7 @@ export default {
       gridColor,
       gridLines,
       axisDimension,
+      clearMatrix,
     };
   },
   components: {

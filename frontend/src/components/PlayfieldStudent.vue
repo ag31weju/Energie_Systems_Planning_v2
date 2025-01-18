@@ -1,21 +1,41 @@
 <template>
   <Panel id="playfieldS">
-    <div id="vueflow_container" ref="vueFlowContainer" :style="{
-      backgroundImage: 'url(' + imgUrl + ')',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }" style="
+    <div
+      id="vueflow_container"
+      ref="vueFlowContainer"
+      :style="{
+        backgroundImage: 'url(' + imgUrl + ')',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }"
+      style="
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 43.5rem;
         z-index: 2;
-      ">
-      <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
-        :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
-        :connection-mode="connectionMode" :node-types="customNodeTypes" :auto-pan-on-node-drag="false"
-        :nodes-draggable="locked" :edges-connectable="false" :zoomOnDoubleClick="false" @connect="onConnect" />
+      "
+    >
+      <vue-flow
+        v-model:nodes="nodes"
+        v-model:edges="edges"
+        :fit-view="true"
+        :zoomOnScroll="false"
+        :zoomOnPinch="false"
+        :panOnDrag="false"
+        :pan-on-scroll="false"
+        :preventScrolling="true"
+        :snap-grid="snapGrid"
+        :snap-to-grid="true"
+        :connection-mode="connectionMode"
+        :node-types="customNodeTypes"
+        :auto-pan-on-node-drag="false"
+        :nodes-draggable="locked"
+        :edges-connectable="false"
+        :zoomOnDoubleClick="false"
+        @connect="onConnect"
+      />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
@@ -23,18 +43,49 @@
     <!-- Buttons at the Bottom -->
 
     <div id="buttons_container">
-      <Select v-model="selectedScenario" :options="scenarios" class="Sbutton"
-        placeholder="Choose Scenario"></Select>
+      <Select
+        v-model="selectedScenario"
+        :options="scenarios"
+        class="Sbutton"
+        placeholder="Choose Scenario"
+      ></Select>
 
-      <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
-      <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario"></Button>
-      
-      <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
+      <Button
+        @click="loadRequest"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.load_scenario"
+      ></Button>
+      <Button
+        @click="triggerImageUpload"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.upload_scenario"
+      ></Button>
+
+      <Button
+        @click="toggleGridOverlay"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.toggle_grid"
+      ></Button>
     </div>
-    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
-      style="display: none" />
-    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
-      style="display: none" />
+    <input
+      type="file"
+      id="imageInput"
+      ref="imageInput"
+      @change="handleFileChange('image', $event)"
+      accept="image/*"
+      style="display: none"
+    />
+    <input
+      type="file"
+      id="jsonInput"
+      ref="jsonInput"
+      @change="handleFileChange('json', $event)"
+      accept=".json"
+      style="display: none"
+    />
   </Panel>
 </template>
 
@@ -55,9 +106,10 @@ import Coal from "@/assets/node_images/producer/coal.png";
 import Solar from "@/assets/node_images/producer/solarPanel.png";
 import Wind from "@/assets/node_images/producer/windmill.png";
 import { usedLanguage } from "../assets/stores/pageSettings";
-import { ref, reactive } from "vue";
+import { ref, reactive, inject } from "vue";
 
 export default {
+  inject: ["selectedNodes", "isAutoSimulating", "newScenarioLoaded"],
   components: {
     Panel,
     Button,
@@ -81,7 +133,7 @@ export default {
     const locked = ref(false); // Lock flag
     const jsonUrl = ref(null); // JSON file URL
     const scenarios = ref(["Scene 1", "Scene 2", "Scene 3"]); // Scenario options
-    const selectedScenario=ref("")
+    const selectedScenario = ref("");
 
     // Reactive object for edge properties
     const edgeProps = reactive({
@@ -89,10 +141,8 @@ export default {
       animated: true, // Edge animation
       style: { stroke: "#FA0404", strokeWidth: 3, opacity: 0.8 }, // Edge style
       type: "bezier",
-      
-      markerEnd: { type: MarkerType.Arrow, width: 6, height: 6, color:
-         "#000" },
-      
+
+      markerEnd: { type: MarkerType.Arrow, width: 6, height: 6, color: "#000" },
     });
 
     // Reactive object for custom node types
@@ -103,7 +153,11 @@ export default {
 
     // Reactive state for selected consumer/producer and their options
     const selectedConsumer = ref(""); // Selected value for consumers
-    const optionsConsumer = ref(["Commercial", "Residential Large", "Residential Small"]); // Consumer options
+    const optionsConsumer = ref([
+      "Commercial",
+      "Residential Large",
+      "Residential Small",
+    ]); // Consumer options
 
     const selectedProducer = ref(""); // Selected value for producers
     const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options
@@ -131,31 +185,24 @@ export default {
       selectedProducer,
       optionsProducers,
       scenarios,
-      selectedScenario
+      selectedScenario,
     };
   },
 
-
   methods: {
     async loadRequest() {
+      if (this.isAutoSimulating) return;
+
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
-        let id=null;
-        if (this.selectedScenario=="Scene 1")
-      {
-        id=1;
-
-      }
-     else if (this.selectedScenario=="Scene 2")
-      {
-        id=2;
-
-      }
-     else if (this.selectedScenario=="Scene 3")
-      {
-        id=3;
-
-      }
+        let id = null;
+        if (this.selectedScenario == "Scene 1") {
+          id = 1;
+        } else if (this.selectedScenario == "Scene 2") {
+          id = 2;
+        } else if (this.selectedScenario == "Scene 3") {
+          id = 3;
+        }
 
         const imgResponse = await axios.get(url, {
           params: { id: id, filetype: "png" },
@@ -168,18 +215,12 @@ export default {
 
         this.imgUrl = URL.createObjectURL(imgResponse.data);
 
-
         const graphResponse = await axios.get(url, {
           params: { id: id, filetype: "json" },
           responseType: "json",
         });
 
-
-
-
-
         const { nodes, edges } = graphResponse.data;
-
 
         this.nodes = nodes.map((node) => {
           let newNode = {
@@ -218,7 +259,8 @@ export default {
                 icon: Nuclear,
                 inputs: [1],
                 outputs: [0],
-                description: "Provides large-scale base power with low carbon emissions.",
+                description:
+                  "Provides large-scale base power with low carbon emissions.",
               };
               break;
             case "Coal Power":
@@ -255,18 +297,19 @@ export default {
           return newNode;
         });
 
-        this.edges =edges.map((edge) => ({
-  ...edge,
-  color: this.edgeProps.color,
-  animated: this.edgeProps.animated, 
-  style: this.edgeProps.style, 
-  type: this.edgeProps.type, 
- 
-  markerEnd: this.edgeProps.markerEnd
-    }));
+        this.edges = edges.map((edge) => ({
+          ...edge,
+          color: this.edgeProps.color,
+          animated: this.edgeProps.animated,
+          style: this.edgeProps.style,
+          type: this.edgeProps.type,
 
+          markerEnd: this.edgeProps.markerEnd,
+        }));
 
-
+        //new scenario loading finished
+        this.selectedNodes = [-1, -1];
+        this.newScenarioLoaded = true;
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
@@ -392,161 +435,160 @@ export default {
 
     // Handle file changes for both image and JSON
     triggerImageUpload() {
+      if (this.isAutoSimulating) return;
+      this.$refs.imageInput.click(); // Trigger image upload
+    },
 
-this.$refs.imageInput.click(); // Trigger image upload
-},
+    handleFileChange(type, event) {
+      const file = event.target.files[0];
+      if (type === "image") {
+        this.imageFile = file;
+        if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
+        this.imgUrl = URL.createObjectURL(file);
 
+        // Show alert for JSON upload
 
-handleFileChange(type, event) {
-const file = event.target.files[0];
-if (type === "image") {
-  this.imageFile = file;
-  if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
-  this.imgUrl = URL.createObjectURL(file);
+        this.$refs.jsonInput.click();
+      } else if (type === "json") {
+        this.jsonFile = file;
+        this.loadScenarioData(); // Handle JSON after image upload
+      }
+    },
 
-  // Show alert for JSON upload
-
-  this.$refs.jsonInput.click();
-} else if (type === "json") {
-  this.jsonFile = file;
-  this.loadScenarioData(); // Handle JSON after image upload
-}
-},
-
-// Load and parse the JSON file
-loadScenarioData() {
-if (!this.imageFile || !this.jsonFile) {
-  console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
-  alert("Please upload both the image and then the JSON file.");
-  return;
-}
-
-const reader = new FileReader();
-reader.onload = (e) => {
-  try {
-      const json = JSON.parse(e.target.result);
-
-      // Check for both JSON structures
-      const nodes = json.nodes || (json.data.nodes);
-      const edges = json.edges || ( json.data.edges);
-
-      if (!nodes || !Array.isArray(nodes)) {
-        throw new Error("Invalid JSON structure: 'nodes' must be an array.");
+    // Load and parse the JSON file
+    loadScenarioData() {
+      if (!this.imageFile || !this.jsonFile) {
+        console.log("Missing files:", {
+          imageFile: this.imageFile,
+          jsonFile: this.jsonFile,
+        });
+        alert("Please upload both the image and then the JSON file.");
+        return;
       }
 
-      if (!edges || !Array.isArray(edges)) {
-        throw new Error("Invalid JSON structure: 'edges' must be an array.");
-      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const json = JSON.parse(e.target.result);
 
+          // Check for both JSON structures
+          const nodes = json.nodes || json.data.nodes;
+          const edges = json.edges || json.data.edges;
 
-    this.nodes = nodes.map((node) => {
-      const newNode = {
-        ...node,
-        data: {}, // Will be populated based on label
+          if (!nodes || !Array.isArray(nodes)) {
+            throw new Error(
+              "Invalid JSON structure: 'nodes' must be an array."
+            );
+          }
+
+          if (!edges || !Array.isArray(edges)) {
+            throw new Error(
+              "Invalid JSON structure: 'edges' must be an array."
+            );
+          }
+
+          this.nodes = nodes.map((node) => {
+            const newNode = {
+              ...node,
+              data: {}, // Will be populated based on label
+            };
+
+            switch (node.label) {
+              case "Commercial":
+                newNode.data = {
+                  label: "Commercial",
+                  icon: Commercial, // Ensure Commercial is imported or defined
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Large":
+                newNode.data = {
+                  label: "Residential Large",
+                  icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Small":
+                newNode.data = {
+                  label: "Residential Small",
+                  icon: ResidentialSmall,
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Nuclear Power":
+                newNode.data = {
+                  label: "Nuclear Power",
+                  icon: Nuclear,
+                  inputs: [1],
+                  outputs: [0],
+                  description:
+                    "Provides large-scale base power with low carbon emissions.",
+                };
+                break;
+              case "Coal Power":
+                newNode.data = {
+                  label: "Coal Power",
+                  icon: Coal,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Traditional fossil fuel energy source.",
+                };
+                break;
+              case "Solar Power":
+                newNode.data = {
+                  label: "Solar Power",
+                  icon: Solar,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from sunlight.",
+                };
+                break;
+              case "Wind Power":
+                newNode.data = {
+                  label: "Wind Power",
+                  icon: Wind,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from wind.",
+                };
+                break;
+              default:
+                console.warn(`Unknown label: ${node.label}`);
+                newNode.data = {
+                  label: "Unknown",
+                  icon: null,
+                  inputs: [],
+                  outputs: [],
+                };
+            }
+
+            return newNode;
+          });
+
+          this.edges = edges.map((edge) => ({
+            ...edge,
+            animated: this.edgeProps.animated,
+            style: this.edgeProps.style,
+            color: this.edgeProps.color,
+          }));
+
+          console.log("Nodes processed:", this.nodes);
+          console.log("Edges processed:", this.edges);
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          alert(`Invalid JSON file: ${error.message}`);
+        }
       };
 
-      switch (node.label) {
-        case "Commercial":
-          newNode.data = {
-            label: "Commercial",
-            icon: Commercial, // Ensure Commercial is imported or defined
-            inputs: [0],
-            outputs: [0, 1],
-          };
-          break;
-        case "Residential Large":
-          newNode.data = {
-            label: "Residential Large",
-            icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
-            inputs: [0],
-            outputs: [0, 1],
-          };
-          break;
-        case "Residential Small":
-          newNode.data = {
-            label: "Residential Small",
-            icon: ResidentialSmall,
-            inputs: [0],
-            outputs: [0, 1],
-          };
-          break;
-        case "Nuclear Power":
-          newNode.data = {
-            label: "Nuclear Power",
-            icon: Nuclear,
-            inputs: [1],
-            outputs: [0],
-            description: "Provides large-scale base power with low carbon emissions.",
-          };
-          break;
-        case "Coal Power":
-          newNode.data = {
-            label: "Coal Power",
-            icon: Coal,
-            inputs: [1],
-            outputs: [0],
-            description: "Traditional fossil fuel energy source.",
-          };
-          break;
-        case "Solar Power":
-          newNode.data = {
-            label: "Solar Power",
-            icon: Solar,
-            inputs: [1],
-            outputs: [0],
-            description: "Generates renewable energy from sunlight.",
-          };
-          break;
-        case "Wind Power":
-          newNode.data = {
-            label: "Wind Power",
-            icon: Wind,
-            inputs: [1],
-            outputs: [0],
-            description: "Generates renewable energy from wind.",
-          };
-          break;
-        default:
-          console.warn(`Unknown label: ${node.label}`);
-          newNode.data = {
-            label: "Unknown",
-            icon: null,
-            inputs: [],
-            outputs: [],
-          };
-      }
-
-      return newNode;
-    });
-
-    this.edges =edges.map((edge) => ({
-      ...edge,
-      animated: this.edgeProps.animated,
-      style: this.edgeProps.style,
-      color: this.edgeProps.color,
-    }));
-
-
-
-    console.log("Nodes processed:", this.nodes);
-    console.log("Edges processed:", this.edges);
-
-  } catch (error) {
-    console.error("Error parsing JSON:", error);
-    alert(`Invalid JSON file: ${error.message}`);
-  }
+      reader.readAsText(this.jsonFile);
+    },
+  },
 };
-
-reader.readAsText(this.jsonFile);
-},
-},
-};
-
 </script>
-
-
 
 <style>
 @import "../assets/main.css";
-
 </style>
