@@ -132,6 +132,8 @@ export default {
 
     const selectedProducer = ref(""); // Selected value for producers
     const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options
+    const scenarios = ref(["Scene 1", "Scene 2", "Scene 3"]); // Scenario options
+    const selectedScenario=ref("")
 
     return {
       usedLang,
@@ -153,7 +155,9 @@ export default {
       selectedConsumer,
       optionsConsumer,
       selectedProducer,
-      optionsProducers
+      optionsProducers,
+      scenarios,
+      selectedScenario,
 
     };
   },
@@ -167,7 +171,22 @@ export default {
     async loadRequest() {
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
-        const id = 1;
+        let id=null;
+        if (this.selectedScenario=="Scene 1")
+      {
+        id=1;
+
+      }
+     else if (this.selectedScenario=="Scene 2")
+      {
+        id=2;
+
+      }
+     else if (this.selectedScenario=="Scene 3")
+      {
+        id=3;
+
+      }
 
         const imgResponse = await axios.get(url, {
           params: { id: id, filetype: "png" },
@@ -185,7 +204,6 @@ export default {
           params: { id: id, filetype: "json" },
           responseType: "json",
         });
-
 
 
 
