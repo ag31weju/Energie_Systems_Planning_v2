@@ -24,7 +24,7 @@
 <script>
 import Chart from "primevue/chart";
 import Panel from "primevue/panel";
-import { ref, watch, inject, onMounted } from "vue";
+import { ref, watch, inject, onMounted, defineExpose } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
 
 export default {
@@ -78,7 +78,7 @@ export default {
     },
   },
   setup(props) {
-    const chartsCollection = [];
+    let chartsCollection = [];
 
     const usedLang = usedLanguage();
     let selectedNodes = inject("selectedNodes");
@@ -183,16 +183,29 @@ export default {
         { length: gridSize.value },
         (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
       );
-
-      chartsCollection.push({
-        selectedNodes: selectedNodes.value,
-        chartsData: chartsCache.value,
-      });
-
-      console.log(chartsCollection);
     });
 
+    const clearCharts = () => {
+      assignAllData(null);
+      chartsCache.value = Array.from(
+        { length: gridSize.value },
+        (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
+      );
+      chartsCollection = [];
+    };
+
+    defineExpose({ clearCharts });
+
     function changeCharts(newVal) {
+      if (newVal[0] === -1 || newVal[1] === -1) {
+        assignAllData(null);
+        chartsCache.value = Array.from(
+          { length: gridSize.value },
+          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
+        );
+        return;
+      }
+
       let selectedCharts = chartsCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
         return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
@@ -212,12 +225,9 @@ export default {
 
       chartsCache.value = selectedCharts;
       assignAllData(selectedCharts[0][0]);
-
-      console.log(chartsCollection);
     }
 
     function assignAllData(newVal) {
-      console.log(newVal);
       lineChartSet.value.datasets[0].data = newVal?.lineChartData;
       barChartSet.value.datasets[0].data =
         newVal?.barChartData?.purchased_power;
@@ -241,11 +251,15 @@ export default {
       }
     }
 
+    function handleSliderVals(newVal) {
+      const rowIndex = newVal[1];
+      const colIndex = newVal[0];
+      assignAllData(chartsCache.value[rowIndex][colIndex]);
+    }
+
     function updateChart(newVal, colIndex, rowIndex) {
       chartsCache.value[rowIndex][colIndex] = newVal;
       assignAllData(newVal);
-
-      console.log(chartsCollection);
     }
 
     function resetCharts() {
@@ -262,12 +276,20 @@ export default {
         );
       });
 
-      chartsCollection[idx].chartsData = chartsCache.value;
+      if (idx >= 0) {
+        chartsCollection[idx].chartsData = chartsCache.value;
+      }
     }
 
     watch(
       () => props.chartsData,
       (newVal) => handleChartsData(newVal),
+      { deep: true }
+    );
+
+    watch(
+      () => props.sliderVals,
+      (newVal) => handleSliderVals(newVal),
       { deep: true }
     );
 
@@ -285,6 +307,7 @@ export default {
       lineChartOptions,
       barChartOptions,
       usedLang,
+      clearCharts,
     };
   },
   components: {
