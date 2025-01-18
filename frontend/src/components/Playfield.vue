@@ -31,6 +31,7 @@
     
       <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
       <Button @click="addConsumerNode" type="submit" class="button" v-bind:label="usedLang.add_consumer"></Button>
+      <Button @click="addBatteryNode" type="submit" class="button" >Add Battery</Button>
       <Button @click="addEnergySourceNode" type="submit" class="button"
         v-bind:label="usedLang.add_energy_source"></Button>
       <Button @click="toggleEdgeMode" type="submit" class="button" v-bind:label="usedLang.add_edge"></Button>
@@ -57,9 +58,11 @@ import axios from "axios";
 import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 import ConsumerNode from "./customNodes/Consumer.vue";
+import BatteryNode from "./customNodes/Battery.vue";
 import ProducerNode from "./customNodes/Producer.vue";
 import ConsumerIcon from "@/assets/node_images/consumer/commercial2.png";
 import Commercial from "@/assets/node_images/consumer/commercial.png";
+import Battery from "@/assets/node_images/battery/battery.png";
 import ResidentialLarge from "@/assets/node_images/consumer/residentialLarge.png";
 import ResidentialSmall from "@/assets/node_images/consumer/residentialSmall.png";
 import Nuclear from "@/assets/node_images/producer/nuclear.png";
@@ -104,6 +107,7 @@ export default {
     const customNodeTypes = reactive({
       consumer: ConsumerNode,
       producer: ProducerNode,
+      battery:  BatteryNode,
     });
 
     // Reactive state for selected consumer/producer and their options
@@ -311,6 +315,30 @@ export default {
         context.lineTo(width, y);
         context.stroke();
       }
+    },
+
+    addBatteryNode(){
+      const vueFlowContainer = this.$refs.vueFlowContainer;
+      if (!vueFlowContainer) return;
+
+      const width = vueFlowContainer.offsetWidth / this.gridSize;
+      const height = vueFlowContainer.offsetHeight / this.gridSize;
+
+      const newNode = {
+        id: `node_${this.nodeIdCounter++}`,
+        type: "producer",
+        position: { x: width * 7, y: height * 3 },
+        data: {
+            label: "Battery",
+            icon: Battery, 
+            inputs: [1], 
+            outputs: [1],}, 
+        targetPosition: "left",
+        sourcePosition: "right",
+      };
+      this.nodes.push(newNode);
+
+
     },
 
     addEnergySourceNode() {
@@ -573,22 +601,14 @@ if (!this.imageFile || !this.jsonFile) {
 const reader = new FileReader();
 reader.onload = (e) => {
   try {
-      const json = JSON.parse(e.target.result);
+    const data = JSON.parse(e.target.result);
+    console.log('Parsed JSON:', data);
 
-      // Check for both JSON structures
-      const nodes = json.nodes || (json.data.nodes);
-      const edges = json.edges || ( json.data.edges);
+    if (!data.nodes || !Array.isArray(data.nodes)) {
+      throw new Error("Invalid JSON structure: 'nodes' must be an array.");
+    }
 
-      if (!nodes || !Array.isArray(nodes)) {
-        throw new Error("Invalid JSON structure: 'nodes' must be an array.");
-      }
-
-      if (!edges || !Array.isArray(edges)) {
-        throw new Error("Invalid JSON structure: 'edges' must be an array.");
-      }
-
-
-    this.nodes = nodes.map((node) => {
+    this.nodes = data.nodes.map((node) => {
       const newNode = {
         ...node,
         data: {}, // Will be populated based on label
@@ -668,7 +688,7 @@ reader.onload = (e) => {
       return newNode;
     });
 
-    this.edges =edges.map((edge) => ({
+    this.edges = data.edges.map((edge) => ({
       ...edge,
       animated: this.edgeProps.animated,
       style: this.edgeProps.style,
