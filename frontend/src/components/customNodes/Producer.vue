@@ -62,14 +62,16 @@ export default defineComponent({
   },
   setup(props, context) {
     let handleNodeSelection = inject("handleNodeSelection");
-    let selectedNodes = inject("selectedNodes");
+    let selectedNodes = inject("selectedNodes")
+      ? inject("selectedNodes")
+      : undefined;
     const isHighlighted = ref(false); // Tracks if the node is hovered
     const nodeID = context.attrs.id.at(-1);
     const isSelectedFirst = computed(() => {
-      return selectedNodes.value[0] === nodeID;
+      return selectedNodes ? selectedNodes.value[0] === nodeID : false;
     });
     const isSelectedSecond = computed(() => {
-      return selectedNodes.value[1] === nodeID;
+      return selectedNodes ? selectedNodes.value[1] === nodeID : false;
     });
 
     const handleMouseOver = () => {
