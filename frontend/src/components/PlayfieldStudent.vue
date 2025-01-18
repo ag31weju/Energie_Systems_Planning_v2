@@ -27,7 +27,14 @@
         placeholder="Choose Scenario"></Select>
 
       <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
-      <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario"></Button>
+      <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario">img</Button>
+      <Button
+        @click="triggerJsonUpload"
+        type="submit"
+        class="slider-button"
+        v-bind:label="upload_json"
+        >json</Button
+      >
       
       <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
     </div>
@@ -392,34 +399,30 @@ export default {
 
     // Handle file changes for both image and JSON
     triggerImageUpload() {
+      this.$refs.imageInput.click(); // Trigger image upload
+    },
 
-this.$refs.imageInput.click(); // Trigger image upload
-},
+    // Trigger the JSON file input
+    triggerJsonUpload() {
+      this.$refs.jsonInput.click(); // Trigger JSON upload
+    },
 
+    handleFileChange(type, event) {
+      const file = event.target.files[0];
+      if (type === "image") {
+        this.imageFile = file;
+        if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
+        this.imgUrl = URL.createObjectURL(file);
 
-handleFileChange(type, event) {
-const file = event.target.files[0];
-if (type === "image") {
-  this.imageFile = file;
-  if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
-  this.imgUrl = URL.createObjectURL(file);
-
-  // Show alert for JSON upload
-
-  this.$refs.jsonInput.click();
-} else if (type === "json") {
-  this.jsonFile = file;
-  this.loadScenarioData(); // Handle JSON after image upload
-}
-},
-
+        // Show alert for JSON upload
+        alert("Please upload the corresponding JSON file.");
+      } else if (type === "json") {
+        this.jsonFile = file;
+        this.loadScenarioData(); // Handle JSON after image upload
+      }
+    },
 // Load and parse the JSON file
 loadScenarioData() {
-if (!this.imageFile || !this.jsonFile) {
-  console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
-  alert("Please upload both the image and then the JSON file.");
-  return;
-}
 
 const reader = new FileReader();
 reader.onload = (e) => {

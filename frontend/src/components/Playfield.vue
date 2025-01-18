@@ -26,24 +26,40 @@
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container1">
-      <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
-      <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario"></Button>
+  <!-- Dropdowns -->
+  
+
+  <!-- Scenario Management -->
+  <div class="row">
+    <Select v-model="selectedScenario" :options="scenarios" class="Sbutton"
+      placeholder="Choose Scenario"></Select>
+    <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
+    <Button @click="triggerJsonUpload" type="submit" class="slider-button" v-bind:label="upload_json">json</Button>
+    <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario">img</Button>
     
-      <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
-      <Button @click="addConsumerNode" type="submit" class="button" v-bind:label="usedLang.add_consumer"></Button>
-      <Button @click="addBatteryNode" type="submit" class="button" >Add Battery</Button>
-      <Button @click="addEnergySourceNode" type="submit" class="button"
-        v-bind:label="usedLang.add_energy_source"></Button>
-      <Button @click="toggleEdgeMode" type="submit" class="button" v-bind:label="usedLang.add_edge"></Button>
-      <Button @click="clearNodes" type="submit" class="button" v-bind:label="usedLang.clear_nodes"></Button>
-      <Button @click="saveData" type="submit" class="button" v-bind:label="usedLang.save_text"></Button>
+    <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
+  <Button @click="saveData" type="submit" class="button" v-bind:label="usedLang.save_text"></Button> 
+   
+  </div>
+<!-- Utilities -->
+<div class="row">
+    <Button @click="toggleEdgeMode" type="submit" class="button" v-bind:label="usedLang.add_edge"></Button>
+    <Button @click="clearNodes" type="submit" class="button" v-bind:label="usedLang.clear_nodes"></Button>
+    <Button @click="addConsumerNode" type="submit" class="button" v-bind:label="usedLang.add_consumer"></Button>
+    <Button @click="addBatteryNode" type="submit" class="button">Add Battery</Button>
+    <Button @click="addEnergySourceNode" type="submit" class="button" v-bind:label="usedLang.add_energy_source"></Button>
+    
+</div>
+  <!-- Actions -->
+  
 
-      <Select v-model="selectedConsumer" :options="optionsConsumer" :placeholder="usedLang.selector_text_consumer">
-      </Select>
-
-      <Select v-model="selectedProducer" :options="optionsProducers" :placeholder="usedLang.selector_text_producer">
-      </Select>
-    </div>
+  
+  <div class="row">
+    
+    <Select v-model="selectedConsumer" :options="optionsConsumer" :placeholder="usedLang.selector_text_consumer"></Select>
+    <Select v-model="selectedProducer" :options="optionsProducers" :placeholder="usedLang.selector_text_producer"></Select>
+  </div>
+</div>
     <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
       style="display: none" />
     <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
@@ -567,48 +583,51 @@ export default {
       }
     },
 
-    // Handle file changes for both image and JSON
     triggerImageUpload() {
+      this.$refs.imageInput.click(); // Trigger image upload
+    },
 
-this.$refs.imageInput.click(); // Trigger image upload
-},
+    // Trigger the JSON file input
+    triggerJsonUpload() {
+      this.$refs.jsonInput.click(); // Trigger JSON upload
+    },
 
+    handleFileChange(type, event) {
+      const file = event.target.files[0];
+      if (type === "image") {
+        this.imageFile = file;
+        if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
+        this.imgUrl = URL.createObjectURL(file);
 
-handleFileChange(type, event) {
-const file = event.target.files[0];
-if (type === "image") {
-  this.imageFile = file;
-  if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
-  this.imgUrl = URL.createObjectURL(file);
-
-  // Show alert for JSON upload
-
-  this.$refs.jsonInput.click();
-} else if (type === "json") {
-  this.jsonFile = file;
-  this.loadScenarioData(); // Handle JSON after image upload
-}
-},
-
+        // Show alert for JSON upload
+        alert("Please upload the corresponding JSON file.");
+      } else if (type === "json") {
+        this.jsonFile = file;
+        this.loadScenarioData(); // Handle JSON after image upload
+      }
+    },
 // Load and parse the JSON file
 loadScenarioData() {
-if (!this.imageFile || !this.jsonFile) {
-  console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
-  alert("Please upload both the image and then the JSON file.");
-  return;
-}
 
 const reader = new FileReader();
 reader.onload = (e) => {
   try {
-    const data = JSON.parse(e.target.result);
-    console.log('Parsed JSON:', data);
+      const json = JSON.parse(e.target.result);
 
-    if (!data.nodes || !Array.isArray(data.nodes)) {
-      throw new Error("Invalid JSON structure: 'nodes' must be an array.");
-    }
+      // Check for both JSON structures
+      const nodes = json.nodes || (json.data.nodes);
+      const edges = json.edges || ( json.data.edges);
 
-    this.nodes = data.nodes.map((node) => {
+      if (!nodes || !Array.isArray(nodes)) {
+        throw new Error("Invalid JSON structure: 'nodes' must be an array.");
+      }
+
+      if (!edges || !Array.isArray(edges)) {
+        throw new Error("Invalid JSON structure: 'edges' must be an array.");
+      }
+
+
+    this.nodes = nodes.map((node) => {
       const newNode = {
         ...node,
         data: {}, // Will be populated based on label
@@ -688,7 +707,7 @@ reader.onload = (e) => {
       return newNode;
     });
 
-    this.edges = data.edges.map((edge) => ({
+    this.edges =edges.map((edge) => ({
       ...edge,
       animated: this.edgeProps.animated,
       style: this.edgeProps.style,
