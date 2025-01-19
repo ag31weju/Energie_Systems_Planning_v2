@@ -66,7 +66,8 @@ export default defineComponent({
       ? inject("selectedNodes")
       : undefined;
     const isHighlighted = ref(false); // Tracks if the node is hovered
-    const nodeID = context.attrs.id.at(-1);
+
+    const nodeID = props?.data.prodID;
     const isSelectedFirst = computed(() => {
       return selectedNodes ? selectedNodes.value[0] === nodeID : false;
     });
@@ -83,8 +84,7 @@ export default defineComponent({
     };
 
     const handleClick = () => {
-      //console.log(context.attrs.id.at(-1)); //id is "node_x" and x is extracted afterwards
-      handleNodeSelection(nodeID);
+      if (handleNodeSelection) handleNodeSelection(nodeID);
     };
 
     return {

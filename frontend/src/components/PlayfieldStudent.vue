@@ -229,8 +229,6 @@ export default {
         this.nodes = nodes.map((node) => {
           let newNode = {
             ...node,
-            prodID: undefined,
-            consID: undefined,
             data: {},
           };
 
@@ -241,8 +239,8 @@ export default {
                 icon: Commercial,
                 inputs: [0],
                 outputs: [0, 1],
+                consID: consCounter,
               };
-              newNode.consID = consCounter;
               consCounter++;
               break;
             case "Residential Large":
@@ -251,8 +249,8 @@ export default {
                 icon: ResidentialLarge,
                 inputs: [0],
                 outputs: [0, 1],
+                consID: consCounter,
               };
-              newNode.consID = consCounter;
               consCounter++;
               break;
             case "Residential Small":
@@ -261,8 +259,8 @@ export default {
                 icon: ResidentialSmall,
                 inputs: [0],
                 outputs: [0, 1],
+                consID: consCounter,
               };
-              newNode.consID = consCounter;
               consCounter++;
               break;
             case "Nuclear Power":
@@ -273,8 +271,8 @@ export default {
                 outputs: [0],
                 description:
                   "Provides large-scale base power with low carbon emissions.",
+                prodID: prodCounter,
               };
-              newNode.prodID = prodCounter;
               prodCounter++;
               break;
             case "Coal Power":
@@ -284,8 +282,8 @@ export default {
                 inputs: [1],
                 outputs: [0],
                 description: "Traditional fossil fuel energy source.",
+                prodID: prodCounter,
               };
-              newNode.prodID = prodCounter;
               prodCounter++;
               break;
             case "Solar Power":
@@ -295,8 +293,8 @@ export default {
                 inputs: [1],
                 outputs: [0],
                 description: "Generates renewable energy from sunlight.",
+                prodID: prodCounter,
               };
-              newNode.prodID = prodCounter;
               prodCounter++;
               break;
             case "Wind Power":
@@ -306,8 +304,8 @@ export default {
                 inputs: [1],
                 outputs: [0],
                 description: "Generates renewable energy from wind.",
+                prodID: prodCounter,
               };
-              newNode.prodID = prodCounter;
               prodCounter++;
               break;
             default:
