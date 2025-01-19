@@ -48,13 +48,20 @@ export default {
     const sliderVals = ref([0, 0]);
     const matrixData = ref(undefined);
     const chartsData = ref(undefined);
+
     const isAutoSimulating = ref(false);
     const stopAutoSimulate = ref(false);
     const newScenarioLoaded = ref(false);
+
     const selectedNodes = ref([-1, -1]);
+    const dataValues = ref(undefined);
+    const prodCapacities = ref(undefined);
 
     const matrixComp = useTemplateRef("matrixComp");
     const chartsComp = useTemplateRef("chartsComp");
+
+    let numberProducers = 0;
+    let numberConsumers = 0;
 
     provide("selectedNodes", selectedNodes);
     provide("isAutoSimulating", isAutoSimulating);
@@ -142,21 +149,26 @@ export default {
     }
     provide("moveOutline", moveOutline);
 
-    function clearAll() {
-      if (newScenarioLoaded) {
-        matrixComp.value?.clearMatrix();
-        chartsComp.value?.clearCharts();
-        newScenarioLoaded.value = false;
-      }
+    function prepareNewScenario(nProds, nCons) {
+      selectedNodes.value = [-1, -1];
+
+      matrixComp.value?.clearMatrix();
+      chartsComp.value?.clearCharts();
+
+      numberConsumers = nCons;
+      numberProducers = nProds;
+
+      const initializeNDarray = (nProds) => {
+        return nProds === 0
+          ? { matrixData: null, chartsData: null }
+          : Array.from({ length: 6 }, () => initializeNDarray(nProds - 1));
+      };
+
+      prodCapacities.value = Array.from({ length: nProds }, () => 0);
+      dataValues.value = initializeNDarray(nProds);
     }
 
-    watch(
-      () => newScenarioLoaded,
-      (newVal) => clearAll(),
-      {
-        deep: true,
-      }
-    );
+    provide("prepareNewScenario", prepareNewScenario);
 
     return {
       handleSimulationData,

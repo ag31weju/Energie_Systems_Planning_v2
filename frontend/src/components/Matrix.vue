@@ -185,10 +185,6 @@ export default {
       );
       outLinePosition.value = props.sliderVals;
       initHeatmap();
-      /*heatmapCollection.push({
-        selectedNodes: selectedNodes.value,
-        z: z.value,
-      });*/ //Not required at mount time since the initial selectedNode value is going to be [-1, -1]
     });
 
     function changeMatrix(newVal) {

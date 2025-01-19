@@ -109,7 +109,7 @@ import { usedLanguage } from "../assets/stores/pageSettings";
 import { ref, reactive, inject } from "vue";
 
 export default {
-  inject: ["selectedNodes", "isAutoSimulating", "newScenarioLoaded"],
+  inject: ["selectedNodes", "isAutoSimulating", "prepareNewScenario"],
   components: {
     Panel,
     Button,
@@ -222,9 +222,15 @@ export default {
 
         const { nodes, edges } = graphResponse.data;
 
+        //counts how many prods and cons there are
+        let prodCounter = 0;
+        let consCounter = 0;
+
         this.nodes = nodes.map((node) => {
           let newNode = {
             ...node,
+            prodID: undefined,
+            consID: undefined,
             data: {},
           };
 
@@ -236,6 +242,8 @@ export default {
                 inputs: [0],
                 outputs: [0, 1],
               };
+              newNode.consID = consCounter;
+              consCounter++;
               break;
             case "Residential Large":
               newNode.data = {
@@ -244,6 +252,8 @@ export default {
                 inputs: [0],
                 outputs: [0, 1],
               };
+              newNode.consID = consCounter;
+              consCounter++;
               break;
             case "Residential Small":
               newNode.data = {
@@ -252,6 +262,8 @@ export default {
                 inputs: [0],
                 outputs: [0, 1],
               };
+              newNode.consID = consCounter;
+              consCounter++;
               break;
             case "Nuclear Power":
               newNode.data = {
@@ -262,6 +274,8 @@ export default {
                 description:
                   "Provides large-scale base power with low carbon emissions.",
               };
+              newNode.prodID = prodCounter;
+              prodCounter++;
               break;
             case "Coal Power":
               newNode.data = {
@@ -271,6 +285,8 @@ export default {
                 outputs: [0],
                 description: "Traditional fossil fuel energy source.",
               };
+              newNode.prodID = prodCounter;
+              prodCounter++;
               break;
             case "Solar Power":
               newNode.data = {
@@ -280,6 +296,8 @@ export default {
                 outputs: [0],
                 description: "Generates renewable energy from sunlight.",
               };
+              newNode.prodID = prodCounter;
+              prodCounter++;
               break;
             case "Wind Power":
               newNode.data = {
@@ -289,6 +307,8 @@ export default {
                 outputs: [0],
                 description: "Generates renewable energy from wind.",
               };
+              newNode.prodID = prodCounter;
+              prodCounter++;
               break;
             default:
               console.warn(`Unknown label: ${node.label}`);
@@ -307,9 +327,9 @@ export default {
           markerEnd: this.edgeProps.markerEnd,
         }));
 
-        //new scenario loading finished
-        this.selectedNodes = [-1, -1];
-        this.newScenarioLoaded = true;
+        //new scenario loading finished and assigned each node a prod or cons id
+        //TODO find out how many consumers and producers there are
+        this.prepareNewScenario(prodCounter, consCounter);
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
