@@ -6,7 +6,7 @@
         :min="0"
         :max="5"
         :step="step"
-        :disabled="isAutoSimulating"
+        :disabled="isAutoSimulating || sliderList[index].nodeID === -1"
         class="w-56"
         :id="`slider${index}`"
         @change="(event) => startMoveOutline(event, index)"
@@ -52,6 +52,7 @@ export default {
     let selectedNodes = inject("selectedNodes");
     let moveOutline = inject("moveOutline");
     let isAutoSimulating = inject("isAutoSimulating");
+    let prodCapacities = inject("prodCapacities");
 
     const step = ref(1);
     const sliderList = ref([]);

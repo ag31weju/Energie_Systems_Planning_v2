@@ -57,13 +57,15 @@ export default {
     const dataValues = ref(undefined);
     const prodCapacities = ref(undefined);
 
+    provide("selectedNodes", selectedNodes);
+    provide("prodCapacities", prodCapacities);
+
     const matrixComp = useTemplateRef("matrixComp");
     const chartsComp = useTemplateRef("chartsComp");
 
     let numberProducers = 0;
     let numberConsumers = 0;
 
-    provide("selectedNodes", selectedNodes);
     provide("isAutoSimulating", isAutoSimulating);
     provide("newScenarioLoaded", newScenarioLoaded);
     provide("sliderVals", sliderVals);
