@@ -111,67 +111,69 @@ def save_slider_data(request):
     elif request.method == "GET":
         # Use the gotten Slider data for some computation with the optimizer
 
-        sliders = []
+        prodCapacities = []
         autoSimulate = None
+        reset = None
+        
 
         with open("slider_data/slider_data.json", "r") as sliderData:
             json_data = json.load(sliderData)
-            sliders = [sliderData for sliderData in json_data.get("sliders")]
+            prodCapacities = [capacity for capacity in json_data.get("prodCapacities")]
             autoSimulate = json_data.get("autoSimulate")
             reset = json_data.get("reset")
-            
 
+        print(prodCapacities)
         
-        data = {"mainData": [[{
-            "matrixData": None,
-            "chartsData": {
-                "lineChartData": [None for _ in range(26)],
-                "barChartData": {
-                    "purchased_power": [None for _ in range(26)],
-                    "pv_production": [None for _ in range(26)],
-                    "pv_curtailment": [None for _ in range(26)],
-                    "storage_charge": [None for _ in range(26)],
-                    "storage_discharge": [None for _ in range(26)],
-                    "demand": [None for _ in range(26)],
-                },
-            },
-        } for _ in range(6)] for _ in range(6)], "bestIdx": [0, 0]}
+        def fill_cell():
+            return {"matrixData": math.floor(random.uniform(0, 100)) ,
+                    "chartsData": {
+                        "lineChartData": [math.floor(random.random() * 100) for _ in range(26)],
+                        "barChartData": {
+                            "purchased_power": [math.floor(random.random() * 100) for _ in range(26)],
+                            "pv_production": [math.floor(random.random() * 100) for _ in range(26)],
+                            "pv_curtailment": [math.floor(random.random() * 100) for _ in range(26)],
+                            "storage_charge": [math.floor(random.random() * 100) for _ in range(26)],
+                            "storage_discharge": [math.floor(random.random() * 100) for _ in range(26)],
+                            "demand": [math.floor(random.random() * 100) for _ in range(26)],
+                            },
+                        },
+                    }
 
-        
-        def fill_data(data, sliderVals, bestMatrixVal):
-            cell = data["mainData"][sliderVals[1]][sliderVals[0]] #matrix row (first index) is y, matrix column (second index) is x
-            cell["chartsData"]["barChartData"] = {
-                "purchased_power": [math.floor(random.random() * 100) for _ in range(26)],
-                "pv_production": [math.floor(random.random() * 100) for _ in range(26)],
-                "pv_curtailment": [math.floor(random.random() * 100) for _ in range(26)],
-                "storage_charge": [math.floor(random.random() * 100) for _ in range(26)],
-                "storage_discharge": [math.floor(random.random() * 100) for _ in range(26)],
-                "demand": [math.floor(random.random() * -100) for _ in range(26)]
-                }
-            cell["chartsData"]["lineChartData"] = [math.floor(random.random() * 100) for _ in range(26)]
-            cell["matrixData"] = math.floor(random.uniform(0, 100)) 
-            print(bestMatrixVal)
-            if bestMatrixVal[0] is not None:
-                if bestMatrixVal[0] > cell["matrixData"]: 
-                    bestMatrixVal[0] = cell["matrixData"]
-                    data["bestIdx"] = [sliderVals[0], sliderVals[1]] 
-            else:                
-                bestMatrixVal[0] = cell["matrixData"]
-                
-                
+        bestIdx = []
+        def fillWholeStructure(pointer, prodCapacities, rec_depth, bestMatrixVal):
+            if rec_depth == len(prodCapacities):
+                value = fill_cell()
+                if bestMatrixVal[0] > value["matrixData"]: 
+                    bestMatrixVal[0] = value["matrixData"]
+                    bestIdx[:] = prodCapacities[:]
+                return value
+            else:
+                while prodCapacities[rec_depth] <= 5:
+                    pointer[prodCapacities[rec_depth]] = fillWholeStructure(pointer[prodCapacities[rec_depth]], prodCapacities, rec_depth+1, bestMatrixVal)
+                    prodCapacities[rec_depth] += 1
+                prodCapacities[rec_depth] = 0
 
+            return pointer
         
+        #Start filling the data structure on autosimulate, otherwise return a simple object. If reset is true, then don't do anything
         if not reset: 
             if autoSimulate:
-                bestMatrixVal = [None] #has to be inside of an array since it acts as a mutable container which does not pass the reference but the value
-                for row in range(6):
-                    for col in range(6):
-                        fill_data(data, [col, row], bestMatrixVal)
-            else:
-               sliderVals = [v.get("value") for v in sliders] 
-               fill_data(data, sliderVals, [None])
+                prodCapacities = [0 for x in prodCapacities] #reset prodCapacities to 0
 
-        print(data.get("bestIdx"))
+                def initializeNDarray(length):
+                    #6 is the amount of steps that can be taken in the slider
+                    return [initializeNDarray(length-1) for _ in range(6)] if length != 0 else None
+                
+                data = initializeNDarray(len(prodCapacities))
+                #[float("inf")] since it acts as a mutable container for the bestMatrixVal
+                data = {"mainData": fillWholeStructure(data, prodCapacities, 0, [float("inf")]), "bestIdx": bestIdx}
+
+                #just for testing
+                #with open('slider_data/tmp.json', 'w') as file:
+                 #   json.dump(data, file, indent=4)
+            else:
+               data = {"mainData": fill_cell(), "bestIdx": [None]}
+
         return JsonResponse(data, status=200)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 

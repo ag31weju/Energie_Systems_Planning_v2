@@ -48,6 +48,7 @@ export default {
   props: ["auto", "simulate", "reset_text"],
   setup(props, context) {
     const usedLang = usedLanguage();
+    const url = "http://127.0.0.1:8000/api/save-slider-data/";
 
     let selectedNodes = inject("selectedNodes");
     let moveOutline = inject("moveOutline");
@@ -58,28 +59,22 @@ export default {
     const sliderList = ref([]);
 
     async function reset() {
-      sliderList.value.forEach((slider) => (slider.value = 0));
       // Send reset flag to the backend
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";
       const sliderData = {
         autoSimulate: false,
         reset: true, // Flag to indicate reset action to reset graphs and matrix
-        sliders: sliderList.value.map((slider) => ({
-          type: slider.type,
-          value: slider.value,
-        })),
+        prodCapacities: prodCapacities.value,
       };
       await postAndGet(url, sliderData);
     }
     async function simulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";
+      sliderList.value.forEach((slider) => {
+        prodCapacities.value[slider.nodeID] = slider.value;
+      });
       const sliderData = {
         autoSimulate: false,
         reset: false,
-        sliders: sliderList.value.map((slider) => ({
-          type: slider.type,
-          value: slider.value,
-        })),
+        prodCapacities: prodCapacities.value,
       };
 
       // Send the full slider data to the backend
@@ -87,14 +82,10 @@ export default {
     }
 
     async function autoSimulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";
       const sliderData = {
         reset: false,
         autoSimulate: true, // Send the boolean flag for auto simulation
-        sliders: sliderList.value.map((slider) => ({
-          type: slider.type,
-          value: slider.value,
-        })),
+        prodCapacities: prodCapacities.value,
       };
 
       // Send the auto-simulation request with the flag
@@ -123,14 +114,14 @@ export default {
           })
           .catch((e) => console.error("GET did not work:", e));
 
-        const propagateChange = {
+        /*const propagateChange = {
           simData: simData.mainData,
           reset: reset,
           autoSimulate: autoSimulate,
           sliderVals: sliderVals,
           bestIdx: simData.bestIdx,
         };
-        context.emit("getSimulationData", propagateChange);
+        context.emit("getSimulationData", propagateChange);*/
       } catch (error) {
         console.error("Error sending data to backend:", error);
         throw error; // Re-throw the error to handle it in the calling method
@@ -143,8 +134,8 @@ export default {
 
     function changeSliders(newVal) {
       sliderList.value = [
-        { value: 0, nodeID: selectedNodes.value[0] },
-        { value: 0, nodeID: selectedNodes.value[1] },
+        { value: 0, nodeID: newVal[0] },
+        { value: 0, nodeID: newVal[1] },
       ];
     }
 
