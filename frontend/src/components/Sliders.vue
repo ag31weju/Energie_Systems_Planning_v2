@@ -17,18 +17,18 @@
 
     <div id="slider-buttons-container">
       <Button
-        @click="reset"
+        @click="postAndGet(true, false, 'reset')"
         class="button"
         v-bind:label="usedLang.reset_text"
       ></Button>
       <Button
-        @click="autoSimulateRequest"
+        @click="postAndGet(false, true, 'auto')"
         class="button"
         v-bind:label="usedLang.auto"
       >
       </Button>
       <Button
-        @click="simulateRequest"
+        @click="postAndGet(false, false, 'simulate')"
         class="button"
         v-bind:label="usedLang.simulate"
       ></Button>
@@ -58,45 +58,17 @@ export default {
     const step = ref(1);
     const sliderList = ref([]);
 
-    async function reset() {
-      // Send reset flag to the backend
-      const sliderData = {
-        autoSimulate: false,
-        reset: true, // Flag to indicate reset action to reset graphs and matrix
-        prodCapacities: prodCapacities.value,
-      };
-      await postAndGet(url, sliderData);
-    }
-    async function simulateRequest() {
-      sliderList.value.forEach((slider) => {
-        prodCapacities.value[slider.nodeID] = slider.value;
-      });
-      const sliderData = {
-        autoSimulate: false,
-        reset: false,
-        prodCapacities: prodCapacities.value,
-      };
-
-      // Send the full slider data to the backend
-      await postAndGet(url, sliderData);
-    }
-
-    async function autoSimulateRequest() {
-      const sliderData = {
-        reset: false,
-        autoSimulate: true, // Send the boolean flag for auto simulation
-        prodCapacities: prodCapacities.value,
-      };
-
-      // Send the auto-simulation request with the flag
-      await postAndGet(url, sliderData);
-    }
-
-    async function postAndGet(url, data) {
+    async function postAndGet(reset, autoSimulate, test) {
+      console.log(test);
       try {
-        const autoSimulate = data.autoSimulate;
-        const reset = data.reset;
-        const sliderVals = data.sliders;
+        const autoSimulate = props.autoSimulate;
+        const reset = props.reset;
+
+        const data = {
+          reset: reset,
+          autoSimulate: autoSimulate, // Send the boolean flag for auto simulation
+          prodCapacities: prodCapacities.value,
+        };
 
         const response = await axios
           .post(url, data, {
@@ -114,14 +86,19 @@ export default {
           })
           .catch((e) => console.error("GET did not work:", e));
 
-        /*const propagateChange = {
+        const sliderVals = sliderList.value.map((slider) => {
+          return slider.value;
+        });
+
+        console.log(sliderVals);
+        const propagateChange = {
           simData: simData.mainData,
           reset: reset,
           autoSimulate: autoSimulate,
           sliderVals: sliderVals,
           bestIdx: simData.bestIdx,
         };
-        context.emit("getSimulationData", propagateChange);*/
+        //  context.emit("getSimulationData", propagateChange);
       } catch (error) {
         console.error("Error sending data to backend:", error);
         throw error; // Re-throw the error to handle it in the calling method
@@ -133,10 +110,9 @@ export default {
     }
 
     function changeSliders(newVal) {
-      sliderList.value = [
-        { value: 0, nodeID: newVal[0] },
-        { value: 0, nodeID: newVal[1] },
-      ];
+      sliderList.value.forEach((slider, idx) => {
+        slider.nodeID = newVal[idx];
+      });
     }
 
     onMounted(() => {
@@ -158,9 +134,7 @@ export default {
       usedLang,
       sliderList,
       step,
-      reset,
-      autoSimulateRequest,
-      simulateRequest,
+      postAndGet,
       startMoveOutline,
       isAutoSimulating,
     };
