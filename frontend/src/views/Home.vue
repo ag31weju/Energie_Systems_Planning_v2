@@ -100,16 +100,14 @@ export default {
         for (let colIndex = 0; colIndex < 6; colIndex++) {
           if (stopAutoSimulate.value) {
             stopAutoSimulate.value = false;
-            prepareNewScenario(numberProducers, numberConsumers); //put in here but need to test if necessary
             return;
           }
           //Extract desired values from propagateChange.simData or dataValues
+          prodCapacities.value[selectedNodes.value[1]] = rowIndex;
+          prodCapacities.value[selectedNodes.value[0]] = colIndex;
           let currentSliderVals = [colIndex, rowIndex];
           let cell = {
-            simData: getDataValuesCell(
-              propagateChange.simData,
-              selectedNodes.value
-            ),
+            simData: getDataValuesCell(propagateChange.simData),
             reset: propagateChange.reset,
             autoSimulate: propagateChange.autoSimulate,
             sliderVals: propagateChange.sliderVals,
@@ -117,8 +115,6 @@ export default {
           };
           simulateData(cell, currentSliderVals);
           //change prodCapacities for currently selected nodes so that the heatmap and charts update visually (even if the values have already been assigned to dataValues)
-          prodCapacities.value[selectedNodes.value[1]] = rowIndex;
-          prodCapacities.value[selectedNodes.value[0]] = colIndex;
           await sleep(700);
         }
       }
