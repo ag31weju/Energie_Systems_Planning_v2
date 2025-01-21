@@ -59,6 +59,8 @@ export default {
 
     provide("selectedNodes", selectedNodes);
     provide("prodCapacities", prodCapacities);
+    provide("dataValues", dataValues);
+    provide("extractDataValuesCell", extractDataValuesCell);
 
     const matrixComp = useTemplateRef("matrixComp");
     const chartsComp = useTemplateRef("chartsComp");
@@ -140,6 +142,70 @@ export default {
 
         console.log("i", pointer[prodCapacities.value[i]]);
         pointer = pointer[prodCapacities.value[i]];
+      }
+    }
+
+    function extractDataValuesCell(
+      newZ,
+      pointer,
+      capacities,
+      rec_depth,
+      colID,
+      rowID,
+      colIndex,
+      rowIndex,
+      forMatrix,
+      forCharts
+    ) {
+      if (rec_depth == capacities.length) {
+        return forMatrix
+          ? pointer.matrixData
+          : forCharts
+          ? pointer.chartsData
+          : console.error("data cannot be assigned to visualization component");
+      } else {
+        if (selectedNodes.value.some((el) => el === rec_depth)) {
+          if (rec_depth === colID) {
+            for (let currColIndex = 0; currColIndex <= 5; currColIndex++) {
+              newZ[rowIndex][currColIndex] = extractDataValuesCell(
+                newZ,
+                pointer[prodCapacities[rec_depth]],
+                capacities,
+                rec_depth + 1,
+                colID,
+                rowID,
+                colIndex,
+                rowIndex
+              );
+            }
+          } else if (rec_depth === rowID) {
+            for (let currRowIndex = 0; currRowIndex <= 5; currRowIndex++) {
+              newZ[currRowIndex][colIndex] = extractDataValuesCell(
+                newZ,
+                pointer[prodCapacities[rec_depth]],
+                capacities,
+                rec_depth + 1,
+                colID,
+                rowID,
+                colIndex,
+                rowIndex
+              );
+            }
+          } else {
+            console.error("rec_depth does not equal any selected node ID");
+          }
+        } else {
+          extractDataValuesCell(
+            newZ,
+            pointer[prodCapacities[rec_depth]],
+            capacities,
+            rec_depth + 1,
+            colID,
+            rowID,
+            colIndex,
+            rowIndex
+          );
+        }
       }
     }
 

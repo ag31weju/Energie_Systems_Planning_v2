@@ -67,7 +67,6 @@ export default {
     },
   },
   setup(props) {
-    let heatmapCollection = [];
     const outLinePosition = ref(null);
     const z = ref(null);
     const layout = ref(null);
@@ -77,6 +76,9 @@ export default {
     const axisDimension = ref(Array.from({ length: 6 }, (_, i) => i));
 
     let selectedNodes = inject("selectedNodes");
+    let prodCapacities = inject("prodCapacities");
+    let dataValues = inject("dataValues");
+    let extractDataValuesCell = inject("extractDataValuesCell");
 
     function updateHeatmap(newVal, colIndex, rowIndex) {
       z.value[rowIndex][colIndex] = newVal;
@@ -85,26 +87,12 @@ export default {
       z.value = Array.from({ length: gridSize.value }, () =>
         Array.from({ length: gridSize.value }, () => null)
       );
-
-      let idx = heatmapCollection.findIndex((el) => {
-        const nodeIDs = el.selectedNodes;
-        return (
-          nodeIDs[0] === selectedNodes.value[0] &&
-          nodeIDs[1] === selectedNodes.value[1]
-        );
-      });
-
-      if (idx >= 0) {
-        heatmapCollection[idx].z = z.value;
-      }
     }
 
     const clearMatrix = () => {
       z.value = Array.from({ length: gridSize.value }, () =>
         Array.from({ length: gridSize.value }, () => null)
       );
-      heatmapCollection = [];
-      console.log(heatmapCollection);
     };
 
     defineExpose({ clearMatrix });
@@ -195,7 +183,25 @@ export default {
         return;
       }
 
-      let selectedHeatmap = heatmapCollection.find((el) => {
+      let rowID = selectedNodes.value[1];
+      let colID = selectedNodes.value[0];
+      const newZ = Array.from({ length: gridSize.value }, () =>
+        Array.from({ length: gridSize.value }, () => null)
+      );
+      extractDataValuesCell(
+        newZ,
+        dataValues.value,
+        prodCapacities.value,
+        0,
+        colID,
+        rowID,
+        0,
+        0,
+        true,
+        false
+      );
+
+      /*let selectedHeatmap = heatmapCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
         return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
       })?.z;
@@ -207,9 +213,9 @@ export default {
         );
         selectedHeatmap = newHeatmap;
         heatmapCollection.push({ selectedNodes: newVal, z: selectedHeatmap });
-      }
+      }*/
 
-      z.value = selectedHeatmap;
+      z.value = newZ;
 
       handleSliderVals([0, 0]);
     }
