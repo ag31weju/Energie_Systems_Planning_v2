@@ -117,7 +117,7 @@ export default {
           };
           simulateData(cell, currentSliderVals);
           //change prodCapacities for currently selected nodes so that the heatmap and charts update visually (even if the values have already been assigned to dataValues)
-          await sleep(700);
+          await sleep(100);
         }
       }
       sliderVals.value = propagateChange.bestIdx;
@@ -127,7 +127,6 @@ export default {
     function getDataValuesCell(pointer) {
       for (let i = 0; i < prodCapacities.value.length; i++) {
         if (i === prodCapacities.value.length - 1) {
-          console.log(pointer[prodCapacities.value[i]]);
           return pointer[prodCapacities.value[i]];
         }
 
@@ -140,7 +139,6 @@ export default {
           );
         }
 
-        console.log("i", pointer[prodCapacities.value[i]]);
         pointer = pointer[prodCapacities.value[i]];
       }
     }
@@ -167,9 +165,9 @@ export default {
         if (selectedNodes.value.some((el) => el === rec_depth)) {
           if (rec_depth === colID) {
             for (let currColIndex = 0; currColIndex <= 5; currColIndex++) {
-              newZ[rowIndex][currColIndex] = extractDataValuesCell(
+              let tmp = extractDataValuesCell(
                 newZ,
-                pointer[capacities[rec_depth]],
+                pointer[currColIndex],
                 capacities,
                 rec_depth + 1,
                 colID,
@@ -179,12 +177,16 @@ export default {
                 forMatrix,
                 forCharts
               );
+              console.log("currColIndex", rec_depth, currColIndex, tmp);
+              newZ[rowIndex][currColIndex] = tmp
+                ? tmp
+                : newZ[rowIndex][currColIndex];
             }
           } else if (rec_depth === rowID) {
             for (let currRowIndex = 0; currRowIndex <= 5; currRowIndex++) {
-              newZ[currRowIndex][colIndex] = extractDataValuesCell(
+              let tmp = extractDataValuesCell(
                 newZ,
-                pointer[capacities[rec_depth]],
+                pointer[currRowIndex],
                 capacities,
                 rec_depth + 1,
                 colID,
@@ -194,13 +196,17 @@ export default {
                 forMatrix,
                 forCharts
               );
+              console.log("currRowIndex", rec_depth, currRowIndex, tmp);
+              newZ[currRowIndex][colIndex] = tmp
+                ? tmp
+                : newZ[currRowIndex][colIndex];
             }
           } else {
             console.error("rec_depth does not equal any selected node ID");
           }
         } else {
-          console.log(pointer, rec_depth);
-          extractDataValuesCell(
+          console.log("hello", rec_depth);
+          return extractDataValuesCell(
             newZ,
             pointer[capacities[rec_depth]],
             capacities,
@@ -219,8 +225,7 @@ export default {
     function updateDataValuesCell(pointer, propagateChange) {
       for (let i = 0; i < prodCapacities.value.length; i++) {
         if (i === prodCapacities.value.length - 1) {
-          pointer[prodCapacities[i]] = propagateChange.simData;
-          console.log(pointer[prodCapacities[i]]);
+          pointer[prodCapacities.value[i]] = propagateChange.simData;
           return;
         }
 
@@ -247,6 +252,7 @@ export default {
         reset: propagateChange.reset,
         chartsValues: propagateChange.simData.chartsData,
       };
+      console.log(dataValues.value);
     }
 
     function handleNodeSelection(newNode) {
@@ -295,6 +301,8 @@ export default {
 
       prodCapacities.value = Array.from({ length: nProds }, () => 0);
       dataValues.value = initializeNDarray(nProds);
+
+      console.log(prodCapacities.value.length);
     }
 
     provide("prepareNewScenario", prepareNewScenario);

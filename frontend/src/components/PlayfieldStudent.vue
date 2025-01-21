@@ -326,7 +326,8 @@ export default {
         }));
 
         //new scenario loading finished and assigned each node a prod or cons id
-        //TODO find out how many consumers and producers there are
+        //TODO find out how many consumers and producers there are^
+        console.log(prodCounter, consCounter);
         this.prepareNewScenario(prodCounter, consCounter);
       } catch (error) {
         console.error("Error fetching data:", error);

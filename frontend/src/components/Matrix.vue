@@ -204,6 +204,8 @@ export default {
         false
       );
 
+      console.log(newZ);
+
       /*let selectedHeatmap = heatmapCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
         return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
