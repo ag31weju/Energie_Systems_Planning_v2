@@ -169,41 +169,48 @@ export default {
             for (let currColIndex = 0; currColIndex <= 5; currColIndex++) {
               newZ[rowIndex][currColIndex] = extractDataValuesCell(
                 newZ,
-                pointer[prodCapacities[rec_depth]],
+                pointer[capacities[rec_depth]],
                 capacities,
                 rec_depth + 1,
                 colID,
                 rowID,
                 colIndex,
-                rowIndex
+                rowIndex,
+                forMatrix,
+                forCharts
               );
             }
           } else if (rec_depth === rowID) {
             for (let currRowIndex = 0; currRowIndex <= 5; currRowIndex++) {
               newZ[currRowIndex][colIndex] = extractDataValuesCell(
                 newZ,
-                pointer[prodCapacities[rec_depth]],
+                pointer[capacities[rec_depth]],
                 capacities,
                 rec_depth + 1,
                 colID,
                 rowID,
                 colIndex,
-                rowIndex
+                rowIndex,
+                forMatrix,
+                forCharts
               );
             }
           } else {
             console.error("rec_depth does not equal any selected node ID");
           }
         } else {
+          console.log(pointer, rec_depth);
           extractDataValuesCell(
             newZ,
-            pointer[prodCapacities[rec_depth]],
+            pointer[capacities[rec_depth]],
             capacities,
             rec_depth + 1,
             colID,
             rowID,
             colIndex,
-            rowIndex
+            rowIndex,
+            forMatrix,
+            forCharts
           );
         }
       }

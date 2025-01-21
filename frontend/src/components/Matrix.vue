@@ -188,6 +188,9 @@ export default {
       const newZ = Array.from({ length: gridSize.value }, () =>
         Array.from({ length: gridSize.value }, () => null)
       );
+
+      console.log(dataValues.value);
+
       extractDataValuesCell(
         newZ,
         dataValues.value,
