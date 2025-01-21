@@ -172,7 +172,7 @@ export default {
                 rec_depth + 1,
                 colID,
                 rowID,
-                colIndex,
+                currColIndex,
                 rowIndex,
                 forMatrix,
                 forCharts
@@ -192,7 +192,7 @@ export default {
                 colID,
                 rowID,
                 colIndex,
-                rowIndex,
+                currRowIndex,
                 forMatrix,
                 forCharts
               );
