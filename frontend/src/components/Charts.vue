@@ -78,10 +78,11 @@ export default {
     },
   },
   setup(props) {
-    let chartsCollection = [];
-
     const usedLang = usedLanguage();
     let selectedNodes = inject("selectedNodes");
+    let prodCapacities = inject("prodCapacities");
+    let dataValues = inject("dataValues");
+    let extractDataValuesCell = inject("extractDataValuesCell");
 
     const chartsCache = ref(null);
 
@@ -191,7 +192,6 @@ export default {
         { length: gridSize.value },
         (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
       );
-      chartsCollection = [];
     };
 
     defineExpose({ clearCharts });
@@ -206,7 +206,30 @@ export default {
         return;
       }
 
-      let selectedCharts = chartsCollection.find((el) => {
+      let rowID = selectedNodes.value[1];
+      let colID = selectedNodes.value[0];
+      const newChartsCache = Array.from({ length: gridSize.value }, () =>
+        Array.from({ length: gridSize.value }, () => null)
+      );
+
+      console.log(dataValues.value);
+
+      extractDataValuesCell(
+        newChartsCache,
+        dataValues.value,
+        prodCapacities.value,
+        0,
+        colID,
+        rowID,
+        0,
+        0,
+        false,
+        true
+      );
+
+      console.log(newChartsCache);
+
+      /*let selectedCharts = chartsCollection.find((el) => {
         const nodeIDs = el.selectedNodes;
         return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
       })?.chartsData;
@@ -223,8 +246,9 @@ export default {
         });
       }
 
-      chartsCache.value = selectedCharts;
-      assignAllData(selectedCharts[0][0]);
+      chartsCache.value = selectedCharts;*/
+      chartsCache.value = newChartsCache;
+      assignAllData(chartsCache.value[0][0]);
     }
 
     function assignAllData(newVal) {
@@ -268,6 +292,7 @@ export default {
         Array.from({ length: gridSize.value }, () => null)
       );
 
+      /*
       let idx = chartsCollection.findIndex((el) => {
         const nodeIDs = el.selectedNodes;
         return (
@@ -278,7 +303,7 @@ export default {
 
       if (idx >= 0) {
         chartsCollection[idx].chartsData = chartsCache.value;
-      }
+      }*/
     }
 
     watch(
