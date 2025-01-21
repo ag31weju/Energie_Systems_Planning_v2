@@ -83,8 +83,10 @@ export default {
       if (!isAutoSimulating.value) {
         if (propagateChange.autoSimulate) {
           isAutoSimulating.value = true;
+          //TODO set dataValues to what has been received from backend (multidimensional array)
           autoSimulateData(propagateChange);
         } else {
+          //TODO update dataValues entry to what has been received from backend (e. g. dataValues[0][3][2] = simData)
           const currentSliderVals = propagateChange.sliderVals.map((el) => {
             return el.value;
           });

@@ -20,17 +20,26 @@
         @click="postAndGet(true, false, 'reset')"
         class="button"
         v-bind:label="usedLang.reset_text"
+        :disabled="
+          isAutoSimulating || sliderList.some((node) => node.nodeID === -1)
+        "
       ></Button>
       <Button
         @click="postAndGet(false, true, 'auto')"
         class="button"
         v-bind:label="usedLang.auto"
+        :disabled="
+          isAutoSimulating || sliderList.some((node) => node.nodeID === -1)
+        "
       >
       </Button>
       <Button
         @click="postAndGet(false, false, 'simulate')"
         class="button"
         v-bind:label="usedLang.simulate"
+        :disabled="
+          isAutoSimulating || sliderList.some((node) => node.nodeID === -1)
+        "
       ></Button>
     </div>
   </Panel>
@@ -45,7 +54,6 @@ import { ref, watch, onMounted, inject } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
 
 export default {
-  props: ["auto", "simulate", "reset_text"],
   setup(props, context) {
     const usedLang = usedLanguage();
     const url = "http://127.0.0.1:8000/api/save-slider-data/";
@@ -56,7 +64,10 @@ export default {
     let prodCapacities = inject("prodCapacities");
 
     const step = ref(1);
-    const sliderList = ref([]);
+    const sliderList = ref([
+      { value: 0, nodeID: -1 },
+      { value: 0, nodeID: -1 },
+    ]);
 
     async function postAndGet(reset, autoSimulate, test) {
       console.log(test);
@@ -114,13 +125,6 @@ export default {
         slider.nodeID = newVal[idx];
       });
     }
-
-    onMounted(() => {
-      sliderList.value = [
-        { value: 0, nodeID: selectedNodes.value[0] },
-        { value: 0, nodeID: selectedNodes.value[1] },
-      ];
-    });
 
     watch(
       () => selectedNodes.value,
