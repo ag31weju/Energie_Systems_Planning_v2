@@ -79,11 +79,12 @@ export default {
       if (propagateChange.reset) {
         isAutoSimulating.value = false;
         stopAutoSimulate.value = true;
+        if (!isAutoSimulating.value)
+          prepareNewScenario(numberProducers, numberConsumers);
       }
       if (!isAutoSimulating.value) {
         if (propagateChange.autoSimulate) {
           isAutoSimulating.value = true;
-          //TODO set dataValues to what has been received from backend (multidimensional array)
           autoSimulateData(propagateChange);
         } else {
           //TODO update dataValues entry to what has been received from backend (e. g. dataValues[0][3][2] = simData)
@@ -95,11 +96,14 @@ export default {
       }
     }
     async function autoSimulateData(propagateChange) {
+      dataValues.value = propagateChange.simData;
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      //TODO set dataValues to what has been received from backend (multidimensional array)
       for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
         for (let colIndex = 0; colIndex < 6; colIndex++) {
           if (stopAutoSimulate.value) {
             stopAutoSimulate.value = false;
+            prepareNewScenario(numberProducers, numberConsumers);
             return;
           }
           let currentSliderVals = [colIndex, rowIndex];
@@ -110,17 +114,39 @@ export default {
       sliderVals.value = propagateChange.bestIdx;
       isAutoSimulating.value = false;
     }
+
+    function getDataValuesCell(pointer) {
+      for (let i = 0; i <= prodCapacities.value.length; i++) {
+        if (i === prodCapacities.value.length) {
+          return pointer;
+        }
+
+        if (!pointer) {
+          console.error(
+            "prodCapacities length is not equal to dataValues depth"
+          );
+          throw new Error(
+            "prodCapacities length is not equal to dataValues depth"
+          );
+        }
+
+        pointer = pointer[prodCapacities.value[i]];
+      }
+    }
+
     function simulateData(propagateChange, currentSliderVals) {
-      const newValues =
-        propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];
+      const currentCell = getDataValuesCell(dataValues.value);
+      currentCell = propagateChange.simData;
+      /*const newValues =
+        propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];*/
       sliderVals.value = currentSliderVals;
       matrixData.value = {
         reset: propagateChange.reset,
-        matrixValue: newValues.matrixData,
+        matrixValue: currentCell.matrixData,
       };
       chartsData.value = {
         reset: propagateChange.reset,
-        chartsValues: newValues.chartsData,
+        chartsValues: currentCell.chartsData,
       };
     }
 

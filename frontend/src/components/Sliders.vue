@@ -109,7 +109,7 @@ export default {
           sliderVals: sliderVals,
           bestIdx: simData.bestIdx,
         };
-        //  context.emit("getSimulationData", propagateChange);
+        context.emit("getSimulationData", propagateChange);
       } catch (error) {
         console.error("Error sending data to backend:", error);
         throw error; // Re-throw the error to handle it in the calling method
