@@ -85,9 +85,11 @@ export default {
       if (!isAutoSimulating.value) {
         if (propagateChange.autoSimulate) {
           isAutoSimulating.value = true;
+          dataValues.value = propagateChange.simData;
           autoSimulateData(propagateChange);
         } else {
           //TODO update dataValues entry to what has been received from backend (e. g. dataValues[0][3][2] = simData)
+          updateDataValuesCell(dataValues.value, propagateChange);
           const currentSliderVals = propagateChange.sliderVals.map((el) => {
             return el.value;
           });
@@ -96,7 +98,6 @@ export default {
       }
     }
     async function autoSimulateData(propagateChange) {
-      dataValues.value = propagateChange.simData;
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       //TODO set dataValues to what has been received from backend (multidimensional array)
       for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
@@ -119,6 +120,8 @@ export default {
       for (let i = 0; i < prodCapacities.value.length; i++) {
         if (i === prodCapacities.value.length - 1) {
           pointer[prodCapacities[i]] = propagateChange.simData;
+          console.log(pointer[prodCapacities[i]]);
+          return;
         }
 
         if (!pointer) {
@@ -135,7 +138,6 @@ export default {
     }
 
     function simulateData(propagateChange, currentSliderVals) {
-      updateDataValuesCell(dataValues.value, propagateChange);
       /*const newValues =
         propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];*/
       sliderVals.value = currentSliderVals;
