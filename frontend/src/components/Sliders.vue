@@ -69,7 +69,9 @@ export default {
     ]);
 
     async function postAndGet(reset, autoSimulate, test) {
-      console.log(test);
+      sliderList.value.forEach((slider) => {
+        prodCapacities.value[slider.nodeID] = slider.value;
+      });
       try {
         const data = {
           reset: reset,
