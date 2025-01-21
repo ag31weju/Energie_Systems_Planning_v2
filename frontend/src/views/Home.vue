@@ -135,7 +135,7 @@ export default {
     }
 
     function simulateData(propagateChange, currentSliderVals) {
-      const currentCell = getDataValuesCell(dataValues.value);
+      let currentCell = getDataValuesCell(dataValues.value);
       currentCell = propagateChange.simData;
       /*const newValues =
         propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];*/
