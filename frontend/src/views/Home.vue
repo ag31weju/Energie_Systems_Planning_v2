@@ -115,10 +115,10 @@ export default {
       isAutoSimulating.value = false;
     }
 
-    function getDataValuesCell(pointer) {
-      for (let i = 0; i <= prodCapacities.value.length; i++) {
-        if (i === prodCapacities.value.length) {
-          return pointer;
+    function updateDataValuesCell(pointer, propagateChange) {
+      for (let i = 0; i < prodCapacities.value.length; i++) {
+        if (i === prodCapacities.value.length - 1) {
+          pointer[prodCapacities[i]] = propagateChange.simData;
         }
 
         if (!pointer) {
@@ -135,18 +135,17 @@ export default {
     }
 
     function simulateData(propagateChange, currentSliderVals) {
-      let currentCell = getDataValuesCell(dataValues.value);
-      currentCell = propagateChange.simData;
+      updateDataValuesCell(dataValues.value, propagateChange);
       /*const newValues =
         propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];*/
       sliderVals.value = currentSliderVals;
       matrixData.value = {
         reset: propagateChange.reset,
-        matrixValue: currentCell.matrixData,
+        matrixValue: propagateChange.simData.matrixData,
       };
       chartsData.value = {
         reset: propagateChange.reset,
-        chartsValues: currentCell.chartsData,
+        chartsValues: propagateChange.simData.chartsData,
       };
     }
 
