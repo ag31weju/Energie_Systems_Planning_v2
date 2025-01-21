@@ -216,6 +216,7 @@ export default {
 
     function handleMatrixData(newVal) {
       if (newVal && Object.keys(newVal).length > 0) {
+        console.log(newVal.reset);
         if (!newVal.reset) {
           const colIndex = props.sliderVals[0];
           const rowIndex = props.sliderVals[1];

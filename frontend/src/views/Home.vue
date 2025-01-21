@@ -86,34 +86,65 @@ export default {
         if (propagateChange.autoSimulate) {
           isAutoSimulating.value = true;
           dataValues.value = propagateChange.simData;
+          prodCapacities.value.map(() => 0);
           autoSimulateData(propagateChange);
         } else {
-          //TODO update dataValues entry to what has been received from backend (e. g. dataValues[0][3][2] = simData)
           updateDataValuesCell(dataValues.value, propagateChange);
-          const currentSliderVals = propagateChange.sliderVals.map((el) => {
-            return el.value;
-          });
-          simulateData(propagateChange, currentSliderVals);
+          simulateData(propagateChange, propagateChange.sliderVals);
         }
       }
     }
     async function autoSimulateData(propagateChange) {
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-      //TODO set dataValues to what has been received from backend (multidimensional array)
       for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
         for (let colIndex = 0; colIndex < 6; colIndex++) {
           if (stopAutoSimulate.value) {
             stopAutoSimulate.value = false;
-            prepareNewScenario(numberProducers, numberConsumers);
+            prepareNewScenario(numberProducers, numberConsumers); //put in here but need to test if necessary
             return;
           }
+          //Extract desired values from propagateChange.simData or dataValues
           let currentSliderVals = [colIndex, rowIndex];
-          simulateData(propagateChange, currentSliderVals);
+          let cell = {
+            simData: getDataValuesCell(
+              propagateChange.simData,
+              selectedNodes.value
+            ),
+            reset: propagateChange.reset,
+            autoSimulate: propagateChange.autoSimulate,
+            sliderVals: propagateChange.sliderVals,
+            bestIdx: propagateChange.bestIdx,
+          };
+          simulateData(cell, currentSliderVals);
+          //change prodCapacities for currently selected nodes so that the heatmap and charts update visually (even if the values have already been assigned to dataValues)
+          prodCapacities.value[selectedNodes.value[1]] = rowIndex;
+          prodCapacities.value[selectedNodes.value[0]] = colIndex;
           await sleep(700);
         }
       }
       sliderVals.value = propagateChange.bestIdx;
       isAutoSimulating.value = false;
+    }
+
+    function getDataValuesCell(pointer) {
+      for (let i = 0; i < prodCapacities.value.length; i++) {
+        if (i === prodCapacities.value.length - 1) {
+          console.log(pointer[prodCapacities.value[i]]);
+          return pointer[prodCapacities.value[i]];
+        }
+
+        if (!pointer) {
+          console.error(
+            "prodCapacities length is not equal to dataValues depth"
+          );
+          throw new Error(
+            "prodCapacities length is not equal to dataValues depth"
+          );
+        }
+
+        console.log("i", pointer[prodCapacities.value[i]]);
+        pointer = pointer[prodCapacities.value[i]];
+      }
     }
 
     function updateDataValuesCell(pointer, propagateChange) {
@@ -138,8 +169,6 @@ export default {
     }
 
     function simulateData(propagateChange, currentSliderVals) {
-      /*const newValues =
-        propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];*/
       sliderVals.value = currentSliderVals;
       matrixData.value = {
         reset: propagateChange.reset,

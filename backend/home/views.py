@@ -155,15 +155,15 @@ def save_slider_data(request):
 
             return pointer
         
+        def initializeNDarray(length):
+            #6 is the amount of steps that can be taken in the slider
+            return [initializeNDarray(length-1) for _ in range(6)] if length != 0 else None
+        
         #Start filling the data structure on autosimulate, otherwise return a simple object. If reset is true, then don't do anything
         if not reset: 
             if autoSimulate:
                 prodCapacities = [0 for x in prodCapacities] #reset prodCapacities to 0
 
-                def initializeNDarray(length):
-                    #6 is the amount of steps that can be taken in the slider
-                    return [initializeNDarray(length-1) for _ in range(6)] if length != 0 else None
-                
                 data = initializeNDarray(len(prodCapacities))
                 #[float("inf")] since it acts as a mutable container for the bestMatrixVal
                 data = {"mainData": fillWholeStructure(data, prodCapacities, 0, [float("inf")]), "bestIdx": bestIdx}
@@ -172,7 +172,9 @@ def save_slider_data(request):
                 #with open('slider_data/tmp.json', 'w') as file:
                  #   json.dump(data, file, indent=4)
             else:
-               data = {"mainData": fill_cell(), "bestIdx": [None]}
+               data = {"mainData": fill_cell(), "bestIdx": bestIdx}
+        else:
+            data = {"mainData": initializeNDarray(len(prodCapacities)), "bestIdx": bestIdx}
 
         return JsonResponse(data, status=200)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)

@@ -20,9 +20,7 @@
         @click="postAndGet(true, false, 'reset')"
         class="button"
         v-bind:label="usedLang.reset_text"
-        :disabled="
-          isAutoSimulating || sliderList.some((node) => node.nodeID === -1)
-        "
+        :disabled="sliderList.some((node) => node.nodeID === -1)"
       ></Button>
       <Button
         @click="postAndGet(false, true, 'auto')"
@@ -54,6 +52,7 @@ import { ref, watch, onMounted, inject } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
 
 export default {
+  props: ["auto", "simulate", "reset_text"],
   setup(props, context) {
     const usedLang = usedLanguage();
     const url = "http://127.0.0.1:8000/api/save-slider-data/";
@@ -72,9 +71,6 @@ export default {
     async function postAndGet(reset, autoSimulate, test) {
       console.log(test);
       try {
-        const autoSimulate = props.autoSimulate;
-        const reset = props.reset;
-
         const data = {
           reset: reset,
           autoSimulate: autoSimulate, // Send the boolean flag for auto simulation
@@ -101,7 +97,6 @@ export default {
           return slider.value;
         });
 
-        console.log(sliderVals);
         const propagateChange = {
           simData: simData.mainData,
           reset: reset,
