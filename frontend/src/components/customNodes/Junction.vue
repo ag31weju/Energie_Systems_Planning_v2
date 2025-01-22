@@ -3,15 +3,14 @@
       class="custom-node"
       :class="{
         highlighted: isHighlighted,
-        selectedFirst: isSelectedFirst,
-        selectedSecond: isSelectedSecond,
+       
       }"
       @mouseover="handleMouseOver"
       @mouseleave="handleMouseLeave"
-      @click="handleClick"
+    
     >
-      <div class="battery-icon">
-        <img :src="data.icon" alt="Battery Icon" />
+      <div class="junction-icon">
+        <img :src="data.icon" alt="junction Icon" />
       </div>
       <div
         v-if="isHighlighted"
@@ -19,7 +18,7 @@
         style="color: crimson; background: black"
       >
         <!-- color of label -->
-        {{ data.label || "Battery" }}
+        {{ data.label || "junction" }}
       </div>
       <div class="handles">
         <!-- Handles for inputs -->
@@ -62,7 +61,7 @@
   import { Handle, Position } from "@vue-flow/core";
   
   export default defineComponent({
-    name: "BatteryNode",
+    name: "junctionNode",
     props: {
       data: {
         type: Object,
@@ -73,16 +72,13 @@
       Handle,
     },
     setup(props, context) {
-      const handleNodeSelection = inject("handleNodeSelection");
+     
       const selectedNodes = inject("selectedNodes");
       const isHighlighted = ref(false); // Tracks if the node is hovered
       const nodeID = context.attrs.id.at(-1);
-      const isSelectedFirst = computed(() => {
-        return selectedNodes.value[0] === nodeID;
-      });
-      const isSelectedSecond = computed(() => {
-        return selectedNodes.value[1] === nodeID;
-      });
+
+      
+      
   
       const handleMouseOver = () => {
         isHighlighted.value = true; // Show "Hello" on hover
@@ -92,18 +88,14 @@
         isHighlighted.value = false; // Hide "Hello" when hover ends
       };
   
-      const handleClick = () => {
-        handleNodeSelection(nodeID);
-      };
+      
   
       return {
         Position,
         isHighlighted,
-        isSelectedFirst,
-        isSelectedSecond,
         handleMouseOver,
         handleMouseLeave,
-        handleClick,
+        
       };
     },
   });
@@ -124,21 +116,9 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   }
   
-  .custom-node.selectedFirst {
-    box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.8);
-    border: 2px solid black;
-    transform: scale(1.1);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-  }
   
-  .custom-node.selectedSecond {
-    box-shadow: 0 0 15px 5px rgba(0, 0, 255, 0.8);
-    border: 2px solid black;
-    transform: scale(1.1);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-  }
   
-  .battery-icon {
+  .junction-icon {
     width: 50px;
     height: 50px;
     display: flex;
@@ -147,7 +127,7 @@
     overflow: hidden;
   }
   
-  .battery-icon img {
+  .junction-icon img {
     width: 100%;
     height: 100%;
     object-fit: contain;

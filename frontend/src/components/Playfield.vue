@@ -3,67 +3,156 @@
     <!-- Image Box -->
 
     <!-- Vue Flow Container -->
-    <div id="vueflow_container" ref="vueFlowContainer" :style="{
-      backgroundImage: 'url(' + imgUrl + ')',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }" style="
+    <div
+      id="vueflow_container"
+      ref="vueFlowContainer"
+      :style="{
+        backgroundImage: 'url(' + imgUrl + ')',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }"
+      style="
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 43.5rem;
         z-index: 2;
-      ">
-      <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
-        :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
-        :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
-        :auto-pan-on-node-drag="false" :nodes-draggable="!locked" :edges-connectable="edgeMode"
-        :zoomOnDoubleClick="false" @connect="onConnect" />
+      "
+    >
+      <vue-flow
+        v-model:nodes="nodes"
+        v-model:edges="edges"
+        :fit-view="true"
+        :zoomOnScroll="false"
+        :zoomOnPinch="false"
+        :panOnDrag="false"
+        :pan-on-scroll="false"
+        :preventScrolling="true"
+        :snap-grid="snapGrid"
+        :snap-to-grid="true"
+        :coordinateExtent="coordinateExtent"
+        :connection-mode="connectionMode"
+        :node-types="customNodeTypes"
+        :auto-pan-on-node-drag="false"
+        :nodes-draggable="!locked"
+        :edges-connectable="edgeMode"
+        :zoomOnDoubleClick="false"
+        @connect="onConnect"
+      />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
 
     <!-- Buttons at the Bottom -->
     <div id="buttons_container1">
-  <!-- Dropdowns -->
-  
+      <!-- Dropdowns -->
 
-  <!-- Scenario Management -->
-  <div class="row">
-    <Select v-model="selectedScenario" :options="scenarios" class="Sbutton"
-      placeholder="Choose Scenario"></Select>
-    <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
-    <Button @click="triggerJsonUpload" type="submit" class="slider-button" v-bind:label="upload_json">json</Button>
-    <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario">img</Button>
-    
-    <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
-  <Button @click="saveData" type="submit" class="button" v-bind:label="usedLang.save_text"></Button> 
-   
-  </div>
-<!-- Utilities -->
-<div class="row">
-    <Button @click="toggleEdgeMode" type="submit" class="button" v-bind:label="usedLang.add_edge"></Button>
-    <Button @click="clearNodes" type="submit" class="button" v-bind:label="usedLang.clear_nodes"></Button>
-    <Button @click="addConsumerNode" type="submit" class="button" v-bind:label="usedLang.add_consumer"></Button>
-    <Button @click="addBatteryNode" type="submit" class="button">Add Battery</Button>
-    <Button @click="addEnergySourceNode" type="submit" class="button" v-bind:label="usedLang.add_energy_source"></Button>
-    
-</div>
-  <!-- Actions -->
-  
+      <!-- Scenario Management -->
+      <div class="row">
+        <Select
+          v-model="selectedScenario"
+          :options="scenarios"
+          class="Sbutton"
+          placeholder="Choose Scenario"
+        ></Select>
+        <Button
+          @click="loadRequest"
+          type="submit"
+          class="button"
+          v-bind:label="usedLang.load_scenario"
+        ></Button>
+        <Button
+          @click="triggerJsonUpload"
+          type="submit"
+          class="slider-button"
+          v-bind:label="upload_json"
+          >json</Button
+        >
+        <Button
+          @click="triggerImageUpload"
+          type="submit"
+          class="button"
+          v-bind:label="usedLang.upload_scenario"
+          >img</Button
+        >
 
-  
-  <div class="row">
-    
-    <Select v-model="selectedConsumer" :options="optionsConsumer" :placeholder="usedLang.selector_text_consumer"></Select>
-    <Select v-model="selectedProducer" :options="optionsProducers" :placeholder="usedLang.selector_text_producer"></Select>
-  </div>
-</div>
-    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
-      style="display: none" />
-    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
-      style="display: none" />
+        <Button
+          @click="toggleGridOverlay"
+          type="submit"
+          class="button"
+          v-bind:label="usedLang.toggle_grid"
+        ></Button>
+        <Button
+          @click="saveData"
+          type="submit"
+          class="button"
+          v-bind:label="usedLang.save_text"
+        ></Button>
+      </div>
+      <!-- Utilities -->
+      <div class="row">
+        <Button
+          @click="toggleEdgeMode"
+          type="submit"
+          class="button"
+          v-bind:label="usedLang.add_edge"
+        ></Button>
+        <Button
+          @click="clearNodes"
+          type="submit"
+          class="button"
+          v-bind:label="usedLang.clear_nodes"
+        ></Button>
+        <Button
+          @click="addConsumerNode"
+          type="submit"
+          class="button"
+          v-bind:label="usedLang.add_consumer"
+        ></Button>
+        <Button @click="addBatteryNode" type="submit" class="button"
+          >Add Battery</Button
+        >
+        <Button @click="addJunctionNode" type="submit" class="button"
+        >Add Junction</Button>
+        <Button
+          @click="addEnergySourceNode"
+          type="submit"
+          class="button"
+          v-bind:label="usedLang.add_energy_source"
+        ></Button>
+      </div>
+      <!-- Actions -->
+
+      <div class="row">
+        <Select
+          v-model="selectedConsumer"
+          :options="optionsConsumer"
+          :placeholder="usedLang.selector_text_consumer"
+        ></Select>
+        <Select
+          v-model="selectedProducer"
+          :options="optionsProducers"
+          :placeholder="usedLang.selector_text_producer"
+        ></Select>
+      </div>
+    </div>
+    <input
+      type="file"
+      id="imageInput"
+      ref="imageInput"
+      @change="handleFileChange('image', $event)"
+      accept="image/*"
+      style="display: none"
+    />
+    <input
+      type="file"
+      id="jsonInput"
+      ref="jsonInput"
+      @change="handleFileChange('json', $event)"
+      accept=".json"
+      style="display: none"
+    />
   </Panel>
 </template>
 
@@ -78,7 +167,7 @@ import BatteryNode from "./customNodes/Battery.vue";
 import ProducerNode from "./customNodes/Producer.vue";
 import ConsumerIcon from "@/assets/node_images/consumer/commercial2.png";
 import Commercial from "@/assets/node_images/consumer/commercial.png";
-import Battery from "@/assets/node_images/battery/battery.png";
+import Battery from "@/assets/node_images/misc/battery.png";
 import ResidentialLarge from "@/assets/node_images/consumer/residentialLarge.png";
 import ResidentialSmall from "@/assets/node_images/consumer/residentialSmall.png";
 import Nuclear from "@/assets/node_images/producer/nuclear.png";
@@ -86,7 +175,7 @@ import Coal from "@/assets/node_images/producer/coal.png";
 import Solar from "@/assets/node_images/producer/solarPanel.png";
 import Wind from "@/assets/node_images/producer/windmill.png";
 import { usedLanguage } from "../assets/stores/pageSettings";
-import { inject, ref, reactive } from 'vue';
+import { inject, ref, reactive } from "vue";
 
 export default {
   components: {
@@ -123,17 +212,21 @@ export default {
     const customNodeTypes = reactive({
       consumer: ConsumerNode,
       producer: ProducerNode,
-      battery:  BatteryNode,
+      battery: BatteryNode,
     });
 
     // Reactive state for selected consumer/producer and their options
     const selectedConsumer = ref(""); // Selected value for consumers
-    const optionsConsumer = ref(["Commercial", "Residential Large", "Residential Small"]); // Consumer options
+    const optionsConsumer = ref([
+      "Commercial",
+      "Residential Large",
+      "Residential Small",
+    ]); // Consumer options
 
     const selectedProducer = ref(""); // Selected value for producers
     const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options
     const scenarios = ref(["Scene 1", "Scene 2", "Scene 3"]); // Scenario options
-    const selectedScenario=ref("")
+    const selectedScenario = ref("");
 
     return {
       usedLang,
@@ -158,11 +251,8 @@ export default {
       optionsProducers,
       scenarios,
       selectedScenario,
-
     };
   },
-
-
 
   methods: {
     toggleLock() {
@@ -171,22 +261,14 @@ export default {
     async loadRequest() {
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
-        let id=null;
-        if (this.selectedScenario=="Scene 1")
-      {
-        id=1;
-
-      }
-     else if (this.selectedScenario=="Scene 2")
-      {
-        id=2;
-
-      }
-     else if (this.selectedScenario=="Scene 3")
-      {
-        id=3;
-
-      }
+        let id = null;
+        if (this.selectedScenario == "Scene 1") {
+          id = 1;
+        } else if (this.selectedScenario == "Scene 2") {
+          id = 2;
+        } else if (this.selectedScenario == "Scene 3") {
+          id = 3;
+        }
 
         const imgResponse = await axios.get(url, {
           params: { id: id, filetype: "png" },
@@ -199,17 +281,12 @@ export default {
 
         this.imgUrl = URL.createObjectURL(imgResponse.data);
 
-
         const graphResponse = await axios.get(url, {
           params: { id: id, filetype: "json" },
           responseType: "json",
         });
 
-
-
-
         const { nodes, edges } = graphResponse.data;
-
 
         this.nodes = nodes.map((node) => {
           let newNode = {
@@ -248,7 +325,8 @@ export default {
                 icon: Nuclear,
                 inputs: [1],
                 outputs: [0],
-                description: "Provides large-scale base power with low carbon emissions.",
+                description:
+                  "Provides large-scale base power with low carbon emissions.",
               };
               break;
             case "Coal Power":
@@ -291,15 +369,11 @@ export default {
           style: this.edgeProps.style,
           color: this.edgeProps.color,
         }));
-
-
-
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
       }
     },
-
 
     toggleGridOverlay() {
       this.showGrid = !this.showGrid;
@@ -351,7 +425,7 @@ export default {
       }
     },
 
-    addBatteryNode(){
+    addBatteryNode() {
       const vueFlowContainer = this.$refs.vueFlowContainer;
       if (!vueFlowContainer) return;
 
@@ -360,19 +434,18 @@ export default {
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
-        type: "producer",
+        type: "battery",
         position: { x: width * 7, y: height * 3 },
         data: {
-            label: "Battery",
-            icon: Battery, 
-            inputs: [1], 
-            outputs: [1],}, 
+          label: "Battery",
+          icon: Battery,
+          inputs: [1],
+          outputs: [1],
+        },
         targetPosition: "left",
         sourcePosition: "right",
       };
       this.nodes.push(newNode);
-
-
     },
 
     addEnergySourceNode() {
@@ -551,7 +624,6 @@ export default {
             color: edge.color,
             style: edge.style,
           })),
-
         };
 
         // Convert to JSON
@@ -624,130 +696,129 @@ export default {
         this.loadScenarioData(); // Handle JSON after image upload
       }
     },
-// Load and parse the JSON file
-loadScenarioData() {
+    // Load and parse the JSON file
+    loadScenarioData() {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const json = JSON.parse(e.target.result);
 
-const reader = new FileReader();
-reader.onload = (e) => {
-  try {
-      const json = JSON.parse(e.target.result);
+          // Check for both JSON structures
+          const nodes = json.nodes || json.data.nodes;
+          const edges = json.edges || json.data.edges;
 
-      // Check for both JSON structures
-      const nodes = json.nodes || (json.data.nodes);
-      const edges = json.edges || ( json.data.edges);
+          if (!nodes || !Array.isArray(nodes)) {
+            throw new Error(
+              "Invalid JSON structure: 'nodes' must be an array."
+            );
+          }
 
-      if (!nodes || !Array.isArray(nodes)) {
-        throw new Error("Invalid JSON structure: 'nodes' must be an array.");
-      }
+          if (!edges || !Array.isArray(edges)) {
+            throw new Error(
+              "Invalid JSON structure: 'edges' must be an array."
+            );
+          }
 
-      if (!edges || !Array.isArray(edges)) {
-        throw new Error("Invalid JSON structure: 'edges' must be an array.");
-      }
+          this.nodes = nodes.map((node) => {
+            const newNode = {
+              ...node,
+              data: {}, // Will be populated based on label
+            };
 
+            switch (node.label) {
+              case "Commercial":
+                newNode.data = {
+                  label: "Commercial",
+                  icon: Commercial, // Ensure Commercial is imported or defined
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Large":
+                newNode.data = {
+                  label: "Residential Large",
+                  icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Small":
+                newNode.data = {
+                  label: "Residential Small",
+                  icon: ResidentialSmall,
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Nuclear Power":
+                newNode.data = {
+                  label: "Nuclear Power",
+                  icon: Nuclear,
+                  inputs: [1],
+                  outputs: [0],
+                  description:
+                    "Provides large-scale base power with low carbon emissions.",
+                };
+                break;
+              case "Coal Power":
+                newNode.data = {
+                  label: "Coal Power",
+                  icon: Coal,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Traditional fossil fuel energy source.",
+                };
+                break;
+              case "Solar Power":
+                newNode.data = {
+                  label: "Solar Power",
+                  icon: Solar,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from sunlight.",
+                };
+                break;
+              case "Wind Power":
+                newNode.data = {
+                  label: "Wind Power",
+                  icon: Wind,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from wind.",
+                };
+                break;
+              default:
+                console.warn(`Unknown label: ${node.label}`);
+                newNode.data = {
+                  label: "Unknown",
+                  icon: null,
+                  inputs: [],
+                  outputs: [],
+                };
+            }
 
-    this.nodes = nodes.map((node) => {
-      const newNode = {
-        ...node,
-        data: {}, // Will be populated based on label
+            return newNode;
+          });
+
+          this.edges = edges.map((edge) => ({
+            ...edge,
+            animated: this.edgeProps.animated,
+            style: this.edgeProps.style,
+            color: this.edgeProps.color,
+          }));
+
+          console.log("Nodes processed:", this.nodes);
+          console.log("Edges processed:", this.edges);
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          alert(`Invalid JSON file: ${error.message}`);
+        }
       };
 
-      switch (node.label) {
-        case "Commercial":
-          newNode.data = {
-            label: "Commercial",
-            icon: Commercial, // Ensure Commercial is imported or defined
-            inputs: [0],
-            outputs: [0, 1],
-          };
-          break;
-        case "Residential Large":
-          newNode.data = {
-            label: "Residential Large",
-            icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
-            inputs: [0],
-            outputs: [0, 1],
-          };
-          break;
-        case "Residential Small":
-          newNode.data = {
-            label: "Residential Small",
-            icon: ResidentialSmall,
-            inputs: [0],
-            outputs: [0, 1],
-          };
-          break;
-        case "Nuclear Power":
-          newNode.data = {
-            label: "Nuclear Power",
-            icon: Nuclear,
-            inputs: [1],
-            outputs: [0],
-            description: "Provides large-scale base power with low carbon emissions.",
-          };
-          break;
-        case "Coal Power":
-          newNode.data = {
-            label: "Coal Power",
-            icon: Coal,
-            inputs: [1],
-            outputs: [0],
-            description: "Traditional fossil fuel energy source.",
-          };
-          break;
-        case "Solar Power":
-          newNode.data = {
-            label: "Solar Power",
-            icon: Solar,
-            inputs: [1],
-            outputs: [0],
-            description: "Generates renewable energy from sunlight.",
-          };
-          break;
-        case "Wind Power":
-          newNode.data = {
-            label: "Wind Power",
-            icon: Wind,
-            inputs: [1],
-            outputs: [0],
-            description: "Generates renewable energy from wind.",
-          };
-          break;
-        default:
-          console.warn(`Unknown label: ${node.label}`);
-          newNode.data = {
-            label: "Unknown",
-            icon: null,
-            inputs: [],
-            outputs: [],
-          };
-      }
-
-      return newNode;
-    });
-
-    this.edges =edges.map((edge) => ({
-      ...edge,
-      animated: this.edgeProps.animated,
-      style: this.edgeProps.style,
-      color: this.edgeProps.color,
-    }));
-
-
-
-    console.log("Nodes processed:", this.nodes);
-    console.log("Edges processed:", this.edges);
-
-  } catch (error) {
-    console.error("Error parsing JSON:", error);
-    alert(`Invalid JSON file: ${error.message}`);
-  }
+      reader.readAsText(this.jsonFile);
+    },
+  },
 };
-
-reader.readAsText(this.jsonFile);
-},
-},
-};
-
 </script>
 
 <style>
