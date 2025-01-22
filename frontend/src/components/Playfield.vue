@@ -84,6 +84,12 @@
           v-bind:label="usedLang.toggle_grid"
         ></Button>
         <Button
+          @click="clearNodes"
+          type="submit"
+          class="button"
+          v-bind:label="usedLang.clear_nodes"
+        ></Button>
+        <Button
           @click="saveData"
           type="submit"
           class="button"
@@ -98,12 +104,7 @@
           class="button"
           v-bind:label="usedLang.add_edge"
         ></Button>
-        <Button
-          @click="clearNodes"
-          type="submit"
-          class="button"
-          v-bind:label="usedLang.clear_nodes"
-        ></Button>
+        
         <Button
           @click="addConsumerNode"
           type="submit"
@@ -164,10 +165,12 @@ import { VueFlow } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 import ConsumerNode from "./customNodes/Consumer.vue";
 import BatteryNode from "./customNodes/Battery.vue";
+import JunctionNode from "./customNodes/Junction.vue";
 import ProducerNode from "./customNodes/Producer.vue";
 import ConsumerIcon from "@/assets/node_images/consumer/commercial2.png";
 import Commercial from "@/assets/node_images/consumer/commercial.png";
 import Battery from "@/assets/node_images/misc/battery.png";
+import Junction from "@/assets/node_images/misc/junction.png";
 import ResidentialLarge from "@/assets/node_images/consumer/residentialLarge.png";
 import ResidentialSmall from "@/assets/node_images/consumer/residentialSmall.png";
 import Nuclear from "@/assets/node_images/producer/nuclear.png";
@@ -213,6 +216,7 @@ export default {
       consumer: ConsumerNode,
       producer: ProducerNode,
       battery: BatteryNode,
+      junction: JunctionNode,
     });
 
     // Reactive state for selected consumer/producer and their options
@@ -435,18 +439,39 @@ export default {
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
         type: "battery",
-        position: { x: width * 7, y: height * 3 },
+        position: { x: width * 5, y: height * 3 },
         data: {
           label: "Battery",
           icon: Battery,
-          inputs: [1],
-          outputs: [1],
+          inputs: [0,1],
+          outputs: [2,3],
         },
-        targetPosition: "left",
-        sourcePosition: "right",
+       
       };
       this.nodes.push(newNode);
     },
+
+    addJunctionNode() {
+  const vueFlowContainer = this.$refs.vueFlowContainer;
+  if (!vueFlowContainer) return;
+
+  const width = vueFlowContainer.offsetWidth / this.gridSize;
+  const height = vueFlowContainer.offsetHeight / this.gridSize;
+
+  const newNode = {
+    id: `node_${this.nodeIdCounter++}`,
+    type: "junction",
+    position: { x: width * 7, y: height * 3 },
+    data: {
+      label: "Junction",
+      icon: Junction,
+      inputs: [0, 1],
+      outputs: [2, 3],
+    },
+  };
+  this.nodes.push(newNode);
+},
+
 
     addEnergySourceNode() {
       const vueFlowContainer = this.$refs.vueFlowContainer;
@@ -598,6 +623,8 @@ export default {
           id: `edge_${this.edges.length + 1}`,
           source: connection.source,
           target: connection.target,
+          sourceHandle: connection.sourceHandle, // Ensure correct handle connection
+  targetHandle: connection.targetHandle, // Ensure correct handle connection
           type: "default",
           animated: this.edgeProps.animated,
           style: this.edgeProps.style,
