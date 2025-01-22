@@ -28,5 +28,13 @@
   "save_text": "Save",
   "add_edge": "Add Edge",
   "selector_text_consumer": "Please select consumer type",
-  "selector_text_producer": "Please select producer type"
+  "selector_text_producer": "Please select producer type",
+  "noColorBlindness": "Color blindness filter off",
+  "achromatopsia": "Achromatopsia",
+  "tritanopia": "Tritanopia",
+  "tritanomaly": "Tritanomaly",
+  "protanopia": "Protanopia",
+  "protanomaly": "Protanomaly",
+  "deuteranopia": "Deuteranopia",
+  "deuteranomaly": "Deuteranomaly"
 }

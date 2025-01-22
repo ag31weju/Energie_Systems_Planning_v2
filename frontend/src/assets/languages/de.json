@@ -28,5 +28,13 @@
   "save_text": "Speichern",
   "add_edge": "Kante hinzufügen",
   "selector_text_consumer": "Bitte selektiere einen Konsumenten",
-  "selector_text_producer": "Bitte selektiere einen Produzenten"
+  "selector_text_producer": "Bitte selektiere einen Produzenten",
+  "noColorBlindness": "Farbblindheitsfilter aus",
+  "achromatopsia": "Achromatopsie",
+  "tritanopia": "Tritanopie",
+  "tritanomaly": "Tritanomalie",
+  "protanopia": "Protanopie",
+  "protanomaly": "Protanomalie",
+  "deuteranopia": "Deuteranopie",
+  "deuteranomaly": "Deuteranomalie"
 }

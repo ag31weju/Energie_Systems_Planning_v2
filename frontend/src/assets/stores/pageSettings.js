@@ -42,6 +42,8 @@ export const usedTheme = defineStore("usedTheme", {
 
 export const usedLanguage = defineStore("usedLanguage", {
   state: () => {
+    const colorBlindnessStore = colorBlindness();
+
     let currLang = "EN";
     let currLangFile = ENLang;
     let capacity = currLangFile.capacity;
@@ -75,6 +77,14 @@ export const usedLanguage = defineStore("usedLanguage", {
     let upload_json = currLangFile.upload_json;
     let selector_text_consumer = currLangFile.selector_text_consumer;
     let selector_text_producer = currLangFile.selector_text_producer;
+    let noColorBlindness = currLangFile.noColorBlindness;
+    let achromatopsia = currLangFile.achromatopsia;
+    let tritanopia = currLangFile.tritanopia;
+    let tritanomaly = currLangFile.tritanomaly;
+    let protanopia = currLangFile.protanopia;
+    let protanomaly = currLangFile.protanomaly;
+    let deuteranopia = currLangFile.deuteranopia;
+    let deuteranomaly = currLangFile.deuteranomaly;
 
     return {
       currLang,
@@ -110,6 +120,15 @@ export const usedLanguage = defineStore("usedLanguage", {
       selector_text_consumer,
       selector_text_producer,
       storage_text,
+      noColorBlindness,
+      achromatopsia,
+      tritanopia,
+      tritanomaly,
+      protanopia,
+      protanomaly,
+      deuteranopia,
+      deuteranomaly,
+      colorBlindnessStore
     };
   },
   actions: {
@@ -160,6 +179,74 @@ export const usedLanguage = defineStore("usedLanguage", {
       this.upload_json = this.currLangFile.upload_json;
       this.selector_text_consumer = this.currLangFile.selector_text_consumer;
       this.selector_text_producer = this.currLangFile.selector_text_producer;
+      this.noColorBlindness = this.currLangFile.noColorBlindness;
+      this.achromatopsia = this.currLangFile.achromatopsia;
+      this.tritanopia = this.currLangFile.tritanopia;
+      this.tritanomaly = this.currLangFile.tritanomaly;
+      this.protanopia = this.currLangFile.protanopia;
+      this.protanomaly = this.currLangFile.protanomaly;
+      this.deuteranopia = this.currLangFile.deuteranopia;
+      this.deuteranomaly = this.currLangFile.deuteranomaly;
+      
+    },
+  },
+});
+
+
+export const colorBlindness = defineStore("colorBlindness", {
+  state: () => {
+    const langStore = usedLanguage();
+    let colorBlindnessTypes = [
+      {
+        label: langStore.noColorBlindness,
+        value: "noColorBlindness"
+      },
+      {
+        label: langStore.achromatopsia,
+        value: "achromatopsia"
+      },
+      {
+        label: langStore.tritanopia,
+        value: "tritanopia"
+      },
+      {
+        label: langStore.tritanomaly,
+        value: "tritanomaly"
+      },
+      {
+        label: langStore.protanopia,
+        value: "protanopia"
+      },
+      {
+        label: langStore.protanomaly,
+        value: "protanomaly"
+      },
+      {
+        label: langStore.deuteranopia,
+        value: "deuteranopia"
+      },
+      {
+        label: langStore.deuteranomaly,
+        value: "deuteranomaly"
+      },
+    ];
+    return {
+      colorBlindnessTypes,
+    };
+  },
+  actions: {
+    setColorBlindness(colorBlindnessType) {
+      this.document.body.classList.toggle(colorBlindness);
+    },
+    updateColorBlindnessLang() {
+      this.colorBlindnessTypes[0].label = this.langStore.noColorBlindness;
+      this.colorBlindnessTypes[1].label = this.langStore.achromatopsia;
+      this.colorBlindnessTypes[2].label = this.langStore.tritanopia;
+      this.colorBlindnessTypes[3].label = this.langStore.tritanomaly;
+      this.colorBlindnessTypes[4].label = this.langStore.protanopia;
+      this.colorBlindnessTypes[5].label = this.langStore.protanomaly;
+      this.colorBlindnessTypes[6].label = this.langStore.deuteranopia;
+      this.colorBlindnessTypes[7].label = this.langStore.deuteranomaly;
     },
   },
 });
