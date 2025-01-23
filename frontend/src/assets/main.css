@@ -9,8 +9,7 @@
   --drawer-border-color: 2px solid #464646;
   --slider-range-color: black;
   --slider-handle-border-color: #464646;
-  --slider-handle-border-color-first: red;
-  --slider-handle-border-color-second: blue;
+
   --matrix-background-color-cell: white;
   --matrix-background-color-header: lightgray;
   --matrix-text-color: black;
@@ -26,11 +25,50 @@
   --drawer-border-color: 2px solid black;
   --slider-color: #34d399;
   --slider-text-color: white;
-  --slider-handle-border-color-first: #red;
-  --slider-handle-border-color-second: blue;
+
   --matrix-background-color-cell: rgb(39, 39, 39);
   --matrix-background-color-header: rgb(60, 60, 60);
   --matrix-text-color: white;
+}
+
+.noColorBlindness {
+  --slider-handle-border-color-first: yellow;
+  --slider-handle-border-color-second: blue;
+}
+
+.achromatopsia {
+  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-second: blue;
+}
+
+.tritanopia {
+  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-second: blue;
+}
+
+.tritanomaly {
+  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-second: blue;
+}
+
+.protanopia {
+  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-second: blue;
+}
+
+.protanomaly {
+  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-second: blue;
+}
+
+.Deuteranopia {
+  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-second: blue;
+}
+
+.Deuteranomaly {
+  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-second: blue;
 }
 
 * {
@@ -93,8 +131,8 @@ body {
   align-items: center;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
-  min-width: 300px;
-  max-width: 300px;
+  min-width: 400px;
+  max-width: 400px;
   min-height: 80px;
   max-height: 80px;
   background-color: var(--primary-background-color);
@@ -338,11 +376,11 @@ body {
 }
 
 #slider0 .p-slider-handle {
-  background-color: red;
+  background-color: var(--slider-handle-border-color-first);
 }
 
 #slider1 .p-slider-handle {
-  background-color: blue;
+  background-color: var(--slider-handle-border-color-second);
 }
 
 #sliders_content {

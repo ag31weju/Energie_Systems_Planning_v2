@@ -42,8 +42,7 @@ export const usedTheme = defineStore("usedTheme", {
 
 export const usedLanguage = defineStore("usedLanguage", {
   state: () => {
-    const colorBlindnessStore = colorBlindness();
-
+    const colorBlindnessStore = usedColorBlindnessTheme();
     let currLang = "EN";
     let currLangFile = ENLang;
     let capacity = currLangFile.capacity;
@@ -128,21 +127,18 @@ export const usedLanguage = defineStore("usedLanguage", {
       protanomaly,
       deuteranopia,
       deuteranomaly,
-      colorBlindnessStore
+      colorBlindnessStore,
     };
   },
   actions: {
     changeLang(language) {
-      console.log("Change has been called!");
       if (this.currLang == language) {
         return;
       }
       if (language == "EN") {
-        console.log("Changed to EN");
         this.currLang = "EN";
         this.currLangFile = ENLang;
       } else if (language == "DE") {
-        console.log("Changed to DE");
         this.currLang = "DE";
         this.currLangFile = DELang;
       } else {
@@ -187,66 +183,73 @@ export const usedLanguage = defineStore("usedLanguage", {
       this.protanomaly = this.currLangFile.protanomaly;
       this.deuteranopia = this.currLangFile.deuteranopia;
       this.deuteranomaly = this.currLangFile.deuteranomaly;
-      
+      this.colorBlindnessStore.updateColorBlindnessLang(this);
     },
   },
 });
 
-
-export const colorBlindness = defineStore("colorBlindness", {
+export const usedColorBlindnessTheme = defineStore("usedColorBlindnessTheme", {
   state: () => {
-    const langStore = usedLanguage();
+    var currentColorSettings = "Color blindness filter off";
     let colorBlindnessTypes = [
       {
-        label: langStore.noColorBlindness,
-        value: "noColorBlindness"
+        label: "Color blindness filter off",
+        value: "noColorBlindness",
       },
       {
-        label: langStore.achromatopsia,
-        value: "achromatopsia"
+        label: "Achromatopsia",
+        value: "achromatopsia",
       },
       {
-        label: langStore.tritanopia,
-        value: "tritanopia"
+        label: "Tritanopia",
+        value: "tritanopia",
       },
       {
-        label: langStore.tritanomaly,
-        value: "tritanomaly"
+        label: "Tritanomaly",
+        value: "tritanomaly",
       },
       {
-        label: langStore.protanopia,
-        value: "protanopia"
+        label: "Protanopia",
+        value: "protanopia",
       },
       {
-        label: langStore.protanomaly,
-        value: "protanomaly"
+        label: "Protanomaly",
+        value: "protanomaly",
       },
       {
-        label: langStore.deuteranopia,
-        value: "deuteranopia"
+        label: "Deuteranopia",
+        value: "deuteranopia",
       },
       {
-        label: langStore.deuteranomaly,
-        value: "deuteranomaly"
+        label: "Deuteranomaly",
+        value: "deuteranomaly",
       },
     ];
+
     return {
       colorBlindnessTypes,
+      currentColorSettings,
     };
   },
   actions: {
     setColorBlindness(colorBlindnessType) {
-      this.document.body.classList.toggle(colorBlindness);
+      if(colorBlindnessType.value == this.currentColorSettings){
+        return;
+      }
+      console.log(colorBlindnessType.value);
+      document.body.classList.toggle(this.currentColorSettings.value);
+      document.body.classList.toggle(colorBlindnessType.value);
+      this.currentColorSettings = colorBlindnessType.value;
     },
-    updateColorBlindnessLang() {
-      this.colorBlindnessTypes[0].label = this.langStore.noColorBlindness;
-      this.colorBlindnessTypes[1].label = this.langStore.achromatopsia;
-      this.colorBlindnessTypes[2].label = this.langStore.tritanopia;
-      this.colorBlindnessTypes[3].label = this.langStore.tritanomaly;
-      this.colorBlindnessTypes[4].label = this.langStore.protanopia;
-      this.colorBlindnessTypes[5].label = this.langStore.protanomaly;
-      this.colorBlindnessTypes[6].label = this.langStore.deuteranopia;
-      this.colorBlindnessTypes[7].label = this.langStore.deuteranomaly;
+    updateColorBlindnessLang(langStore) {
+      this.colorBlindnessTypes[0].label = langStore.noColorBlindness;
+      this.colorBlindnessTypes[1].label = langStore.achromatopsia;
+      this.colorBlindnessTypes[2].label = langStore.tritanopia;
+      this.colorBlindnessTypes[3].label = langStore.tritanomaly;
+      this.colorBlindnessTypes[4].label = langStore.protanopia;
+      this.colorBlindnessTypes[5].label = langStore.protanomaly;
+      this.colorBlindnessTypes[6].label = langStore.deuteranopia;
+      this.colorBlindnessTypes[7].label = langStore.deuteranomaly;
     },
   },
 });
