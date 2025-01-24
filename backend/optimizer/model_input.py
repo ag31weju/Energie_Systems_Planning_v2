@@ -187,8 +187,8 @@ class OptNetworkInput(AbstractModelInput):
        pass
    def populate(self):
       # This is a simple example. The input probably should come ffrom a scenario class
-      n_ts = 24
-      dt=1
+      n_ts = 24 #timesteps
+      dt=1      #per hour
       #Populate the sets
       self['T'].val = list(range(0, n_ts))
 

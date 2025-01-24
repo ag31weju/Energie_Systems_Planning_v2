@@ -37,6 +37,8 @@ class Producer(Technology):
       self.capacity_cost = capacity_cost
       self.operation_cost = operation_cost
       self.operational_lifetime = operational_lifetime   
+      #renuable producer: availability profile name
+      #time step data^
    
    def get_name(self):
       return self.producer_type.value
@@ -71,7 +73,8 @@ class Consumer(Technology):
 
       self.is_consumer = True
       self.yearly_demand = 0
-
+      self.demand_profile_name = None # This is a string that will be used to identify the demand profile. It will be used to get the demand profile from the database
+      #volume data
       pass
 
    @staticmethod

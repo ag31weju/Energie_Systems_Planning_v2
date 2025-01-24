@@ -55,6 +55,7 @@ def get_abstract_pyomo_model():
    model.Pi = pyo.Var(model.N, model.T)
 
    model.Cg = pyo.Var(model.Ug, within=pyo.NonNegativeReals) # Generation Capacity
+   #e.g x^2 function, around 0 being best
 
    ## Equations ##
 
