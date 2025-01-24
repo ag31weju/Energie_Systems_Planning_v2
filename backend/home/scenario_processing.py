@@ -1,6 +1,8 @@
 import json
 from PIL import Image
 import io
+from pathlib import Path
+from graph_to_scenario.create_scenario import Scenario
 
 """
 This does image and JSON processing of the Scenario uploaded by the user.
@@ -45,48 +47,31 @@ def process_image(image_file):
 
 
 def parse_json(json_file):
+    '''
+    Get the json file from frontend and using create_scenario.py, parse the json file for optimizer
+    '''
+    ''' commented out for now, fix node labels in frontend first
     try:
         # Read and decode the JSON file
         json_data = json_file.read().decode("utf-8")
         parsed_data = json.loads(json_data)
-
-        # Graph representation using a dictionary
-        graph = {
-            "nodes": {},  # Node attributes
-            "edges": {}   # Edge list with weights
-        }
-
-        # Add nodes to the graph
-        for node in parsed_data.get("nodes", []):
-            node_id = node.get("id")
-            graph["nodes"][node_id] = node  # Store node attributes
-
-        # Add edges to the graph
-        for edge in parsed_data.get("edges", []):
-            start = edge.get("start")
-            end = edge.get("end")
-            weight = edge.get("weight", 1)
-
-            # Add an edge as an undirected connection
-            if start not in graph["edges"]:
-                graph["edges"][start] = []
-            if end not in graph["edges"]:
-                graph["edges"][end] = []
-
-            graph["edges"][start].append({"end": end, "weight": weight})
-            graph["edges"][end].append({"end": start, "weight": weight})
-
-        output_json = "parsed_output.json"
-
-        # Save parsed data to a new JSON file
-        with open(output_json, "w") as f:
-            json.dump(parsed_data, f, indent=4)
-        print(f"Parsed data saved to {output_json}")
-
-        return graph
+        current_dir = Path(__file__).parent #current directory
+        default_value_file = current_dir.parent/ "graph_to_scenario" / "default_node_values.json" #default values json file
+        scenario = Scenario(parsed_data, None, default_value_file) #create a scenario object
 
     except json.JSONDecodeError as e:
         raise ValueError(f"Invalid JSON file: {str(e)}")
     except Exception as e:
         raise RuntimeError(f"Error parsing JSON file: {str(e)}")
+    '''
 
+
+'''
+How to Navigate to a File in a Sibling Folder Using pathlib
+    -Import Path from pathlib.
+    -Use Path(__file__).parent to get the current script's directory.
+    -Use .parent on the current directory to move up one level (equivalent to cd.. in terminal).
+    -Combine the parent directory with the sibling folder name and file name using / (e.g., parent_dir / "folder_name" / "file_name.json").
+    -Use .exists() to check if the file exists before opening or processing it.
+    -Open and process the file if it exists; otherwise, handle the case where it does not.
+'''
