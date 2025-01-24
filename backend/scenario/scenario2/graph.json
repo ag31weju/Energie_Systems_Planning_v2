@@ -7,7 +7,7 @@
                 "y": 400
             },
             "type": "consumer",
-            "label": "Residential Large"
+            "label": "City"
         },
         {
             "id": "node_2",
@@ -16,7 +16,7 @@
                 "y": 500
             },
             "type": "consumer",
-            "label": "Residential Small"
+            "label": "House"
         },
         {
             "id": "node_3",
@@ -25,7 +25,7 @@
                 "y": 500
             },
             "type": "consumer",
-            "label": "Commercial"
+            "label": "Industry"
         },
         {
             "id": "node_4",
@@ -34,7 +34,7 @@
                 "y": 200
             },
             "type": "producer",
-            "label": "Nuclear Power"
+            "label": "Wind"
         },
         {
             "id": "node_5",
@@ -43,7 +43,7 @@
                 "y": 250
             },
             "type": "producer",
-            "label": "Coal Power"
+            "label": "Coal"
         },
         {
             "id": "node_6",
@@ -52,7 +52,7 @@
                 "y": 100
             },
             "type": "producer",
-            "label": "Solar Power"
+            "label": "Solar"
         },
         {
             "id": "node_7",
@@ -61,7 +61,7 @@
                 "y": 200
             },
             "type": "producer",
-            "label": "Wind Power"
+            "label": "Wind"
         }
     ],
     "edges": [

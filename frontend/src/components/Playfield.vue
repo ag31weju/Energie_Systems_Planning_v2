@@ -3,43 +3,23 @@
     <!-- Image Box -->
 
     <!-- Vue Flow Container -->
-    <div
-      id="vueflow_container"
-      ref="vueFlowContainer"
-      :style="{
-        backgroundImage: 'url(' + imgUrl + ')',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }"
-      style="
+    <div id="vueflow_container" ref="vueFlowContainer" :style="{
+      backgroundImage: 'url(' + imgUrl + ')',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }" style="
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 43.5rem;
         z-index: 2;
-      "
-    >
-      <vue-flow
-        v-model:nodes="nodes"
-        v-model:edges="edges"
-        :fit-view="true"
-        :zoomOnScroll="false"
-        :zoomOnPinch="false"
-        :panOnDrag="false"
-        :pan-on-scroll="false"
-        :preventScrolling="true"
-        :snap-grid="snapGrid"
-        :snap-to-grid="true"
-        :coordinateExtent="coordinateExtent"
-        :connection-mode="connectionMode"
-        :node-types="customNodeTypes"
-        :auto-pan-on-node-drag="false"
-        :nodes-draggable="!locked"
-        :edges-connectable="edgeMode"
-        :zoomOnDoubleClick="false"
-        @connect="onConnect"
-      />
+      ">
+      <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
+        :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
+        :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
+        :auto-pan-on-node-drag="false" :nodes-draggable="!locked" :edges-connectable="edgeMode"
+        :zoomOnDoubleClick="false" @connect="onConnect" />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
@@ -50,110 +30,39 @@
 
       <!-- Scenario Management -->
       <div class="row">
-        <Select
-          v-model="selectedScenario"
-          :options="scenarios"
-          class="Sbutton"
-          placeholder="Choose Scenario"
-        ></Select>
-        <Button
-          @click="loadRequest"
-          type="submit"
-          class="button"
-          v-bind:label="usedLang.load_scenario"
-        ></Button>
-        <Button
-          @click="triggerJsonUpload"
-          type="submit"
-          class="slider-button"
-          v-bind:label="upload_json"
-          >json</Button
-        >
-        <Button
-          @click="triggerImageUpload"
-          type="submit"
-          class="button"
-          v-bind:label="usedLang.upload_scenario"
-          >img</Button
-        >
+        <Select v-model="selectedScenario" :options="scenarios" class="Sbutton" placeholder="Choose Scenario"></Select>
+        <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
+        <Button @click="triggerJsonUpload" type="submit" class="slider-button" v-bind:label="upload_json">json</Button>
+        <Button @click="triggerImageUpload" type="submit" class="button"
+          v-bind:label="usedLang.upload_scenario">img</Button>
 
-        <Button
-          @click="toggleGridOverlay"
-          type="submit"
-          class="button"
-          v-bind:label="usedLang.toggle_grid"
-        ></Button>
-        <Button
-          @click="clearNodes"
-          type="submit"
-          class="button"
-          v-bind:label="usedLang.clear_nodes"
-        ></Button>
-        <Button
-          @click="saveData"
-          type="submit"
-          class="button"
-          v-bind:label="usedLang.save_text"
-        ></Button>
+        <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
+        <Button @click="clearNodes" type="submit" class="button" v-bind:label="usedLang.clear_nodes"></Button>
+        <Button @click="saveData" type="submit" class="button" v-bind:label="usedLang.save_text"></Button>
       </div>
       <!-- Utilities -->
       <div class="row">
-        <Button
-          @click="toggleEdgeMode"
-          type="submit"
-          class="button"
-          v-bind:label="usedLang.add_edge"
-        ></Button>
-        
-        <Button
-          @click="addConsumerNode"
-          type="submit"
-          class="button"
-          v-bind:label="usedLang.add_consumer"
-        ></Button>
-        <Button @click="addBatteryNode" type="submit" class="button"
-          >Add Battery</Button
-        >
-        <Button @click="addJunctionNode" type="submit" class="button"
-        >Add Junction</Button>
-        <Button
-          @click="addEnergySourceNode"
-          type="submit"
-          class="button"
-          v-bind:label="usedLang.add_energy_source"
-        ></Button>
+        <Button @click="toggleEdgeMode" type="submit" class="button" v-bind:label="usedLang.add_edge"></Button>
+
+        <Button @click="addConsumerNode" type="submit" class="button" v-bind:label="usedLang.add_consumer"></Button>
+        <Button @click="addBatteryNode" type="submit" class="button">Add Battery</Button>
+        <Button @click="addJunctionNode" type="submit" class="button">Add Junction</Button>
+        <Button @click="addEnergySourceNode" type="submit" class="button"
+          v-bind:label="usedLang.add_energy_source"></Button>
       </div>
       <!-- Actions -->
 
       <div class="row">
-        <Select
-          v-model="selectedConsumer"
-          :options="optionsConsumer"
-          :placeholder="usedLang.selector_text_consumer"
-        ></Select>
-        <Select
-          v-model="selectedProducer"
-          :options="optionsProducers"
-          :placeholder="usedLang.selector_text_producer"
-        ></Select>
+        <Select v-model="selectedConsumer" :options="optionsConsumer"
+          :placeholder="usedLang.selector_text_consumer"></Select>
+        <Select v-model="selectedProducer" :options="optionsProducers"
+          :placeholder="usedLang.selector_text_producer"></Select>
       </div>
     </div>
-    <input
-      type="file"
-      id="imageInput"
-      ref="imageInput"
-      @change="handleFileChange('image', $event)"
-      accept="image/*"
-      style="display: none"
-    />
-    <input
-      type="file"
-      id="jsonInput"
-      ref="jsonInput"
-      @change="handleFileChange('json', $event)"
-      accept=".json"
-      style="display: none"
-    />
+    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
+      style="display: none" />
+    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
+      style="display: none" />
   </Panel>
 </template>
 
@@ -167,16 +76,19 @@ import ConsumerNode from "./customNodes/Consumer.vue";
 import BatteryNode from "./customNodes/Battery.vue";
 import JunctionNode from "./customNodes/Junction.vue";
 import ProducerNode from "./customNodes/Producer.vue";
-import ConsumerIcon from "@/assets/node_images/consumer/commercial2.png";
-import Commercial from "@/assets/node_images/consumer/commercial.png";
+
+import Industry from "@/assets/node_images/consumer/Industry.png";
+import City from "@/assets/node_images/consumer/City.png";
+import House from "@/assets/node_images/consumer/House.png";
+
 import Battery from "@/assets/node_images/misc/battery.png";
 import Junction from "@/assets/node_images/misc/junction.png";
-import ResidentialLarge from "@/assets/node_images/consumer/residentialLarge.png";
-import ResidentialSmall from "@/assets/node_images/consumer/residentialSmall.png";
-import Nuclear from "@/assets/node_images/producer/nuclear.png";
-import Coal from "@/assets/node_images/producer/coal.png";
-import Solar from "@/assets/node_images/producer/solarPanel.png";
-import Wind from "@/assets/node_images/producer/windmill.png";
+
+import Gas from "@/assets/node_images/producer/Gas.png";
+import Coal from "@/assets/node_images/producer/Coal.png";
+import Solar from "@/assets/node_images/producer/Solar.png";
+import Wind from "@/assets/node_images/producer/Wind.png";
+
 import { usedLanguage } from "../assets/stores/pageSettings";
 import { inject, ref, reactive } from "vue";
 
@@ -221,14 +133,9 @@ export default {
 
     // Reactive state for selected consumer/producer and their options
     const selectedConsumer = ref(""); // Selected value for consumers
-    const optionsConsumer = ref([
-      "Commercial",
-      "Residential Large",
-      "Residential Small",
-    ]); // Consumer options
-
+    const optionsConsumer = ref(["Industry", "City", "House"]);
     const selectedProducer = ref(""); // Selected value for producers
-    const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options
+    const optionsProducers = ref(["Gas", "Coal", "Solar", "Wind"]); // Producer options
     const scenarios = ref(["Scene 1", "Scene 2", "Scene 3"]); // Scenario options
     const selectedScenario = ref("");
 
@@ -299,61 +206,61 @@ export default {
           };
 
           switch (node.label) {
-            case "Commercial":
+            case "Industry":
               newNode.data = {
-                label: "Commercial",
-                icon: Commercial,
+                label: "Industry",
+                icon: Industry,
                 inputs: [0],
                 outputs: [0, 1],
               };
               break;
-            case "Residential Large":
+            case "City":
               newNode.data = {
-                label: "Residential Large",
-                icon: ResidentialLarge,
+                label: "City",
+                icon: City,
                 inputs: [0],
                 outputs: [0, 1],
               };
               break;
-            case "Residential Small":
+            case "House":
               newNode.data = {
-                label: "Residential Small",
+                label: "House",
                 icon: ResidentialSmall,
                 inputs: [0],
                 outputs: [0, 1],
               };
               break;
-            case "Nuclear Power":
+            case "Gas":
               newNode.data = {
-                label: "Nuclear Power",
-                icon: Nuclear,
+                label: "Gas",
+                icon: Gas,
                 inputs: [1],
                 outputs: [0],
                 description:
                   "Provides large-scale base power with low carbon emissions.",
               };
               break;
-            case "Coal Power":
+            case "Coal":
               newNode.data = {
-                label: "Coal Power",
+                label: "Coal",
                 icon: Coal,
                 inputs: [1],
                 outputs: [0],
                 description: "Traditional fossil fuel energy source.",
               };
               break;
-            case "Solar Power":
+            case "Solar":
               newNode.data = {
-                label: "Solar Power",
+                label: "Solar",
                 icon: Solar,
                 inputs: [1],
                 outputs: [0],
                 description: "Generates renewable energy from sunlight.",
               };
               break;
-            case "Wind Power":
+            case "Wind":
               newNode.data = {
-                label: "Wind Power",
+                label: "Wind",
                 icon: Wind,
                 inputs: [1],
                 outputs: [0],
@@ -443,34 +350,34 @@ export default {
         data: {
           label: "Battery",
           icon: Battery,
-          inputs: [0,1],
-          outputs: [2,3],
+          inputs: [0, 1],
+          outputs: [2, 3],
         },
-       
+
       };
       this.nodes.push(newNode);
     },
 
     addJunctionNode() {
-  const vueFlowContainer = this.$refs.vueFlowContainer;
-  if (!vueFlowContainer) return;
+      const vueFlowContainer = this.$refs.vueFlowContainer;
+      if (!vueFlowContainer) return;
 
-  const width = vueFlowContainer.offsetWidth / this.gridSize;
-  const height = vueFlowContainer.offsetHeight / this.gridSize;
+      const width = vueFlowContainer.offsetWidth / this.gridSize;
+      const height = vueFlowContainer.offsetHeight / this.gridSize;
 
-  const newNode = {
-    id: `node_${this.nodeIdCounter++}`,
-    type: "junction",
-    position: { x: width * 7, y: height * 3 },
-    data: {
-      label: "Junction",
-      icon: Junction,
-      inputs: [0, 1],
-      outputs: [2, 3],
+      const newNode = {
+        id: `node_${this.nodeIdCounter++}`,
+        type: "junction",
+        position: { x: width * 7, y: height * 3 },
+        data: {
+          label: "Junction",
+          icon: Junction,
+          inputs: [0, 1],
+          outputs: [2, 3],
+        },
+      };
+      this.nodes.push(newNode);
     },
-  };
-  this.nodes.push(newNode);
-},
 
 
     addEnergySourceNode() {
@@ -496,10 +403,10 @@ export default {
 
       // Use switch to configure the data property
       switch (this.selectedProducer) {
-        case "Nuclear":
+        case "Gas":
           newNode.data = {
-            label: "Nuclear Power",
-            icon: Nuclear, // Add an icon path if available
+            label: "Gas",
+            icon: Gas, // Add an icon path if available
             inputs: [1], // Example configuration for inputs
             outputs: [0],
             description:
@@ -509,7 +416,7 @@ export default {
 
         case "Coal":
           newNode.data = {
-            label: "Coal Power",
+            label: "Coal",
             icon: Coal, // Add an icon path if available
             inputs: [1],
             outputs: [0],
@@ -519,7 +426,7 @@ export default {
 
         case "Solar":
           newNode.data = {
-            label: "Solar Power",
+            label: "Solar",
             icon: Solar, // Add an icon path if available
             inputs: [1],
             outputs: [0],
@@ -529,7 +436,7 @@ export default {
 
         case "Wind":
           newNode.data = {
-            label: "Wind Power",
+            label: "Wind",
             icon: Wind, // Add an icon path if available
             inputs: [1],
             outputs: [0],
@@ -566,27 +473,27 @@ export default {
 
       // Use switch to set the data field based on the selected producer
       switch (this.selectedConsumer) {
-        case "Commercial":
+        case "Industry":
           newNode.data = {
-            label: "Commercial",
-            icon: Commercial,
+            label: "Industry",
+            icon: Industry,
             inputs: [0],
             outputs: [0, 1],
           };
           break;
 
-        case "Residential Large":
+        case "City":
           newNode.data = {
-            label: "Residential Large",
-            icon: ResidentialLarge,
+            label: "City",
+            icon: City,
             inputs: [0],
             outputs: [0, 1],
           };
           break;
 
-        case "Residential Small":
+        case "House":
           newNode.data = {
-            label: "Residential Small",
+            label: "House",
             icon: ResidentialSmall,
             inputs: [0],
             outputs: [0, 1],
@@ -624,7 +531,7 @@ export default {
           source: connection.source,
           target: connection.target,
           sourceHandle: connection.sourceHandle, // Ensure correct handle connection
-  targetHandle: connection.targetHandle, // Ensure correct handle connection
+          targetHandle: connection.targetHandle, // Ensure correct handle connection
           type: "default",
           animated: this.edgeProps.animated,
           style: this.edgeProps.style,
@@ -753,59 +660,59 @@ export default {
             };
 
             switch (node.label) {
-              case "Commercial":
+              case "Industry":
                 newNode.data = {
-                  label: "Commercial",
-                  icon: Commercial, // Ensure Commercial is imported or defined
+                  label: "Industry",
+                  icon: Industry, // Ensure Industry is imported or defined
                   inputs: [0],
                   outputs: [0, 1],
                 };
                 break;
-              case "Residential Large":
+              case "City":
                 newNode.data = {
-                  label: "Residential Large",
-                  icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
+                  label: "City",
+                  icon: City, // Ensure City is imported or defined
                   inputs: [0],
                   outputs: [0, 1],
                 };
                 break;
-              case "Residential Small":
+              case "House":
                 newNode.data = {
-                  label: "Residential Small",
+                  label: "House",
                   icon: ResidentialSmall,
                   inputs: [0],
                   outputs: [0, 1],
                 };
                 break;
-              case "Nuclear Power":
+              case "Gas":
                 newNode.data = {
-                  label: "Nuclear Power",
-                  icon: Nuclear,
+                  label: "Gas",
+                  icon: Gas,
                   inputs: [1],
                   outputs: [0],
                   description:
                     "Provides large-scale base power with low carbon emissions.",
                 };
                 break;
-              case "Coal Power":
+              case "Coal":
                 newNode.data = {
-                  label: "Coal Power",
+                  label: "Coal",
                   icon: Coal,
                   inputs: [1],
                   outputs: [0],
                   description: "Traditional fossil fuel energy source.",
                 };
                 break;
-              case "Solar Power":
+              case "Solar":
                 newNode.data = {
-                  label: "Solar Power",
+                  label: "Solar",
                   icon: Solar,
                   inputs: [1],
                   outputs: [0],
                   description: "Generates renewable energy from sunlight.",
                 };
                 break;
-              case "Wind Power":
+              case "Wind":
                 newNode.data = {
                   label: "Wind Power",
                   icon: Wind,

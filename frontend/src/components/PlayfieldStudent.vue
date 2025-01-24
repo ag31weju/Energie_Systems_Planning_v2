@@ -1,41 +1,21 @@
 <template>
   <Panel id="playfieldS">
-    <div
-      id="vueflow_container"
-      ref="vueFlowContainer"
-      :style="{
-        backgroundImage: 'url(' + imgUrl + ')',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }"
-      style="
+    <div id="vueflow_container" ref="vueFlowContainer" :style="{
+      backgroundImage: 'url(' + imgUrl + ')',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }" style="
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 43.5rem;
         z-index: 2;
-      "
-    >
-      <vue-flow
-        v-model:nodes="nodes"
-        v-model:edges="edges"
-        :fit-view="true"
-        :zoomOnScroll="false"
-        :zoomOnPinch="false"
-        :panOnDrag="false"
-        :pan-on-scroll="false"
-        :preventScrolling="true"
-        :snap-grid="snapGrid"
-        :snap-to-grid="true"
-        :connection-mode="connectionMode"
-        :node-types="customNodeTypes"
-        :auto-pan-on-node-drag="false"
-        :nodes-draggable="locked"
-        :edges-connectable="false"
-        :zoomOnDoubleClick="false"
-        @connect="onConnect"
-      />
+      ">
+      <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
+        :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
+        :connection-mode="connectionMode" :node-types="customNodeTypes" :auto-pan-on-node-drag="false"
+        :nodes-draggable="locked" :edges-connectable="false" :zoomOnDoubleClick="false" @connect="onConnect" />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
@@ -43,41 +23,19 @@
     <!-- Buttons at the Bottom -->
 
     <div id="buttons_container">
-      <Select
-        v-model="selectedScenario"
-        :options="scenarios"
-        class="Sbutton"
-        placeholder="Choose Scenario"
-      ></Select>
+      <Select v-model="selectedScenario" :options="scenarios" class="Sbutton" placeholder="Choose Scenario"></Select>
 
       <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
-      <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario">img</Button>
-      <Button
-        @click="triggerJsonUpload"
-        type="submit"
-        class="slider-button"
-        v-bind:label="upload_json"
-        >json</Button
-      >
-      
+      <Button @click="triggerImageUpload" type="submit" class="button"
+        v-bind:label="usedLang.upload_scenario">img</Button>
+      <Button @click="triggerJsonUpload" type="submit" class="slider-button" v-bind:label="upload_json">json</Button>
+
       <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
     </div>
-    <input
-      type="file"
-      id="imageInput"
-      ref="imageInput"
-      @change="handleFileChange('image', $event)"
-      accept="image/*"
-      style="display: none"
-    />
-    <input
-      type="file"
-      id="jsonInput"
-      ref="jsonInput"
-      @change="handleFileChange('json', $event)"
-      accept=".json"
-      style="display: none"
-    />
+    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
+      style="display: none" />
+    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
+      style="display: none" />
   </Panel>
 </template>
 
@@ -89,14 +47,19 @@ import { VueFlow, MarkerType } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 import ConsumerNode from "./customNodes/Consumer.vue";
 import ProducerNode from "./customNodes/Producer.vue";
-import ConsumerIcon from "@/assets/node_images/consumer/commercial2.png";
-import Commercial from "@/assets/node_images/consumer/commercial.png";
-import ResidentialLarge from "@/assets/node_images/consumer/residentialLarge.png";
-import ResidentialSmall from "@/assets/node_images/consumer/residentialSmall.png";
-import Nuclear from "@/assets/node_images/producer/nuclear.png";
-import Coal from "@/assets/node_images/producer/coal.png";
-import Solar from "@/assets/node_images/producer/solarPanel.png";
-import Wind from "@/assets/node_images/producer/windmill.png";
+
+import Industry from "@/assets/node_images/consumer/Industry.png";
+import City from "@/assets/node_images/consumer/City.png";
+import House from "@/assets/node_images/consumer/House.png";
+
+import Battery from "@/assets/node_images/misc/battery.png";
+import Junction from "@/assets/node_images/misc/junction.png";
+
+import Gas from "@/assets/node_images/producer/Gas.png";
+import Coal from "@/assets/node_images/producer/Coal.png";
+import Solar from "@/assets/node_images/producer/Solar.png";
+import Wind from "@/assets/node_images/producer/Wind.png";
+
 import { usedLanguage } from "../assets/stores/pageSettings";
 import { ref, reactive, inject } from "vue";
 
@@ -146,13 +109,13 @@ export default {
     // Reactive state for selected consumer/producer and their options
     const selectedConsumer = ref(""); // Selected value for consumers
     const optionsConsumer = ref([
-      "Commercial",
-      "Residential Large",
-      "Residential Small",
+      "Industry",
+      "City",
+      "House",
     ]); // Consumer options
 
     const selectedProducer = ref(""); // Selected value for producers
-    const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options
+    const optionsProducers = ref(["Gas", "Coal", "Solar", "Wind"]); // Producer options
 
     return {
       usedLang,
@@ -221,61 +184,61 @@ export default {
           };
 
           switch (node.label) {
-            case "Commercial":
+            case "Industry":
               newNode.data = {
-                label: "Commercial",
-                icon: Commercial,
+                label: "Industry",
+                icon: Industry,
                 inputs: [0],
                 outputs: [0, 1],
               };
               break;
-            case "Residential Large":
+            case "City":
               newNode.data = {
-                label: "Residential Large",
-                icon: ResidentialLarge,
+                label: "City",
+                icon: City,
                 inputs: [0],
                 outputs: [0, 1],
               };
               break;
-            case "Residential Small":
+            case "House":
               newNode.data = {
-                label: "Residential Small",
-                icon: ResidentialSmall,
+                label: "House",
+                icon: House,
                 inputs: [0],
                 outputs: [0, 1],
               };
               break;
-            case "Nuclear Power":
+            case "Gas":
               newNode.data = {
-                label: "Nuclear Power",
-                icon: Nuclear,
+                label: "Gas",
+                icon: Gas,
                 inputs: [1],
                 outputs: [0],
                 description:
                   "Provides large-scale base power with low carbon emissions.",
               };
               break;
-            case "Coal Power":
+            case "Coal":
               newNode.data = {
-                label: "Coal Power",
+                label: "Coal",
                 icon: Coal,
                 inputs: [1],
                 outputs: [0],
                 description: "Traditional fossil fuel energy source.",
               };
               break;
-            case "Solar Power":
+            case "Solar":
               newNode.data = {
-                label: "Solar Power",
+                label: "Solar",
                 icon: Solar,
                 inputs: [1],
                 outputs: [0],
                 description: "Generates renewable energy from sunlight.",
               };
               break;
-            case "Wind Power":
+            case "Wind":
               newNode.data = {
-                label: "Wind Power",
+                label: "Wind",
                 icon: Wind,
                 inputs: [1],
                 outputs: [0],
@@ -427,8 +390,8 @@ export default {
 
     // Handle file changes for both image and JSON
     triggerImageUpload() {
-      if (this.isAutoSimulating) return;            this.$refs.imageInput.click(); // Trigger image upload
-        },
+      if (this.isAutoSimulating) return; this.$refs.imageInput.click(); // Trigger image upload
+    },
     // Trigger the JSON file input
     triggerJsonUpload() {
       this.$refs.jsonInput.click(); // Trigger JSON upload
@@ -441,22 +404,22 @@ export default {
         if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
         this.imgUrl = URL.createObjectURL(file);
 
-  // Show alert for JSON upload
+        // Show alert for JSON upload
 
-  this.$refs.jsonInput.click();
-} else if (type === "json") {
-  this.jsonFile = file;
-  this.loadScenarioData(); // Handle JSON after image upload
-}
-},
+        this.$refs.jsonInput.click();
+      } else if (type === "json") {
+        this.jsonFile = file;
+        this.loadScenarioData(); // Handle JSON after image upload
+      }
+    },
 
-// Load and parse the JSON file
-loadScenarioData() {
-if (!this.imageFile || !this.jsonFile) {
-  console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
-  alert("Please upload both the image and then the JSON file.");
-  return;
-}
+    // Load and parse the JSON file
+    loadScenarioData() {
+      if (!this.imageFile || !this.jsonFile) {
+        console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
+        alert("Please upload both the image and then the JSON file.");
+        return;
+      }
 
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -486,61 +449,61 @@ if (!this.imageFile || !this.jsonFile) {
             };
 
             switch (node.label) {
-              case "Commercial":
+              case "Industry":
                 newNode.data = {
-                  label: "Commercial",
-                  icon: Commercial, // Ensure Commercial is imported or defined
+                  label: "Industry",
+                  icon: Industry, // Ensure Commercial is imported or defined
                   inputs: [0],
                   outputs: [0, 1],
                 };
                 break;
-              case "Residential Large":
+              case "City":
                 newNode.data = {
-                  label: "Residential Large",
-                  icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
+                  label: "City",
+                  icon: City, // Ensure ResidentialLarge is imported or defined
                   inputs: [0],
                   outputs: [0, 1],
                 };
                 break;
-              case "Residential Small":
+              case "House":
                 newNode.data = {
-                  label: "Residential Small",
-                  icon: ResidentialSmall,
+                  label: "House",
+                  icon: House,
                   inputs: [0],
                   outputs: [0, 1],
                 };
                 break;
-              case "Nuclear Power":
+              case "Gas":
                 newNode.data = {
-                  label: "Nuclear Power",
-                  icon: Nuclear,
+                  label: "Gas",
+                  icon: Gas,
                   inputs: [1],
                   outputs: [0],
                   description:
                     "Provides large-scale base power with low carbon emissions.",
                 };
                 break;
-              case "Coal Power":
+              case "Coal":
                 newNode.data = {
-                  label: "Coal Power",
+                  label: "Coal",
                   icon: Coal,
                   inputs: [1],
                   outputs: [0],
                   description: "Traditional fossil fuel energy source.",
                 };
                 break;
-              case "Solar Power":
+              case "Solar":
                 newNode.data = {
-                  label: "Solar Power",
+                  label: "Solar",
                   icon: Solar,
                   inputs: [1],
                   outputs: [0],
                   description: "Generates renewable energy from sunlight.",
                 };
                 break;
-              case "Wind Power":
+              case "Wind":
                 newNode.data = {
-                  label: "Wind Power",
+                  label: "Wind",
                   icon: Wind,
                   inputs: [1],
                   outputs: [0],
