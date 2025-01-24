@@ -10,8 +10,8 @@
     @mouseleave="handleMouseLeave"
     @click="handleClick"
   >
-    <div class="producer-icon">
-      <img :src="data.icon" alt="Producer Icon" />
+    <div class="battery-icon">
+      <img :src="data.icon" alt="Battery Icon" />
     </div>
     <div
       v-if="isHighlighted"
@@ -19,41 +19,44 @@
       style="color: crimson; background: black"
     >
       <!-- color of label -->
-      {{ data.label || "Unnamed Node" }}
+      {{ data.label || "Battery" }}
     </div>
     <div class="handles">
-      <!-- Handles for inputs -->
-      
+  <!-- Handles for inputs -->
+     <div v-for="(input, index) in data.inputs" :key="'input_' + index">
+    <Handle
+      type="target"
+      :position="'left'"   
+      :id="'input_' + index"
+      style="background: #555"
+    />
+    <Handle
+      type="target"
+      :position="'top'"    
+      :id="'input_top_' + index"
+      style="background: #555"
+    />
+  </div>
 
-      <!-- Handles for outputs -->
-      <div v-for="(output, index) in data.outputs" :key="'output_' + index">
-        <Handle
-          type="source"
-          :position="Position.Left"
-          :id="output"
-          style="background: #555"
-        />
-        <Handle
-          type="source"
-          :position="Position.Right"
-          :id="output"
-          style="background: #555"
-        />
-        <Handle
-          type="source"
-          :position="Position.Top"
-          :id="output"
-          style="background: #555"
-        />
-        <Handle
-          type="source"
-          :position="Position.Bottom"
-          :id="output"
-          style="background: #555"
+  <!-- Handles for outputs -->
+  <div v-for="(output, index) in data.outputs" :key="'output_' + index">
+    <Handle
+      type="source"
+      :position="'right'"  
+      :id="'output_' + index"
+      style="background: #555"
+    />
+    <Handle
+      type="source"
+      :position="'bottom'" 
+      :id="'output_bottom_' + index"
+      style="background: #555"
+    />
+  </div>
         />
       </div>
     </div>
-  </div>
+  
 </template>
 
 <script>
@@ -61,7 +64,7 @@ import { ref, inject, defineComponent, computed } from "vue";
 import { Handle, Position } from "@vue-flow/core";
 
 export default defineComponent({
-  name: "ProducerNode",
+  name: "BatteryNode",
   props: {
     data: {
       type: Object,
@@ -72,7 +75,7 @@ export default defineComponent({
     Handle,
   },
   setup(props, context) {
-    let handleNodeSelection = inject("handleNodeSelection");
+    const handleNodeSelection = inject("handleNodeSelection");
     let selectedNodes = inject("selectedNodes")
       ? inject("selectedNodes")
       : undefined;
@@ -94,7 +97,6 @@ export default defineComponent({
     };
 
     const handleClick = () => {
-      //console.log(context.attrs.id.at(-1)); //id is "node_x" and x is extracted afterwards
       handleNodeSelection(nodeID);
     };
 
@@ -119,31 +121,28 @@ export default defineComponent({
   justify-content: center;
   color: #fff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  /* Smooth animation */
 }
 
 .custom-node.highlighted {
   transform: scale(1.2);
-  /* Enlarge the node */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  /* Add a shadow for highlighting */
 }
 
 .custom-node.selectedFirst {
-  box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.8); /* Red glow effect */
-  border: 2px solid black; /* Optional red border */
-  transform: scale(1.1); /* Slightly larger */
+  box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.8);
+  border: 2px solid black;
+  transform: scale(1.1);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .custom-node.selectedSecond {
-  box-shadow: 0 0 15px 5px rgba(0, 0, 255, 0.8); /* Red glow effect */
-  border: 2px solid black; /* Optional red border */
-  transform: scale(1.1); /* Slightly larger */
+  box-shadow: 0 0 15px 5px rgba(0, 0, 255, 0.8);
+  border: 2px solid black;
+  transform: scale(1.1);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.producer-icon {
+.battery-icon {
   width: 50px;
   height: 50px;
   display: flex;
@@ -152,7 +151,7 @@ export default defineComponent({
   overflow: hidden;
 }
 
-.producer-icon img {
+.battery-icon img {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -160,7 +159,6 @@ export default defineComponent({
 
 .node-name {
   margin-top: 8px;
-  /* Adds space between the image and "Hello" */
   font-size: 14px;
   color: #333;
   text-align: center;

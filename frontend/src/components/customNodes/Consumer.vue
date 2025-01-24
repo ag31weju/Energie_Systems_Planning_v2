@@ -11,12 +11,13 @@
       <!-- Handles for inputs -->
       <div v-for="(input, index) in data.inputs" :key="'input_' + index">
         <Handle type="target" :position="Position.Left" :id="input" style="background: #555" />
+        <Handle type="target" :position="Position.Right" :id="input" style="background: #555" />
+        <Handle type="target" :position="Position.Top" :id="input" style="background: #555" />
+        <Handle type="target" :position="Position.Bottom" :id="input" style="background: #555" />
       </div>
 
       <!-- Handles for outputs -->
-      <div v-for="(output, index) in data.outputs" :key="'output_' + index">
-        <Handle type="source" :position="Position.Right" :id="output" style="background: #555" />
-      </div>
+     
     </div>
   </div>
 </template>
