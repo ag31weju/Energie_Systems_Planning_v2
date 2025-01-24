@@ -1,15 +1,18 @@
 from pathlib import Path
-from node_types import Producer, Consumer, Battery
-import Utils
+from .node_types import Producer, Consumer, Battery
+from . import Utils
 
 
 class Scenario:
-    def __init__(self, graph_data, excel_file_path):
+    def __init__(self, graph_data):
         self.nodes = []  # contains nodes parsed from json sent from frontend
         self.edges = []  # contains edges parsed from json sent from frontend
         self.final_nodes = []  # contains nodes with default values
         self.timestep_chosen = None  # the timestep from the excel file
         self.graph_data = graph_data  # the graph json from frontend
+
+        current_dir = Path(__file__).parent
+        excel_file_path = current_dir / "volume_data" / "Technology_defaults.xlsx"
         self.excel_file_path = excel_file_path
         self.defaults = self.get_default_node_values()
         self.get_time_steps()
@@ -113,10 +116,9 @@ class Scenario:
 def main():
     current_dir = Path(__file__).parent
     scenario_json_file = current_dir.parent / "scenario_data" / "scenario_data.json"
-    excel_file_path = current_dir / "volume_data" / "Technology_defaults.xlsx"
     graph_data = Utils.load_json(scenario_json_file)
     # Initialize the Scenario class
-    scenario = Scenario(graph_data, excel_file_path=excel_file_path)
+    scenario = Scenario(graph_data)
 
     # Process the graph data to create nodes
     scenario.process_graph_data()
@@ -127,4 +129,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    pass
+    #main()

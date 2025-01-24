@@ -1,8 +1,7 @@
 import json
 from PIL import Image
 import io
-from pathlib import Path
-from graph_to_scenario.create_scenario import Scenario
+from graph_to_scenario.scenario import Scenario
 
 """
 This does image and JSON processing of the Scenario uploaded by the user.
@@ -50,20 +49,10 @@ def parse_json(json_file):
     '''
     Get the json file from frontend and using create_scenario.py, parse the json file for optimizer
     '''
-    ''' commented out for now, fix node labels in frontend first
-    try:
-        # Read and decode the JSON file
-        json_data = json_file.read().decode("utf-8")
-        parsed_data = json.loads(json_data)
-        current_dir = Path(__file__).parent #current directory
-        default_value_file = current_dir.parent/ "graph_to_scenario" / "default_node_values.json" #default values json file
-        scenario = Scenario(parsed_data, None, default_value_file) #create a scenario object
+    scenario = Scenario(json_file)
 
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON file: {str(e)}")
-    except Exception as e:
-        raise RuntimeError(f"Error parsing JSON file: {str(e)}")
-    '''
+
+
 
 
 '''
