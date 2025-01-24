@@ -190,7 +190,6 @@ export const usedLanguage = defineStore("usedLanguage", {
 
 export const usedColorBlindnessTheme = defineStore("usedColorBlindnessTheme", {
   state: () => {
-    var currentColorSettings = "Color blindness filter off";
     let colorBlindnessTypes = [
       {
         label: "Color blindness filter off",
@@ -226,6 +225,9 @@ export const usedColorBlindnessTheme = defineStore("usedColorBlindnessTheme", {
       },
     ];
 
+    var currentColorSettings = colorBlindnessTypes[0];
+    document.body.classList.toggle(currentColorSettings.value);
+
     return {
       colorBlindnessTypes,
       currentColorSettings,
@@ -233,13 +235,12 @@ export const usedColorBlindnessTheme = defineStore("usedColorBlindnessTheme", {
   },
   actions: {
     setColorBlindness(colorBlindnessType) {
-      if(colorBlindnessType.value == this.currentColorSettings){
+      if(colorBlindnessType.value == this.currentColorSettings.value){
         return;
       }
-      console.log(colorBlindnessType.value);
       document.body.classList.toggle(this.currentColorSettings.value);
       document.body.classList.toggle(colorBlindnessType.value);
-      this.currentColorSettings = colorBlindnessType.value;
+      this.currentColorSettings = colorBlindnessType;
     },
     updateColorBlindnessLang(langStore) {
       this.colorBlindnessTypes[0].label = langStore.noColorBlindness;

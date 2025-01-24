@@ -9,7 +9,8 @@
   --drawer-border-color: 2px solid #464646;
   --slider-range-color: black;
   --slider-handle-border-color: #464646;
-
+  --slider-handle-border-color-first: yellow;
+  --slider-handle-border-color-second: blue;
   --matrix-background-color-cell: white;
   --matrix-background-color-header: lightgray;
   --matrix-text-color: black;
@@ -31,33 +32,33 @@
   --matrix-text-color: white;
 }
 
-.noColorBlindness {
+/* .noColorBlindness {
   --slider-handle-border-color-first: yellow;
   --slider-handle-border-color-second: blue;
-}
+} */
 
 .achromatopsia {
-  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-first: green;
   --slider-handle-border-color-second: blue;
 }
 
 .tritanopia {
-  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-first: purple;
   --slider-handle-border-color-second: blue;
 }
 
 .tritanomaly {
-  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-first: darkgrey;
   --slider-handle-border-color-second: blue;
 }
 
 .protanopia {
-  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-first: pink;
   --slider-handle-border-color-second: blue;
 }
 
 .protanomaly {
-  --slider-handle-border-color-first: red;
+  --slider-handle-border-color-first: brown;
   --slider-handle-border-color-second: blue;
 }
 
