@@ -9,7 +9,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 43.5rem;
+        height: 92%;
         z-index: 2;
       ">
       <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
@@ -18,7 +18,7 @@
         :nodes-draggable="locked" :edges-connectable="false" :zoomOnDoubleClick="false" @connect="onConnect" />
     </div>
 
-    <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
+    <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay1"></canvas>
 
     <!-- Buttons at the Bottom -->
 
@@ -362,8 +362,28 @@ case "Junction":
       }
     },
 
-    async saveData() {
-      try {
+
+    // Handle file changes for both image and JSON
+    triggerImageUpload() {
+      if (this.isAutoSimulating) return; this.$refs.imageInput.click(); // Trigger image upload
+    },
+    // Trigger the JSON file input
+    triggerJsonUpload() {
+      this.$refs.jsonInput.click(); // Trigger JSON upload
+    },
+
+   async handleFileChange(type, event) {
+      const file = event.target.files[0];
+      if (type === "image") {
+        this.imageFile = file;
+        if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
+        this.imgUrl = URL.createObjectURL(file);
+
+        // Show alert for JSON upload
+        alert("Please upload the corresponding JSON file.");
+      } else if (type === "json") {
+        this.jsonFile = file;
+        try {
         // Get node and edge data
         const dataToSave = {
           nodes: this.nodes.map((node) => ({
@@ -378,8 +398,10 @@ case "Junction":
             target: edge.target,
             color: edge.color,
             style: edge.style,
+            sourceHandle:edge.sourceHandle,
+            targetHandle: edge.targetHandle,
+
           })),
-          imageUrl: this.imgUrl,
         };
 
         // Convert to JSON
@@ -401,54 +423,16 @@ case "Junction":
           }
         );
 
-        if (response.status === 200) {
-          alert("Data saved successfully!");
-        } else {
+        if (!response.status === 200) {
           alert("Error saving data.");
         }
-
-        // Optionally, download the JSON file
-        const jsonString = JSON.stringify(dataToSave);
-
-        const jsonBlob = new Blob([jsonString], { type: "application/json" });
-        const jsonLink = document.createElement("a");
-        jsonLink.href = URL.createObjectURL(jsonBlob);
-        jsonLink.download = "scenario_data.json";
-        jsonLink.click();
-
-        // Save image file locally
-        const imageLink = document.createElement("a");
-        imageLink.href = URL.createObjectURL(this.imageFile);
-        imageLink.download = this.imageFile.name || "scenario_image.png";
-        imageLink.click();
-
-        alert("Files downloaded locally!");
+   
+        
       } catch (error) {
         console.error("Error saving data:", error);
         alert(`Error: ${error.message}`);
       }
-    },
-
-    // Handle file changes for both image and JSON
-    triggerImageUpload() {
-      if (this.isAutoSimulating) return; this.$refs.imageInput.click(); // Trigger image upload
-    },
-    // Trigger the JSON file input
-    triggerJsonUpload() {
-      this.$refs.jsonInput.click(); // Trigger JSON upload
-    },
-
-    handleFileChange(type, event) {
-      const file = event.target.files[0];
-      if (type === "image") {
-        this.imageFile = file;
-        if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
-        this.imgUrl = URL.createObjectURL(file);
-
-        // Show alert for JSON upload
-        alert("Please upload the corresponding JSON file.");
-      } else if (type === "json") {
-        this.jsonFile = file;
+    
         this.loadScenarioData(); // Handle JSON after image upload
       }
     },

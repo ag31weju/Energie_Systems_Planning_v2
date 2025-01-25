@@ -12,7 +12,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 43.5rem;
+        height: 72.5%;
         z-index: 2;
       ">
       <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
@@ -560,7 +560,7 @@ case "Junction":
       }
     },
 
-    async saveData() {
+      saveData() {
       try {
         // Get node and edge data
         const dataToSave = {
@@ -588,24 +588,6 @@ case "Junction":
 
         // Send to backend (Django)
 
-        const url = "http://127.0.0.1:8000/api/save-scenario/";
-        const response = await axios.post(
-          url,
-          {
-            data: dataToSave,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json", // Ensures JSON format
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          alert("Graph Data downloaded successfully");
-        } else {
-          alert("Error saving data.");
-        }
 
         // Optionally, download the JSON file
         const jsonString = JSON.stringify(dataToSave);
@@ -731,7 +713,7 @@ case "Junction":
                 break;
               case "Wind":
                 newNode.data = {
-                  label: "Wind Power",
+                  label: "Wind",
                   icon: Wind,
                   inputs: [0, 1],
                   outputs: [2, 3],
