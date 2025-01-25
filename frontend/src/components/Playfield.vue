@@ -18,7 +18,7 @@
       <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
         :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
         :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
-        :auto-pan-on-node-drag="false" :nodes-draggable="!locked" :edges-connectable="edgeMode"
+        :auto-pan-on-node-drag="false" :nodes-draggable="!locked" :edges-connectable="edgeMode" :autoPanOnConnect="false"
         :zoomOnDoubleClick="false" @connect="onConnect" />
     </div>
 
