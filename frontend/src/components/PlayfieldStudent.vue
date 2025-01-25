@@ -239,25 +239,7 @@ export default {
                   outputs: [2, 3],
                 description: "Generates renewable energy from sunlight.",
               };
-              break;case "Battery":
-  newNode.data = {
-    label: "Battery",
-    icon: Battery, 
-    inputs: [0, 1], 
-    outputs: [2, 3], 
-    description: "Stores energy for later use and provides backup power.",
-  };
-  break;
-
-case "Junction":
-  newNode.data = {
-    label: "Junction",
-    icon: Junction, 
-    inputs: [0, 1,], 
-    outputs: [2, 3], 
-    description: "Connects and distributes inputs to various outputs.",
-  };
-  break;
+              break;
             case "Wind":
               newNode.data = {
                 label: "Wind",
