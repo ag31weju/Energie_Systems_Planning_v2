@@ -8,10 +8,9 @@
     </Button>
     <Button @click="currLang.changeLang('DE')" class="button"><img src="../assets/de.png"
         style="width: 30px; height: 20px" /></Button>
-    <!-- <Select v-model="newColorFilter" :options="colorBlindnessSelect.colorBlindnessTypes" :option-label="colorBlindnessSelect.colorBlindnessTypes.label"
-      :placeholder="colorBlindnessSelect.colorBlindnessTypes.label"
-      @change="colorBlindnessSelect.setColorBlindness(newColorFilter)"></Select> -->
-    <Select v-model="newColorFilter" :options="currColorBlindnessTheme.colorBlindnessTypes" option-label="label" :placeholder="currColorBlindnessTheme.colorBlindnessTypes[0].label"
+    <!-- <Select v-model="newColorFilter" :options="currColorBlindnessTheme.colorBlindnessTypes" option-label="label" :placeholder="currColorBlindnessTheme.colorBlindnessTypes[0].label"
+      @change="currColorBlindnessTheme.setColorBlindness(newColorFilter)"></Select> -->
+      <Select v-model="newColorFilter" :options="currColorBlindnessTheme.colorBlindnessTypes" option-label="label" option-group-label="label" option-group-children="items" :placeholder="currColorBlindnessTheme.colorBlindnessTypes[0].items[0].label"
       @change="currColorBlindnessTheme.setColorBlindness(newColorFilter)"></Select>
   </Drawer>
   <Button id="drawer-button" @click="visible = !visible">

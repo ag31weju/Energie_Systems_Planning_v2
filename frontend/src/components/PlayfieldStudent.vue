@@ -160,7 +160,7 @@ export default {
     ]); // Consumer options
 
     const selectedProducer = ref(""); // Selected value for producers
-    const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options
+    const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options "Where is this even used? -Paul"
 
     return {
       usedLang,
