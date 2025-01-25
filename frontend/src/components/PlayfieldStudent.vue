@@ -47,6 +47,8 @@ import { VueFlow, MarkerType } from "@vue-flow/core";
 import "@vue-flow/core/dist/style.css";
 import ConsumerNode from "./customNodes/Consumer.vue";
 import ProducerNode from "./customNodes/Producer.vue";
+import JunctionNode from "./customNodes/Junction.vue";
+import BatteryNode from "./customNodes/Battery.vue";
 
 import Industry from "@/assets/node_images/consumer/Industry.png";
 import City from "@/assets/node_images/consumer/City.png";
@@ -104,6 +106,8 @@ export default {
     const customNodeTypes = reactive({
       consumer: ConsumerNode,
       producer: ProducerNode,
+      battery: BatteryNode,
+      junction: JunctionNode,
     });
 
     // Reactive state for selected consumer/producer and their options
@@ -188,32 +192,32 @@ export default {
               newNode.data = {
                 label: "Industry",
                 icon: Industry,
-                inputs: [0],
-                outputs: [0, 1],
+                inputs: [0, 1],
+                  outputs: [2, 3],
               };
               break;
             case "City":
               newNode.data = {
                 label: "City",
                 icon: City,
-                inputs: [0],
-                outputs: [0, 1],
+                inputs: [0, 1],
+                  outputs: [2, 3],
               };
               break;
             case "House":
               newNode.data = {
                 label: "House",
                 icon: House,
-                inputs: [0],
-                outputs: [0, 1],
+                inputs: [0, 1],
+                  outputs: [2, 3],
               };
               break;
             case "Gas":
               newNode.data = {
                 label: "Gas",
                 icon: Gas,
-                inputs: [1],
-                outputs: [0],
+                inputs: [0, 1],
+                  outputs: [2, 3],
                 description:
                   "Provides large-scale base power with low carbon emissions.",
               };
@@ -222,8 +226,8 @@ export default {
               newNode.data = {
                 label: "Coal",
                 icon: Coal,
-                inputs: [1],
-                outputs: [0],
+                inputs: [0, 1],
+                outputs: [2, 3],
                 description: "Traditional fossil fuel energy source.",
               };
               break;
@@ -231,20 +235,57 @@ export default {
               newNode.data = {
                 label: "Solar",
                 icon: Solar,
-                inputs: [1],
-                outputs: [0],
+                inputs: [0, 1],
+                  outputs: [2, 3],
                 description: "Generates renewable energy from sunlight.",
               };
-              break;
+              break;case "Battery":
+  newNode.data = {
+    label: "Battery",
+    icon: Battery, 
+    inputs: [0, 1], 
+    outputs: [2, 3], 
+    description: "Stores energy for later use and provides backup power.",
+  };
+  break;
+
+case "Junction":
+  newNode.data = {
+    label: "Junction",
+    icon: Junction, 
+    inputs: [0, 1,], 
+    outputs: [2, 3], 
+    description: "Connects and distributes inputs to various outputs.",
+  };
+  break;
             case "Wind":
               newNode.data = {
                 label: "Wind",
                 icon: Wind,
-                inputs: [1],
-                outputs: [0],
+                inputs: [0, 1],
+                outputs: [2, 3],
                 description: "Generates renewable energy from wind.",
               };
               break;
+              case "Battery":
+  newNode.data = {
+    label: "Battery",
+    icon: Battery, 
+    inputs: [0, 1], 
+    outputs: [2, 3], 
+    description: "Stores energy for later use and provides backup power.",
+  };
+  break;
+
+case "Junction":
+  newNode.data = {
+    label: "Junction",
+    icon: Junction, 
+    inputs: [0, 1,], 
+    outputs: [2, 3], 
+    description: "Connects and distributes inputs to various outputs.",
+  };
+  break;
             default:
               console.warn(`Unknown label: ${node.label}`);
           }
@@ -405,22 +446,14 @@ export default {
         this.imgUrl = URL.createObjectURL(file);
 
         // Show alert for JSON upload
-
-        this.$refs.jsonInput.click();
+        alert("Please upload the corresponding JSON file.");
       } else if (type === "json") {
         this.jsonFile = file;
         this.loadScenarioData(); // Handle JSON after image upload
       }
     },
-
     // Load and parse the JSON file
     loadScenarioData() {
-      if (!this.imageFile || !this.jsonFile) {
-        console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
-        alert("Please upload both the image and then the JSON file.");
-        return;
-      }
-
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
@@ -452,33 +485,33 @@ export default {
               case "Industry":
                 newNode.data = {
                   label: "Industry",
-                  icon: Industry, // Ensure Commercial is imported or defined
-                  inputs: [0],
-                  outputs: [0, 1],
+                  icon: Industry, // Ensure Industry is imported or defined
+                  inputs: [0, 1],
+                  outputs: [2, 3],
                 };
                 break;
               case "City":
                 newNode.data = {
                   label: "City",
-                  icon: City, // Ensure ResidentialLarge is imported or defined
-                  inputs: [0],
-                  outputs: [0, 1],
+                  icon: City, // Ensure City is imported or defined
+                  inputs: [0, 1],
+                  outputs: [2, 3],
                 };
                 break;
               case "House":
                 newNode.data = {
                   label: "House",
-                  icon: House,
-                  inputs: [0],
-                  outputs: [0, 1],
+                  icon: ResidentialSmall,
+                  inputs: [0, 1],
+                  outputs: [2, 3],
                 };
                 break;
               case "Gas":
                 newNode.data = {
                   label: "Gas",
                   icon: Gas,
-                  inputs: [1],
-                  outputs: [0],
+                  inputs: [0, 1],
+                  outputs: [2, 3],
                   description:
                     "Provides large-scale base power with low carbon emissions.",
                 };
@@ -487,8 +520,8 @@ export default {
                 newNode.data = {
                   label: "Coal",
                   icon: Coal,
-                  inputs: [1],
-                  outputs: [0],
+                  inputs: [0, 1],
+                  outputs: [2, 3],
                   description: "Traditional fossil fuel energy source.",
                 };
                 break;
@@ -496,20 +529,39 @@ export default {
                 newNode.data = {
                   label: "Solar",
                   icon: Solar,
-                  inputs: [1],
-                  outputs: [0],
+                  inputs: [0, 1],
+                  outputs: [2, 3],
                   description: "Generates renewable energy from sunlight.",
                 };
                 break;
               case "Wind":
                 newNode.data = {
-                  label: "Wind",
+                  label: "Wind Power",
                   icon: Wind,
-                  inputs: [1],
-                  outputs: [0],
+                  inputs: [0, 1],
+                  outputs: [2, 3],
                   description: "Generates renewable energy from wind.",
                 };
                 break;
+                case "Battery":
+  newNode.data = {
+    label: "Battery",
+    icon: Battery, 
+    inputs: [0, 1], 
+    outputs: [2, 3], 
+    description: "Stores energy for later use and provides backup power.",
+  };
+  break;
+
+case "Junction":
+  newNode.data = {
+    label: "Junction",
+    icon: Junction, 
+    inputs: [0, 1,], 
+    outputs: [2, 3], 
+    description: "Connects and distributes inputs to various outputs.",
+  };
+  break;
               default:
                 console.warn(`Unknown label: ${node.label}`);
                 newNode.data = {

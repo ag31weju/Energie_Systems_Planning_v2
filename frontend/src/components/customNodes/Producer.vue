@@ -26,32 +26,34 @@
       
 
       <!-- Handles for outputs -->
-      <div v-for="(output, index) in data.outputs" :key="'output_' + index">
-        <Handle
-          type="source"
-          :position="Position.Left"
-          :id="output"
-          style="background: #555"
-        />
-        <Handle
-          type="source"
-          :position="Position.Right"
-          :id="output"
-          style="background: #555"
-        />
-        <Handle
-          type="source"
-          :position="Position.Top"
-          :id="output"
-          style="background: #555"
-        />
-        <Handle
-          type="source"
-          :position="Position.Bottom"
-          :id="output"
-          style="background: #555"
-        />
-      </div>
+      <!-- Handles for outputs -->
+<div v-for="(output, index) in data.outputs" :key="'output_' + index">
+  <Handle
+    type="source"
+    :position="'left'"
+    :id="'output_left_' + index"
+    style="background: #555"
+  />
+  <Handle
+    type="source"
+    :position="'top'"
+    :id="'output_top_' + index"
+    style="background: #555"
+  />
+  <Handle
+    type="source"
+    :position="'right'"
+    :id="'output_right_' + index"
+    style="background: #555"
+  />
+  <Handle
+    type="source"
+    :position="'bottom'"
+    :id="'output_bottom_' + index"
+    style="background: #555"
+  />
+</div>
+
     </div>
   </div>
 </template>

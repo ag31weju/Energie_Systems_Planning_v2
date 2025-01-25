@@ -10,11 +10,31 @@
     <div class="handles">
       <!-- Handles for inputs -->
       <div v-for="(input, index) in data.inputs" :key="'input_' + index">
-        <Handle type="target" :position="Position.Left" :id="input" style="background: #555" />
-        <Handle type="target" :position="Position.Right" :id="input" style="background: #555" />
-        <Handle type="target" :position="Position.Top" :id="input" style="background: #555" />
-        <Handle type="target" :position="Position.Bottom" :id="input" style="background: #555" />
-      </div>
+    <Handle
+      type="target"
+      :position="'left'"   
+      :id="'input_' + index"
+      style="background: #555"
+    />
+    <Handle
+      type="target"
+      :position="'top'"    
+      :id="'input_top_' + index"
+      style="background: #555"
+    />
+    <Handle
+      type="target"
+      :position="'right'"   
+      :id="'input_right_' + index"
+      style="background: #555"
+    />
+    <Handle
+      type="target"
+      :position="'bottom'"    
+      :id="'input_bottom_' + index"
+      style="background: #555"
+    />
+  </div>
 
       <!-- Handles for outputs -->
      
