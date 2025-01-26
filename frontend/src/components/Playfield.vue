@@ -595,7 +595,7 @@ case "Junction":
         const jsonBlob = new Blob([jsonString], { type: "application/json" });
         const jsonLink = document.createElement("a");
         jsonLink.href = URL.createObjectURL(jsonBlob);
-        jsonLink.download = "scenario_data.json";
+        jsonLink.download = "scenario_graph.json";
         jsonLink.click();
 
    
