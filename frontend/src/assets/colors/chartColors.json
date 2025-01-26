@@ -1,0 +1,74 @@
+{
+  "noColorBlindness": {
+    "color_storage": "",
+    "color_purchase_power": "",
+    "color_demand": "",
+    "color_pv_production": "",
+    "color_pv_curtailment": "",
+    "color_storage_charge": "",
+    "color_storage_discharge": ""
+  },
+  "achromatopsia": {
+    "color_storage": "",
+    "color_purchase_power": "",
+    "color_demand": "",
+    "color_pv_production": "",
+    "color_pv_curtailment": "",
+    "color_storage_charge": "",
+    "color_storage_discharge": ""
+  },
+  "tritanopia": {
+    "color_storage": "",
+    "color_purchase_power": "",
+    "color_demand": "",
+    "color_pv_production": "",
+    "color_pv_curtailment": "",
+    "color_storage_charge": "",
+    "color_storage_discharge": ""
+  },
+  "tritanomaly": {
+    "color_storage": "",
+    "color_purchase_power": "",
+    "color_demand": "",
+    "color_pv_production": "",
+    "color_pv_curtailment": "",
+    "color_storage_charge": "",
+    "color_storage_discharge": ""
+  },
+  "protanopia": {
+    "color_storage": "",
+    "color_purchase_power": "",
+    "color_demand": "",
+    "color_pv_production": "",
+    "color_pv_curtailment": "",
+    "color_storage_charge": "",
+    "color_storage_discharge": ""
+  },
+  "protanomaly": {
+    "color_storage": "",
+    "color_purchase_power": "",
+    "color_demand": "",
+    "color_pv_production": "",
+    "color_pv_curtailment": "",
+    "color_storage_charge": "",
+    "color_storage_discharge": ""
+  },
+  "deuteranopia": {
+    "color_storage": "",
+    "color_purchase_power": "",
+    "color_demand": "",
+    "color_pv_production": "",
+    "color_pv_curtailment": "",
+    "color_storage_charge": "",
+    "color_storage_discharge": ""
+  },
+  "deuteranomaly": {
+    "color_storage": "",
+    "color_purchase_power": "",
+    "color_demand": "",
+    "color_pv_production": "",
+    "color_pv_curtailment": "",
+    "color_storage_charge": "",
+    "color_storage_discharge": ""
+  }
+}

@@ -28,7 +28,7 @@
     <div id="buttons_container1">
       <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
       <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario"></Button>
-    
+
       <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
       <Button @click="addConsumerNode" type="submit" class="button" v-bind:label="usedLang.add_consumer"></Button>
       <Button @click="addEnergySourceNode" type="submit" class="button"
@@ -66,8 +66,8 @@ import Nuclear from "@/assets/node_images/producer/nuclear.png";
 import Coal from "@/assets/node_images/producer/coal.png";
 import Solar from "@/assets/node_images/producer/solarPanel.png";
 import Wind from "@/assets/node_images/producer/windmill.png";
-import { usedLanguage } from "../assets/stores/pageSettings";
-import { inject, ref, reactive } from 'vue';
+import { usedLanguage, usedColorBlindnessTheme } from "../assets/stores/pageSettings";
+import { inject, ref, reactive, watch } from 'vue';
 
 export default {
   components: {
@@ -112,6 +112,7 @@ export default {
 
     const selectedProducer = ref(""); // Selected value for producers
     const optionsProducers = ref(["Nuclear", "Coal", "Solar", "Wind"]); // Producer options
+
 
     return {
       usedLang,
@@ -542,153 +543,153 @@ export default {
     // Handle file changes for both image and JSON
     triggerImageUpload() {
 
-this.$refs.imageInput.click(); // Trigger image upload
-},
+      this.$refs.imageInput.click(); // Trigger image upload
+    },
 
 
-handleFileChange(type, event) {
-const file = event.target.files[0];
-if (type === "image") {
-  this.imageFile = file;
-  if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
-  this.imgUrl = URL.createObjectURL(file);
+    handleFileChange(type, event) {
+      const file = event.target.files[0];
+      if (type === "image") {
+        this.imageFile = file;
+        if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
+        this.imgUrl = URL.createObjectURL(file);
 
-  // Show alert for JSON upload
+        // Show alert for JSON upload
 
-  this.$refs.jsonInput.click();
-} else if (type === "json") {
-  this.jsonFile = file;
-  this.loadScenarioData(); // Handle JSON after image upload
-}
-},
+        this.$refs.jsonInput.click();
+      } else if (type === "json") {
+        this.jsonFile = file;
+        this.loadScenarioData(); // Handle JSON after image upload
+      }
+    },
 
-// Load and parse the JSON file
-loadScenarioData() {
-if (!this.imageFile || !this.jsonFile) {
-  console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
-  alert("Please upload both the image and then the JSON file.");
-  return;
-}
-
-const reader = new FileReader();
-reader.onload = (e) => {
-  try {
-      const json = JSON.parse(e.target.result);
-
-      // Check for both JSON structures
-      const nodes = json.nodes || (json.data.nodes);
-      const edges = json.edges || ( json.data.edges);
-
-      if (!nodes || !Array.isArray(nodes)) {
-        throw new Error("Invalid JSON structure: 'nodes' must be an array.");
+    // Load and parse the JSON file
+    loadScenarioData() {
+      if (!this.imageFile || !this.jsonFile) {
+        console.log('Missing files:', { imageFile: this.imageFile, jsonFile: this.jsonFile });
+        alert("Please upload both the image and then the JSON file.");
+        return;
       }
 
-      if (!edges || !Array.isArray(edges)) {
-        throw new Error("Invalid JSON structure: 'edges' must be an array.");
-      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const json = JSON.parse(e.target.result);
+
+          // Check for both JSON structures
+          const nodes = json.nodes || (json.data.nodes);
+          const edges = json.edges || (json.data.edges);
+
+          if (!nodes || !Array.isArray(nodes)) {
+            throw new Error("Invalid JSON structure: 'nodes' must be an array.");
+          }
+
+          if (!edges || !Array.isArray(edges)) {
+            throw new Error("Invalid JSON structure: 'edges' must be an array.");
+          }
 
 
-    this.nodes = nodes.map((node) => {
-      const newNode = {
-        ...node,
-        data: {}, // Will be populated based on label
+          this.nodes = nodes.map((node) => {
+            const newNode = {
+              ...node,
+              data: {}, // Will be populated based on label
+            };
+
+            switch (node.label) {
+              case "Commercial":
+                newNode.data = {
+                  label: "Commercial",
+                  icon: Commercial, // Ensure Commercial is imported or defined
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Large":
+                newNode.data = {
+                  label: "Residential Large",
+                  icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Residential Small":
+                newNode.data = {
+                  label: "Residential Small",
+                  icon: ResidentialSmall,
+                  inputs: [0],
+                  outputs: [0, 1],
+                };
+                break;
+              case "Nuclear Power":
+                newNode.data = {
+                  label: "Nuclear Power",
+                  icon: Nuclear,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Provides large-scale base power with low carbon emissions.",
+                };
+                break;
+              case "Coal Power":
+                newNode.data = {
+                  label: "Coal Power",
+                  icon: Coal,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Traditional fossil fuel energy source.",
+                };
+                break;
+              case "Solar Power":
+                newNode.data = {
+                  label: "Solar Power",
+                  icon: Solar,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from sunlight.",
+                };
+                break;
+              case "Wind Power":
+                newNode.data = {
+                  label: "Wind Power",
+                  icon: Wind,
+                  inputs: [1],
+                  outputs: [0],
+                  description: "Generates renewable energy from wind.",
+                };
+                break;
+              default:
+                console.warn(`Unknown label: ${node.label}`);
+                newNode.data = {
+                  label: "Unknown",
+                  icon: null,
+                  inputs: [],
+                  outputs: [],
+                };
+            }
+
+            return newNode;
+          });
+
+          this.edges = edges.map((edge) => ({
+            ...edge,
+            animated: this.edgeProps.animated,
+            style: this.edgeProps.style,
+            color: this.edgeProps.color,
+          }));
+
+
+
+          console.log("Nodes processed:", this.nodes);
+          console.log("Edges processed:", this.edges);
+
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          alert(`Invalid JSON file: ${error.message}`);
+        }
       };
 
-      switch (node.label) {
-        case "Commercial":
-          newNode.data = {
-            label: "Commercial",
-            icon: Commercial, // Ensure Commercial is imported or defined
-            inputs: [0],
-            outputs: [0, 1],
-          };
-          break;
-        case "Residential Large":
-          newNode.data = {
-            label: "Residential Large",
-            icon: ResidentialLarge, // Ensure ResidentialLarge is imported or defined
-            inputs: [0],
-            outputs: [0, 1],
-          };
-          break;
-        case "Residential Small":
-          newNode.data = {
-            label: "Residential Small",
-            icon: ResidentialSmall,
-            inputs: [0],
-            outputs: [0, 1],
-          };
-          break;
-        case "Nuclear Power":
-          newNode.data = {
-            label: "Nuclear Power",
-            icon: Nuclear,
-            inputs: [1],
-            outputs: [0],
-            description: "Provides large-scale base power with low carbon emissions.",
-          };
-          break;
-        case "Coal Power":
-          newNode.data = {
-            label: "Coal Power",
-            icon: Coal,
-            inputs: [1],
-            outputs: [0],
-            description: "Traditional fossil fuel energy source.",
-          };
-          break;
-        case "Solar Power":
-          newNode.data = {
-            label: "Solar Power",
-            icon: Solar,
-            inputs: [1],
-            outputs: [0],
-            description: "Generates renewable energy from sunlight.",
-          };
-          break;
-        case "Wind Power":
-          newNode.data = {
-            label: "Wind Power",
-            icon: Wind,
-            inputs: [1],
-            outputs: [0],
-            description: "Generates renewable energy from wind.",
-          };
-          break;
-        default:
-          console.warn(`Unknown label: ${node.label}`);
-          newNode.data = {
-            label: "Unknown",
-            icon: null,
-            inputs: [],
-            outputs: [],
-          };
-      }
-
-      return newNode;
-    });
-
-    this.edges =edges.map((edge) => ({
-      ...edge,
-      animated: this.edgeProps.animated,
-      style: this.edgeProps.style,
-      color: this.edgeProps.color,
-    }));
-
-
-
-    console.log("Nodes processed:", this.nodes);
-    console.log("Edges processed:", this.edges);
-
-  } catch (error) {
-    console.error("Error parsing JSON:", error);
-    alert(`Invalid JSON file: ${error.message}`);
-  }
-};
-
-reader.readAsText(this.jsonFile);
-},
-},
+      reader.readAsText(this.jsonFile);
+    },
+  },
 };
 
 </script>

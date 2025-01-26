@@ -494,12 +494,8 @@ body {
   width: 250px;
 }
 
-.p-select-option-group{
-  background-color: lightgrey;
-}
-
 .p-select-option-group-label {
   color: black;
   font-weight: bold;
-  font-size: larger;
+  font-size: medium;
 }

@@ -3,10 +3,10 @@
     "reset": false,
     "sliders": [
         {
-            "value": 0
+            "value": 2
         },
         {
-            "value": 0
+            "value": 3
         }
     ]
 }

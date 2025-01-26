@@ -103,6 +103,7 @@ export const usedLanguage = defineStore("usedLanguage", {
     let commercial = currLangFile.commercial;
     let residential_small = currLangFile.residential_small;
     let residential_large = currLangFile.residential_large;
+    let choose_scenario = currLangFile.choose_scenario;
     let scene_1 = currLangFile.scene_1;
     let scene_2 = currLangFile.scene_2;
     let scene_3 = currLangFile.scene_3;
@@ -172,6 +173,7 @@ export const usedLanguage = defineStore("usedLanguage", {
       commercial,
       residential_small,
       residential_large,
+      choose_scenario,
       scene_1,
       scene_2,
       scene_3,
@@ -233,7 +235,8 @@ export const usedLanguage = defineStore("usedLanguage", {
       this.upload_json = this.currLangFile.upload_json;
       this.selector_text_consumer = this.currLangFile.selector_text_consumer;
       this.selector_text_producer = this.currLangFile.selector_text_producer;
-      this.group_no_color_blindness = this.currLangFile.group_no_color_blindness;
+      this.group_no_color_blindness =
+        this.currLangFile.group_no_color_blindness;
       this.group_monochrome = this.currLangFile.group_monochrome;
       this.group_red_green = this.currLangFile.group_red_green;
       this.group_blue_yellow = this.currLangFile.group_blue_yellow;
@@ -260,6 +263,7 @@ export const usedLanguage = defineStore("usedLanguage", {
       this.commercial = this.currLangFile.commercial;
       this.residential_small = this.currLangFile.residential_small;
       this.residential_large = this.currLangFile.residential_large;
+      this.choose_scenario = this.currLangFile.choose_scenario;
       this.scene_1 = this.currLangFile.scene_1;
       this.scene_2 = this.currLangFile.scene_2;
       this.scene_3 = this.currLangFile.scene_3;
