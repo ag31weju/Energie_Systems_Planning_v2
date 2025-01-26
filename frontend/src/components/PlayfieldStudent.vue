@@ -485,7 +485,7 @@ case "Junction":
               case "House":
                 newNode.data = {
                   label: "House",
-                  icon: ResidentialSmall,
+                  icon: House,
                   inputs: [0, 1],
                   outputs: [2, 3],
                 };

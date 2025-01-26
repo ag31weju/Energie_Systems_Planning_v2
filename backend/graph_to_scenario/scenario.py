@@ -10,15 +10,21 @@ class Scenario:
         self.final_nodes = []  # contains nodes with default values
         self.timestep_chosen = None  # the timestep from the excel file
         self.graph_data = graph_data  # the graph json from frontend
-
         current_dir = Path(__file__).parent
         excel_file_path = current_dir / "volume_data" / "Technology_defaults.xlsx"
         self.excel_file_path = excel_file_path
-        self.defaults = self.get_default_node_values()
+
+    def initialize(self):
+        """
+        Initializes the Scenario class by processing the graph data and getting the default node values.
+        """
+        self.get_default_node_values()
+        self.process_graph_data()
         self.get_time_steps()
         self.get_edges()
-        
-        
+        self.print_nodes()
+        self.print_time_step()
+        self.print_edges()
 
     def process_graph_data(self):
         """
@@ -28,11 +34,13 @@ class Scenario:
         corresponding Producer, Consumer, or Battery instances with default values and positions.
         """
         # Define the valid node types
-        VALID_TYPES = {"producer", "consumer", "battery"}
+        VALID_TYPES = {"producer", "consumer", "battery", "junction"}
 
         try:
             # Loop through each node in the graph data
-            for node in self.graph_data.get("nodes", []):
+            for node in self.graph_data.get("nodes", []) or self.graph_data.get(
+                "data", {}
+            ).get("nodes", []):
                 # Check that each node contains the required keys
                 if not all(key in node for key in ["id", "type", "label"]):
                     raise ValueError(f"Missing keys in node: {node}")
@@ -41,7 +49,6 @@ class Scenario:
                 node_type = node["type"].lower()
                 if node_type not in VALID_TYPES:
                     raise ValueError(f"Invalid type in node: {node['type']}")
-                
 
                 # Retrieve technology defaults
                 technology = node["label"].lower()
@@ -88,7 +95,7 @@ class Scenario:
     def get_default_node_values(self):
         """Gets the default values for the nodes from the excel file
         and stores as a dictionary in self.defaults"""
-        return Utils.load_default_technology_data(self.excel_file_path)
+        self.defaults = Utils.load_default_technology_data(self.excel_file_path)
 
     def get_time_steps(self, scenario_name="default"):
         """
@@ -98,19 +105,41 @@ class Scenario:
             scenario_name (str): The name of the scenario to fetch the timestep for (default is "default").
         """
         self.timestep_chosen = Utils.get_timestep(self.excel_file_path, scenario_name)
-        print("Timestep chosen:", self.timestep_chosen)
 
     def get_edges(self):
         """
         Gets the edges from the graph data and stores them in self.edges.
         """
-        self.edges = self.graph_data.get("edges", [])
-        print("Edges in the scenario:")
+        self.edges = self.graph_data.get("edges", []) or self.graph_data.get(
+            "data", {}
+        ).get("edges", [])
+
+    def print_nodes(self):
+        """
+        Gets the nodes from the graph data and stores them in self.nodes.
+        """
+        print("Nodes in the scenario:")
+        for node in self.nodes:
+            print(node)
+
+    def print_edges(self):
+        """
+        Gets the nodes from the graph data and stores them in self.nodes.
+        """
+        print("Nodes in the scenario:")
         for edge in self.edges:
             print(edge)
 
+    def print_time_step(self):
+        """
+        Prints the timestep chosen for the scenario.
+        """
+        print(f"Time step chosen: {self.timestep_chosen}")
 
-
+    def extract_volume_data_by_timestep_indices(
+        self, timestep_filename, availbility_profile_name
+    ):
+        pass
 
 
 def main():
@@ -130,4 +159,4 @@ def main():
 
 if __name__ == "__main__":
     pass
-    #main()
+    # main()
