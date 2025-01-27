@@ -369,10 +369,12 @@ case "Junction":
     },
     // Trigger the JSON file input
     triggerJsonUpload() {
+      this.nodes = [];
+      this.edges = [];
       this.$refs.jsonInput.click(); // Trigger JSON upload
     },
 
-   async handleFileChange(type, event) {
+  handleFileChange(type, event) {
       const file = event.target.files[0];
       if (type === "image") {
         this.imageFile = file;
@@ -383,63 +385,15 @@ case "Junction":
         alert("Please upload the corresponding JSON file.");
       } else if (type === "json") {
         this.jsonFile = file;
-        try {
-        // Get node and edge data
-        const dataToSave = {
-          nodes: this.nodes.map((node) => ({
-            id: node.id,
-            position: node.position,
-            type: node.type,
-            label: node.data.label,
-          })),
-          edges: this.edges.map((edge) => ({
-            id: edge.id,
-            source: edge.source,
-            target: edge.target,
-            color: edge.color,
-            style: edge.style,
-            sourceHandle:edge.sourceHandle,
-            targetHandle: edge.targetHandle,
-
-          })),
-        };
-
-        // Convert to JSON
-
-        // Send to backend (Django)
-
-        // Send to backend (Django)
-
-        const url = "http://127.0.0.1:8000/api/save-scenario/";
-        const response = await axios.post(
-          url,
-          {
-            data: dataToSave,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json", // Ensures JSON format
-            },
-          }
-        );
-
-        if (!response.status === 200) {
-          alert("Error saving data.");
-        }
-   
         
-      } catch (error) {
-        console.error("Error saving data:", error);
-        alert(`Error: ${error.message}`);
-      }
     
         this.loadScenarioData(); // Handle JSON after image upload
       }
     },
     // Load and parse the JSON file
-    loadScenarioData() {
+    async loadScenarioData() {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const json = JSON.parse(e.target.result);
 
@@ -527,25 +481,25 @@ case "Junction":
                   description: "Generates renewable energy from wind.",
                 };
                 break;
-                case "Battery":
-  newNode.data = {
-    label: "Battery",
-    icon: Battery, 
-    inputs: [0, 1], 
-    outputs: [2, 3], 
-    description: "Stores energy for later use and provides backup power.",
-  };
-  break;
+                                    case "Battery":
+                      newNode.data = {
+                        label: "Battery",
+                        icon: Battery, 
+                        inputs: [0, 1], 
+                        outputs: [2, 3], 
+                        description: "Stores energy for later use and provides backup power.",
+                      };
+                      break;
 
-case "Junction":
-  newNode.data = {
-    label: "Junction",
-    icon: Junction, 
-    inputs: [0, 1,], 
-    outputs: [2, 3], 
-    description: "Connects and distributes inputs to various outputs.",
-  };
-  break;
+               case "Junction":
+                newNode.data = {
+                  label: "Junction",
+                  icon: Junction, 
+                  inputs: [0, 1,], 
+                  outputs: [2, 3], 
+                  description: "Connects and distributes inputs to various outputs.",
+                };
+                break;
               default:
                 console.warn(`Unknown label: ${node.label}`);
                 newNode.data = {
@@ -568,15 +522,50 @@ case "Junction":
 
           console.log("Nodes processed:", this.nodes);
           console.log("Edges processed:", this.edges);
-        } catch (error) {
-          console.error("Error parsing JSON:", error);
-          alert(`Invalid JSON file: ${error.message}`);
-        }
+          const dataToSave = {
+        nodes: this.nodes.map((node) => ({
+          id: node.id,
+          position: node.position,
+          type: node.type,
+          label: node.data.label,
+        })),
+        edges: this.edges.map((edge) => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          color: edge.color,
+          style: edge.style,
+          sourceHandle: edge.sourceHandle,
+          targetHandle: edge.targetHandle,
+        })),
       };
 
-      reader.readAsText(this.jsonFile);
-    },
-  },
+      const url = "http://127.0.0.1:8000/api/save-scenario/";
+      const response = await axios.post(
+        url,
+        { data: dataToSave },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Data saved successfully!");
+      } else {
+        alert("Error saving data.");
+      }
+    } catch (error) {
+      console.error("Error processing or saving JSON:", error);
+      alert(`Error: ${error.message}`);
+    }
+  };
+
+  reader.readAsText(this.jsonFile);
+}
+
+},
 };
 </script>
 
