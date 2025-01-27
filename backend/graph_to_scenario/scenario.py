@@ -1,30 +1,37 @@
 from pathlib import Path
+import math
 from .node_types import Producer, Consumer, Battery
 from . import Utils
+
+# from node_types import Producer, Consumer, Battery
+# import Utils
 
 
 class Scenario:
     def __init__(self, graph_data):
         self.nodes = []  # contains nodes parsed from json sent from frontend
         self.edges = []  # contains edges parsed from json sent from frontend
-        self.final_nodes = []  # contains nodes with default values
         self.timestep_chosen = None  # the timestep from the excel file
         self.graph_data = graph_data  # the graph json from frontend
-        current_dir = Path(__file__).parent
-        excel_file_path = current_dir / "volume_data" / "Technology_defaults.xlsx"
-        self.excel_file_path = excel_file_path
+        # folder paths
+        self.current_dir = Path(__file__).parent
+        self.excel_file_path = (
+            self.current_dir / "volume_data" / "Technology_defaults.xlsx"
+        )
+        self.volume_data_folder = self.current_dir / "volume_data"
 
     def initialize(self):
         """
         Initializes the Scenario class by processing the graph data and getting the default node values.
         """
+        self.get_time_steps()
         self.get_default_node_values()
         self.process_graph_data()
-        self.get_time_steps()
+
         self.get_edges()
         self.print_nodes()
-        self.print_time_step()
-        self.print_edges()
+        # self.print_time_step()
+        # self.print_edges()
 
     def process_graph_data(self):
         """
@@ -56,6 +63,26 @@ class Scenario:
                 if not tech_defaults:
                     raise ValueError(f"No defaults found for technology: {technology}")
 
+                # Process availability_profile_name or demand_profile_name
+                processed_availability_profile = None
+                processed_demand_profile = None
+
+                if (
+                    "availability_profile_name" in tech_defaults
+                    and tech_defaults["availability_profile_name"] != None
+                ):
+                    processed_availability_profile = self.process_profile(
+                        tech_defaults["availability_profile_name"]
+                    )
+
+                if (
+                    "demand_profile_name" in tech_defaults
+                    and tech_defaults["demand_profile_name"] != None
+                ):
+                    processed_demand_profile = self.process_profile(
+                        tech_defaults["demand_profile_name"]
+                    )
+
                 # Create the appropriate node based on type
                 if node_type == "producer":
                     self.nodes.append(
@@ -65,9 +92,7 @@ class Scenario:
                             capacity_cost=tech_defaults.get("capacity_cost"),
                             operation_cost=tech_defaults.get("operation_cost"),
                             operation_lifetime=tech_defaults.get("operation_lifetime"),
-                            availability_profile=tech_defaults.get(
-                                "availability_profile_name"
-                            ),
+                            availability_profile=processed_availability_profile,
                         )
                     )
                 elif node_type == "consumer":
@@ -76,9 +101,7 @@ class Scenario:
                             node_id=node["id"],
                             technology=node["label"],
                             yearly_demand=tech_defaults.get("yearly_demand"),
-                            demand_profile_name=tech_defaults.get(
-                                "demand_profile_name"
-                            ),
+                            demand_profile_name=processed_demand_profile,
                         )
                     )
                 elif node_type == "battery":
@@ -136,10 +159,58 @@ class Scenario:
         """
         print(f"Time step chosen: {self.timestep_chosen}")
 
-    def extract_volume_data_by_timestep_indices(
-        self, timestep_filename, availbility_profile_name
-    ):
-        pass
+    def process_profile(self, profile_name):
+        """
+        Processes the profile file based on the given profile name and selected timesteps.
+
+        Args:
+            profile_name (str): The name of the profile file to process.
+
+        Returns:
+            list: Processed and formatted array or data structure.
+        """
+        try:
+            # Handle empty or NaN profile_name
+            if not profile_name or (
+                isinstance(profile_name, float) and math.isnan(profile_name)
+            ):
+                # print(f"Skipping invalid profile_name: {profile_name}")
+                return []
+
+            # Construct paths using pathlib
+            profile_file_path = self.volume_data_folder / profile_name
+            indices_file_path = self.volume_data_folder / self.timestep_chosen
+
+            # Read and process the profile data
+            with open(profile_file_path, "r") as profile_file:
+                profile_data = [float(value) for value in profile_file.read().split()]
+
+            # Read and process the indices data
+            with open(indices_file_path, "r") as indices_file:
+                indices = [int(index.strip()) for index in indices_file.readlines()]
+
+            # Extract the corresponding values
+            selected_data = [
+                profile_data[i - 1] for i in indices
+            ]  # timesteps are not 0 index
+
+            # Format the values to six decimal places
+            formatted_data = [f"{value:.6f}" for value in selected_data]
+
+            return formatted_data
+
+        except FileNotFoundError as e:
+            print(f"File not found: {e}")
+            return []
+        except ValueError as e:
+            print(f"Value error: {e}")
+            return []
+        except IndexError as e:
+            print(f"Index error: {e}")
+            return []
+        except Exception as e:
+            print(f"Error processing profile {profile_name}: {e}")
+            return []
 
 
 def main():
@@ -148,15 +219,9 @@ def main():
     graph_data = Utils.load_json(scenario_json_file)
     # Initialize the Scenario class
     scenario = Scenario(graph_data)
-
-    # Process the graph data to create nodes
-    scenario.process_graph_data()
-    # Print the nodes list
-    print("Nodes in the scenario:")
-    for node in scenario.nodes:
-        print(node)
+    scenario.initialize()
 
 
 if __name__ == "__main__":
     pass
-    # main()
+    #main()
