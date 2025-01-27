@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { ref, provide, watch, useTemplateRef } from "vue";
+import { ref, provide, watch, onMounted, useTemplateRef } from "vue";
 import Chart from "primevue/chart";
 import Sliders from "../components/Sliders.vue";
 import Playfield from "../components/PlayfieldStudent.vue";
@@ -40,11 +40,21 @@ import Matrix from "../components/Matrix.vue";
 import Charts from "../components/Charts.vue";
 import Drawerbox from "../components/Drawerbox.vue";
 import { usedTheme } from "../assets/stores/pageSettings";
+import { usedDataStore } from "../assets/stores/dataValues";
 
 export default {
   setup(props, context) {
     const first = ref(true);
     const currTheme = usedTheme();
+
+    const dataStore = usedDataStore();
+    const selectedNodes = dataStore.selectedNodes;
+    const dataValues = dataStore.dataValues;
+    const prodCapacities = dataStore.prodCapacities;
+    const getDataValuesCell = dataStore.getDataValuesCell;
+    const updateDataValuesCell = dataStore.updateDataValuesCell;
+    const extractDataValuesCell = dataStore.extractDataValuesCell;
+
     const sliderVals = ref([0, 0]);
     const matrixData = ref(undefined);
     const chartsData = ref(undefined);
@@ -52,10 +62,6 @@ export default {
     const isAutoSimulating = ref(false);
     const stopAutoSimulate = ref(false);
     const newScenarioLoaded = ref(false);
-
-    const selectedNodes = ref([-1, -1]);
-    const dataValues = ref(undefined);
-    const prodCapacities = ref(undefined);
 
     provide("selectedNodes", selectedNodes);
     provide("prodCapacities", prodCapacities);
@@ -75,7 +81,10 @@ export default {
     const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
 
     function handleSimulationData(propagateChange) {
-      if (selectedNodes.value[0] === -1 || selectedNodes.value[1] === -1)
+      if (
+        dataStore.selectedNodes[0] === -1 ||
+        dataStore.selectedNodes[1] === -1
+      )
         return;
 
       if (propagateChange.reset) {
@@ -87,11 +96,11 @@ export default {
       if (!isAutoSimulating.value) {
         if (propagateChange.autoSimulate) {
           isAutoSimulating.value = true;
-          dataValues.value = propagateChange.simData;
-          prodCapacities.value.map(() => 0);
+          dataStore.dataValues = propagateChange.simData;
+          dataStore.prodCapacities.map(() => 0);
           autoSimulateData(propagateChange);
         } else {
-          updateDataValuesCell(dataValues.value, propagateChange);
+          updateDataValuesCell(dataStore.dataValues, propagateChange);
           simulateData(propagateChange, propagateChange.sliderVals);
         }
       }
@@ -105,11 +114,11 @@ export default {
             return;
           }
           //Extract desired values from propagateChange.simData or dataValues
-          prodCapacities.value[selectedNodes.value[1]] = rowIndex;
-          prodCapacities.value[selectedNodes.value[0]] = colIndex;
+          dataStore.prodCapacities[dataStore.selectedNodes[1]] = rowIndex;
+          dataStore.prodCapacities[dataStore.selectedNodes[0]] = colIndex;
           let currentSliderVals = [colIndex, rowIndex];
           let cell = {
-            simData: getDataValuesCell(propagateChange.simData),
+            simData: dataStore.getDataValuesCell(propagateChange.simData),
             reset: propagateChange.reset,
             autoSimulate: propagateChange.autoSimulate,
             sliderVals: propagateChange.sliderVals,
@@ -123,124 +132,6 @@ export default {
       isAutoSimulating.value = false;
     }
 
-    function getDataValuesCell(pointer) {
-      for (let i = 0; i < prodCapacities.value.length; i++) {
-        if (i === prodCapacities.value.length - 1) {
-          return pointer[prodCapacities.value[i]];
-        }
-
-        if (!pointer) {
-          console.error(
-            "prodCapacities length is not equal to dataValues depth"
-          );
-          throw new Error(
-            "prodCapacities length is not equal to dataValues depth"
-          );
-        }
-
-        pointer = pointer[prodCapacities.value[i]];
-      }
-    }
-
-    function extractDataValuesCell(
-      newZ,
-      pointer,
-      capacities,
-      rec_depth,
-      colID,
-      rowID,
-      colIndex,
-      rowIndex,
-      forMatrix,
-      forCharts
-    ) {
-      if (rec_depth == capacities.length) {
-        return forMatrix
-          ? pointer.matrixData
-          : forCharts
-          ? pointer.chartsData
-          : console.error("data cannot be assigned to visualization component");
-      } else {
-        if (selectedNodes.value.some((el) => el === rec_depth)) {
-          if (rec_depth === colID) {
-            for (let currColIndex = 0; currColIndex <= 5; currColIndex++) {
-              let tmp = extractDataValuesCell(
-                newZ,
-                pointer[currColIndex],
-                capacities,
-                rec_depth + 1,
-                colID,
-                rowID,
-                currColIndex,
-                rowIndex,
-                forMatrix,
-                forCharts
-              );
-              console.log("currColIndex", rec_depth, currColIndex, tmp);
-              newZ[rowIndex][currColIndex] = tmp
-                ? tmp
-                : newZ[rowIndex][currColIndex];
-            }
-          } else if (rec_depth === rowID) {
-            for (let currRowIndex = 0; currRowIndex <= 5; currRowIndex++) {
-              let tmp = extractDataValuesCell(
-                newZ,
-                pointer[currRowIndex],
-                capacities,
-                rec_depth + 1,
-                colID,
-                rowID,
-                colIndex,
-                currRowIndex,
-                forMatrix,
-                forCharts
-              );
-              console.log("currRowIndex", rec_depth, currRowIndex, tmp);
-              newZ[currRowIndex][colIndex] = tmp
-                ? tmp
-                : newZ[currRowIndex][colIndex];
-            }
-          } else {
-            console.error("rec_depth does not equal any selected node ID");
-          }
-        } else {
-          console.log("hello", rec_depth);
-          return extractDataValuesCell(
-            newZ,
-            pointer[capacities[rec_depth]],
-            capacities,
-            rec_depth + 1,
-            colID,
-            rowID,
-            colIndex,
-            rowIndex,
-            forMatrix,
-            forCharts
-          );
-        }
-      }
-    }
-
-    function updateDataValuesCell(pointer, propagateChange) {
-      for (let i = 0; i < prodCapacities.value.length; i++) {
-        if (i === prodCapacities.value.length - 1) {
-          pointer[prodCapacities.value[i]] = propagateChange.simData;
-          return;
-        }
-
-        if (!pointer) {
-          console.error(
-            "prodCapacities length is not equal to dataValues depth"
-          );
-          throw new Error(
-            "prodCapacities length is not equal to dataValues depth"
-          );
-        }
-
-        pointer = pointer[prodCapacities.value[i]];
-      }
-    }
-
     function simulateData(propagateChange, currentSliderVals) {
       sliderVals.value = currentSliderVals;
       matrixData.value = {
@@ -251,29 +142,29 @@ export default {
         reset: propagateChange.reset,
         chartsValues: propagateChange.simData.chartsData,
       };
-      console.log(dataValues.value);
+      console.log(dataStore.dataValues);
     }
 
     function handleNodeSelection(newNode) {
       if (!isAutoSimulating.value) {
         console.log(selectedNodes);
         //LIFO-wise selection -> 0 first, 1 subsequently
-        const idx = selectedNodes.value.findIndex((el) => {
+        const idx = dataStore.selectedNodes.findIndex((el) => {
           return el === newNode;
         });
         //if idx >= 0, that means that the node is supposed to be de-highlighted (shifted with idx = 0, popped with idx = 1). Otherwise, it is going to be highlighted (pushed)
         if (idx >= 0) {
           idx === 0
-            ? (selectedNodes.value = [selectedNodes.value[1], -1])
-            : (selectedNodes.value = [selectedNodes.value[0], -1]);
+            ? (dataStore.selectedNodes = [dataStore.selectedNodes[1], -1])
+            : (dataStore.selectedNodes = [dataStore.selectedNodes[0], -1]);
         } else {
-          if (selectedNodes.value[0] === -1) {
-            selectedNodes.value = [newNode, -1];
+          if (dataStore.selectedNodes[0] === -1) {
+            dataStore.selectedNodes = [newNode, -1];
           } else {
-            selectedNodes.value = [selectedNodes.value[0], newNode];
+            dataStore.selectedNodes = [dataStore.selectedNodes[0], newNode];
           }
         }
-        console.log(selectedNodes.value[0], selectedNodes.value[1]);
+        console.log(dataStore.selectedNodes[0], dataStore.selectedNodes[1]);
       }
     }
     provide("handleNodeSelection", handleNodeSelection);
@@ -283,8 +174,18 @@ export default {
     }
     provide("moveOutline", moveOutline);
 
+    //for testing
+    onMounted(() => {
+      /*
+      let prodCapacities = dataStore.prodCapacities;
+      dataStore.prodCapacities = "hm";
+      prodCapacities = "hm";
+      console.log(prodCapacities === dataStore.prodCapacities);
+      console.log(prodCapacities);*/
+    });
+
     function prepareNewScenario(nProds, nCons) {
-      selectedNodes.value = [-1, -1];
+      dataStore.selectedNodes = [-1, -1];
 
       matrixComp.value?.clearMatrix();
       chartsComp.value?.clearCharts();
@@ -298,10 +199,10 @@ export default {
           : Array.from({ length: 6 }, () => initializeNDarray(nProds - 1));
       };
 
-      prodCapacities.value = Array.from({ length: nProds }, () => 0);
-      dataValues.value = initializeNDarray(nProds);
+      dataStore.prodCapacities = Array.from({ length: nProds }, () => 0);
+      dataStore.dataValues = initializeNDarray(nProds);
 
-      console.log(prodCapacities.value.length);
+      console.log(dataStore.prodCapacities.length);
     }
 
     provide("prepareNewScenario", prepareNewScenario);

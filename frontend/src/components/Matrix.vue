@@ -22,15 +22,6 @@
       :display-mode-bar="true"
       :config="{
         displayModeBar: false,
-        /*displaylogo: false,
-        modeBarButtonsToRemove: [
-          'zoomIn',
-          'zoomOut',
-          'zoom',
-          'pan2d',
-          'resetScale2d',
-          'toImage',
-        ],*/
       }"
       class="matrix-plotly"
     ></VuePlotly>
@@ -40,8 +31,8 @@
 <script>
 import { Panel } from "primevue";
 import { ref, watch, inject, onMounted, defineExpose } from "vue";
-import VueApexCharts from "vue3-apexcharts";
 import { VuePlotly } from "vue3-plotly";
+import { usedDataStore } from "../assets/stores/dataValues";
 
 export default {
   props: {
@@ -67,6 +58,8 @@ export default {
     },
   },
   setup(props) {
+    const dataStore = usedDataStore();
+
     const outLinePosition = ref(null);
     const z = ref(null);
     const layout = ref(null);
@@ -75,18 +68,8 @@ export default {
     const gridLines = ref([]);
     const axisDimension = ref(Array.from({ length: 6 }, (_, i) => i));
 
-    let selectedNodes = inject("selectedNodes");
-    let prodCapacities = inject("prodCapacities");
-    let dataValues = inject("dataValues");
-    let extractDataValuesCell = inject("extractDataValuesCell");
-
     function updateHeatmap(newVal, colIndex, rowIndex) {
       z.value[rowIndex][colIndex] = newVal;
-    }
-    function resetHeatmap() {
-      z.value = Array.from({ length: gridSize.value }, () =>
-        Array.from({ length: gridSize.value }, () => null)
-      );
     }
 
     const clearMatrix = () => {
@@ -94,8 +77,6 @@ export default {
         Array.from({ length: gridSize.value }, () => null)
       );
     };
-
-    defineExpose({ clearMatrix });
 
     function initHeatmap() {
       for (let i = 0; i <= gridSize.value; i++) {
@@ -183,18 +164,18 @@ export default {
         return;
       }
 
-      let rowID = selectedNodes.value[1];
-      let colID = selectedNodes.value[0];
+      let rowID = dataStore.selectedNodes[1];
+      let colID = dataStore.selectedNodes[0];
       const newZ = Array.from({ length: gridSize.value }, () =>
         Array.from({ length: gridSize.value }, () => null)
       );
 
-      console.log(dataValues.value);
+      console.log(dataStore.dataValues);
 
-      extractDataValuesCell(
+      dataStore.extractDataValuesCell(
         newZ,
-        dataValues.value,
-        prodCapacities.value,
+        dataStore.dataValues,
+        dataStore.prodCapacities,
         0,
         colID,
         rowID,
@@ -205,20 +186,6 @@ export default {
       );
 
       console.log(newZ);
-
-      /*let selectedHeatmap = heatmapCollection.find((el) => {
-        const nodeIDs = el.selectedNodes;
-        return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
-      })?.z;
-
-      if (!selectedHeatmap) {
-        const newHeatmap = Array.from(
-          { length: gridSize.value },
-          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
-        );
-        selectedHeatmap = newHeatmap;
-        heatmapCollection.push({ selectedNodes: newVal, z: selectedHeatmap });
-      }*/
 
       z.value = newZ;
 
@@ -233,7 +200,7 @@ export default {
           const rowIndex = props.sliderVals[1];
           updateHeatmap(newVal.matrixValue, colIndex, rowIndex);
         } else {
-          resetHeatmap();
+          clearMatrix();
         }
       } else {
         console.error("Not good, matrix is not receiving data");
@@ -338,7 +305,7 @@ export default {
     );
 
     watch(
-      () => selectedNodes.value,
+      () => dataStore.selectedNodes,
       (newVal) => changeMatrix(newVal),
       {
         deep: true,
@@ -358,7 +325,6 @@ export default {
   },
   components: {
     Panel,
-    apexchart: VueApexCharts,
     VuePlotly,
   },
 };

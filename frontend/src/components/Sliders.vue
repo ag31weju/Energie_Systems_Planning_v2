@@ -50,11 +50,13 @@ import Panel from "primevue/panel";
 import axios from "axios";
 import { ref, watch, onMounted, inject } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
+import { usedDataStore } from "../assets/stores/dataValues";
 
 export default {
   props: ["auto", "simulate", "reset_text"],
   setup(props, context) {
     const usedLang = usedLanguage();
+    const dataStore = usedDataStore();
     const url = "http://127.0.0.1:8000/api/save-slider-data/";
 
     let selectedNodes = inject("selectedNodes");
@@ -70,13 +72,13 @@ export default {
 
     async function postAndGet(reset, autoSimulate) {
       sliderList.value.forEach((slider) => {
-        prodCapacities.value[slider.nodeID] = slider.value;
+        dataStore.prodCapacities[slider.nodeID] = slider.value;
       });
       try {
         const data = {
           reset: reset,
           autoSimulate: autoSimulate, // Send the boolean flag for auto simulation
-          prodCapacities: prodCapacities.value,
+          prodCapacities: dataStore.prodCapacities,
         };
 
         const response = await axios
@@ -124,7 +126,7 @@ export default {
     }
 
     watch(
-      () => selectedNodes.value,
+      () => dataStore.selectedNodes,
       (newVal) => changeSliders(newVal),
       {
         deep: true,

@@ -26,6 +26,7 @@ import Chart from "primevue/chart";
 import Panel from "primevue/panel";
 import { ref, watch, inject, onMounted, defineExpose } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
+import { usedDataStore } from "../assets/stores/dataValues";
 
 export default {
   props: {
@@ -79,10 +80,7 @@ export default {
   },
   setup(props) {
     const usedLang = usedLanguage();
-    let selectedNodes = inject("selectedNodes");
-    let prodCapacities = inject("prodCapacities");
-    let dataValues = inject("dataValues");
-    let extractDataValuesCell = inject("extractDataValuesCell");
+    const dataStore = usedDataStore();
 
     const chartsCache = ref(null);
 
@@ -194,8 +192,6 @@ export default {
       );
     };
 
-    defineExpose({ clearCharts });
-
     function changeCharts(newVal) {
       if (newVal[0] === -1 || newVal[1] === -1) {
         assignAllData(null);
@@ -206,18 +202,18 @@ export default {
         return;
       }
 
-      let rowID = selectedNodes.value[1];
-      let colID = selectedNodes.value[0];
+      let rowID = dataStore.selectedNodes[1];
+      let colID = dataStore.selectedNodes[0];
       const newChartsCache = Array.from({ length: gridSize.value }, () =>
         Array.from({ length: gridSize.value }, () => null)
       );
 
-      console.log(dataValues.value);
+      console.log(dataStore.dataValues);
 
-      extractDataValuesCell(
+      dataStore.extractDataValuesCell(
         newChartsCache,
-        dataValues.value,
-        prodCapacities.value,
+        dataStore.dataValues,
+        dataStore.prodCapacities,
         0,
         colID,
         rowID,
@@ -228,25 +224,6 @@ export default {
       );
 
       console.log(newChartsCache);
-
-      /*let selectedCharts = chartsCollection.find((el) => {
-        const nodeIDs = el.selectedNodes;
-        return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
-      })?.chartsData;
-
-      if (!selectedCharts) {
-        const newCharts = Array.from(
-          { length: gridSize.value },
-          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
-        );
-        selectedCharts = newCharts;
-        chartsCollection.push({
-          selectedNodes: newVal,
-          chartsData: selectedCharts,
-        });
-      }
-
-      chartsCache.value = selectedCharts;*/
       chartsCache.value = newChartsCache;
       assignAllData(chartsCache.value[0][0]);
     }
@@ -291,19 +268,6 @@ export default {
       chartsCache.value = Array.from({ length: gridSize.value }, () =>
         Array.from({ length: gridSize.value }, () => null)
       );
-
-      /*
-      let idx = chartsCollection.findIndex((el) => {
-        const nodeIDs = el.selectedNodes;
-        return (
-          nodeIDs[0] === selectedNodes.value[0] &&
-          nodeIDs[1] === selectedNodes.value[1]
-        );
-      });
-
-      if (idx >= 0) {
-        chartsCollection[idx].chartsData = chartsCache.value;
-      }*/
     }
 
     watch(
@@ -319,7 +283,7 @@ export default {
     );
 
     watch(
-      () => selectedNodes.value,
+      () => dataStore.selectedNodes,
       (newVal) => changeCharts(newVal),
       {
         deep: true,
