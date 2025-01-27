@@ -127,14 +127,14 @@ def save_slider_data(request):
         def fill_cell():
             return {"matrixData": math.floor(random.uniform(0, 100)) ,
                     "chartsData": {
-                        "lineChartData": [math.floor(random.random() * 100) for _ in range(26)],
+                        "lineChartData": [math.floor(random.random() * 100) for _ in range(25)],
                         "barChartData": {
-                            "purchased_power": [math.floor(random.random() * 100) for _ in range(26)],
-                            "pv_production": [math.floor(random.random() * 100) for _ in range(26)],
-                            "pv_curtailment": [math.floor(random.random() * 100) for _ in range(26)],
-                            "storage_charge": [math.floor(random.random() * 100) for _ in range(26)],
-                            "storage_discharge": [math.floor(random.random() * 100) for _ in range(26)],
-                            "demand": [math.floor(random.random() * 100) for _ in range(26)],
+                            "purchased_power": [math.floor(random.random() * 100) for _ in range(25)],
+                            "pv_production": [math.floor(random.random() * 100) for _ in range(25)],
+                            "pv_curtailment": [math.floor(random.random() * 100) for _ in range(25)],
+                            "storage_charge": [math.floor(random.random() * 100) for _ in range(25)],
+                            "storage_discharge": [math.floor(random.random() * 100) for _ in range(25)],
+                            "demand": [math.floor(random.random() * -100) for _ in range(25)],
                             },
                         },
                     }
@@ -152,7 +152,6 @@ def save_slider_data(request):
                     pointer[prodCapacities[rec_depth]] = fillWholeStructure(pointer[prodCapacities[rec_depth]], prodCapacities, rec_depth+1, bestMatrixVal)
                     prodCapacities[rec_depth] += 1
                 prodCapacities[rec_depth] = 0
-
             return pointer
         
         def initializeNDarray(length):
@@ -175,6 +174,7 @@ def save_slider_data(request):
                data = {"mainData": fill_cell(), "bestIdx": bestIdx}
         else:
             data = {"mainData": initializeNDarray(len(prodCapacities)), "bestIdx": bestIdx}
+
 
         return JsonResponse(data, status=200)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)

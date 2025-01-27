@@ -66,7 +66,7 @@ export default defineComponent({
       ? inject("selectedNodes")
       : undefined;
     const isHighlighted = ref(false); // Tracks if the node is hovered
-
+    console.log(selectedNodes);
     const nodeID = props?.data.prodID;
     const isSelectedFirst = computed(() => {
       return selectedNodes ? selectedNodes.value[0] === nodeID : false;

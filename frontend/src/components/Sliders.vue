@@ -17,13 +17,13 @@
 
     <div id="slider-buttons-container">
       <Button
-        @click="postAndGet(true, false, 'reset')"
+        @click="postAndGet(true, false)"
         class="button"
         v-bind:label="usedLang.reset_text"
         :disabled="sliderList.some((node) => node.nodeID === -1)"
       ></Button>
       <Button
-        @click="postAndGet(false, true, 'auto')"
+        @click="postAndGet(false, true)"
         class="button"
         v-bind:label="usedLang.auto"
         :disabled="
@@ -32,7 +32,7 @@
       >
       </Button>
       <Button
-        @click="postAndGet(false, false, 'simulate')"
+        @click="postAndGet(false, false)"
         class="button"
         v-bind:label="usedLang.simulate"
         :disabled="
@@ -68,7 +68,7 @@ export default {
       { value: 0, nodeID: -1 },
     ]);
 
-    async function postAndGet(reset, autoSimulate, test) {
+    async function postAndGet(reset, autoSimulate) {
       sliderList.value.forEach((slider) => {
         prodCapacities.value[slider.nodeID] = slider.value;
       });

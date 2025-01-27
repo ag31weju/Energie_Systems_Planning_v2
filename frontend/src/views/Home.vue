@@ -116,7 +116,6 @@ export default {
             bestIdx: propagateChange.bestIdx,
           };
           simulateData(cell, currentSliderVals);
-          //change prodCapacities for currently selected nodes so that the heatmap and charts update visually (even if the values have already been assigned to dataValues)
           await sleep(100);
         }
       }
