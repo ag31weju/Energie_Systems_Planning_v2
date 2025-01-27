@@ -27,79 +27,63 @@ export const useDataStore = defineStore("useDataStore", () => {
     newZ,
     pointer,
     capacities,
-    rec_depth,
     colID,
     rowID,
-    colIndex,
-    rowIndex,
     forMatrix,
     forCharts
   ) {
-    if (rec_depth == capacities.length) {
-      return forMatrix
-        ? pointer.matrixData
-        : forCharts
-        ? pointer.chartsData
-        : console.error("data cannot be assigned to visualization component");
-    } else {
-      if (selectedNodes.value.some((el) => el === rec_depth)) {
-        if (rec_depth === colID) {
-          for (let currColIndex = 0; currColIndex <= 5; currColIndex++) {
-            let tmp = extractDataValuesCell(
-              newZ,
-              pointer[currColIndex],
-              capacities,
-              rec_depth + 1,
-              colID,
-              rowID,
-              currColIndex,
-              rowIndex,
-              forMatrix,
-              forCharts
-            );
-            console.log("currColIndex", rec_depth, currColIndex, tmp);
-            newZ[rowIndex][currColIndex] = tmp
-              ? tmp
-              : newZ[rowIndex][currColIndex];
-          }
-        } else if (rec_depth === rowID) {
-          for (let currRowIndex = 0; currRowIndex <= 5; currRowIndex++) {
-            let tmp = extractDataValuesCell(
-              newZ,
-              pointer[currRowIndex],
-              capacities,
-              rec_depth + 1,
-              colID,
-              rowID,
-              colIndex,
-              currRowIndex,
-              forMatrix,
-              forCharts
-            );
-            console.log("currRowIndex", rec_depth, currRowIndex, tmp);
-            newZ[currRowIndex][colIndex] = tmp
-              ? tmp
-              : newZ[currRowIndex][colIndex];
+    function recExtractDataValuesCell(pointer, rec_depth, colIndex, rowIndex) {
+      if (rec_depth == capacities.length) {
+        return forMatrix
+          ? pointer.matrixData
+          : forCharts
+          ? pointer.chartsData
+          : console.error("data cannot be assigned to visualization component");
+      } else {
+        if (selectedNodes.value.some((el) => el === rec_depth)) {
+          if (rec_depth === colID) {
+            for (let currColIndex = 0; currColIndex <= 5; currColIndex++) {
+              let tmp = recExtractDataValuesCell(
+                pointer[currColIndex],
+                rec_depth + 1,
+                currColIndex,
+                rowIndex
+              );
+              console.log("currColIndex", rec_depth, currColIndex, tmp);
+              newZ[rowIndex][currColIndex] = tmp
+                ? tmp
+                : newZ[rowIndex][currColIndex];
+            }
+          } else if (rec_depth === rowID) {
+            for (let currRowIndex = 0; currRowIndex <= 5; currRowIndex++) {
+              let tmp = recExtractDataValuesCell(
+                pointer[currRowIndex],
+                rec_depth + 1,
+                colIndex,
+                currRowIndex
+              );
+              console.log("currRowIndex", rec_depth, currRowIndex, tmp);
+              newZ[currRowIndex][colIndex] = tmp
+                ? tmp
+                : newZ[currRowIndex][colIndex];
+            }
+          } else {
+            console.error("rec_depth does not equal any selected node ID");
           }
         } else {
-          console.error("rec_depth does not equal any selected node ID");
+          console.log("hello", rec_depth);
+          return recExtractDataValuesCell(
+            pointer[capacities[rec_depth]],
+            rec_depth + 1,
+            colIndex,
+            rowIndex
+          );
         }
-      } else {
-        console.log("hello", rec_depth);
-        return extractDataValuesCell(
-          newZ,
-          pointer[capacities[rec_depth]],
-          capacities,
-          rec_depth + 1,
-          colID,
-          rowID,
-          colIndex,
-          rowIndex,
-          forMatrix,
-          forCharts
-        );
       }
     }
+
+    recExtractDataValuesCell(pointer, 0, 0, 0);
+    return;
   }
 
   function updateDataValuesCell(pointer, propagateChange) {

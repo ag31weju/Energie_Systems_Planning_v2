@@ -104,11 +104,8 @@ export default {
         newZ,
         dataStore.dataValues,
         dataStore.prodCapacities,
-        0,
         colID,
         rowID,
-        0,
-        0,
         true,
         false
       );
