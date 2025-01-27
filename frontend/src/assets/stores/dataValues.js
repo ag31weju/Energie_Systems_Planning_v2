@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-export const usedDataStore = defineStore("usedDataStore", () => {
+export const useDataStore = defineStore("useDataStore", () => {
   const selectedNodes = ref([-1, -1]);
   const dataValues = ref(undefined);
   const prodCapacities = ref(undefined);
