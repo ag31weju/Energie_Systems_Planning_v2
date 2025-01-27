@@ -48,7 +48,7 @@
 <script>
 import { ref, inject, defineComponent, computed } from "vue";
 import { Handle, Position } from "@vue-flow/core";
-import { usedDataStore } from "../../assets/stores/dataValues";
+import { useDataStore } from "../../assets/stores/dataValues";
 
 export default defineComponent({
   name: "ProducerNode",
@@ -63,7 +63,7 @@ export default defineComponent({
   },
   setup(props, context) {
     let handleNodeSelection = inject("handleNodeSelection");
-    const dataStore = usedDataStore();
+    const dataStore = useDataStore();
     const isHighlighted = ref(false); // Tracks if the node is hovered
     const nodeID = props?.data.prodID;
     const isSelectedFirst = computed(() => {

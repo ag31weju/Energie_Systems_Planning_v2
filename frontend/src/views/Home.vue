@@ -40,14 +40,14 @@ import Matrix from "../components/Matrix.vue";
 import Charts from "../components/Charts.vue";
 import Drawerbox from "../components/Drawerbox.vue";
 import { usedTheme } from "../assets/stores/pageSettings";
-import { usedDataStore } from "../assets/stores/dataValues";
+import { useDataStore } from "../assets/stores/dataValues";
 
 export default {
   setup(props, context) {
     const first = ref(true);
     const currTheme = usedTheme();
 
-    const dataStore = usedDataStore();
+    const dataStore = useDataStore();
     const selectedNodes = dataStore.selectedNodes;
     const dataValues = dataStore.dataValues;
     const prodCapacities = dataStore.prodCapacities;

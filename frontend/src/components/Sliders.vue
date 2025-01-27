@@ -50,13 +50,13 @@ import Panel from "primevue/panel";
 import axios from "axios";
 import { ref, watch, onMounted, inject } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
-import { usedDataStore } from "../assets/stores/dataValues";
+import { useDataStore } from "../assets/stores/dataValues";
 
 export default {
   props: ["auto", "simulate", "reset_text"],
   setup(props, context) {
     const usedLang = usedLanguage();
-    const dataStore = usedDataStore();
+    const dataStore = useDataStore();
     const url = "http://127.0.0.1:8000/api/save-slider-data/";
 
     let selectedNodes = inject("selectedNodes");

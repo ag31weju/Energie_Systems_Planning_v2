@@ -5,7 +5,7 @@
         <Chart
           type="line"
           :data="lineChartSet"
-          :options="lineChartOptions"
+          :options="chartsDesignStore.lineChartOptions"
           class="h-[30rem]"
           style="height: 15rem; width: 52rem"
         />
@@ -13,7 +13,7 @@
       <Chart
         type="bar"
         :data="barChartSet"
-        :options="barChartOptions"
+        :options="chartsDesignStore.barChartOptions"
         class="h-[30rem]"
         style="height: 15rem; width: 52rem"
       />
@@ -26,8 +26,8 @@ import Chart from "primevue/chart";
 import Panel from "primevue/panel";
 import { ref, watch, inject, onMounted, defineExpose } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
-import { usedDataStore } from "../assets/stores/dataValues";
-
+import { useDataStore } from "../assets/stores/dataValues";
+import { useChartsDesignStore } from "../assets/stores/chartsDesign";
 export default {
   props: {
     chartsData: {
@@ -80,7 +80,8 @@ export default {
   },
   setup(props) {
     const usedLang = usedLanguage();
-    const dataStore = usedDataStore();
+    const dataStore = useDataStore();
+    const chartsDesignStore = useChartsDesignStore();
 
     const chartsCache = ref(null);
 
@@ -97,17 +98,6 @@ export default {
           data: null,
         },
       ],
-    });
-
-    const lineChartOptions = ref({
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: "bottom",
-        },
-      },
     });
 
     const barChartSet = ref({
@@ -156,25 +146,6 @@ export default {
           data: null,
         },
       ],
-    });
-
-    const barChartOptions = ref({
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: "bottom",
-        },
-      },
-      scales: {
-        x: {
-          stacked: true,
-        },
-        y: {
-          stacked: true,
-        },
-      },
     });
 
     onMounted(() => {
@@ -293,8 +264,7 @@ export default {
     return {
       lineChartSet,
       barChartSet,
-      lineChartOptions,
-      barChartOptions,
+      chartsDesignStore,
       usedLang,
       clearCharts,
     };
