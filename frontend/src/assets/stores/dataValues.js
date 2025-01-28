@@ -1,10 +1,17 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 export const useDataStore = defineStore("useDataStore", () => {
   const selectedNodes = ref([-1, -1]);
-  const dataValues = ref(undefined);
-  const prodCapacities = ref(undefined);
+  const dataValues = ref(null);
+  const prodCapacities = ref(null);
+
+  const isSelectedFirst = (nodeID) => {
+    return selectedNodes.value ? selectedNodes.value[0] === nodeID : false;
+  };
+  const isSelectedSecond = (nodeID) => {
+    return selectedNodes.value ? selectedNodes.value[1] === nodeID : false;
+  };
 
   function getDataValuesCell(pointer) {
     for (let i = 0; i < prodCapacities.value.length; i++) {
@@ -108,6 +115,8 @@ export const useDataStore = defineStore("useDataStore", () => {
     dataValues,
     prodCapacities,
     selectedNodes,
+    isSelectedFirst,
+    isSelectedSecond,
     getDataValuesCell,
     updateDataValuesCell,
     extractDataValuesCell,

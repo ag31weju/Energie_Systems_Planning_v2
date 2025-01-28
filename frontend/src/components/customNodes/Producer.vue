@@ -3,8 +3,8 @@
     class="custom-node"
     :class="{
       highlighted: isHighlighted,
-      selectedFirst: isSelectedFirst,
-      selectedSecond: isSelectedSecond,
+      selectedFirst: dataStore.isSelectedFirst(nodeID),
+      selectedSecond: dataStore.isSelectedSecond(nodeID),
     }"
     @mouseover="handleMouseOver"
     @mouseleave="handleMouseLeave"
@@ -66,16 +66,6 @@ export default defineComponent({
     const dataStore = useDataStore();
     const isHighlighted = ref(false); // Tracks if the node is hovered
     const nodeID = props?.data.prodID;
-    const isSelectedFirst = computed(() => {
-      return dataStore.selectedNodes
-        ? dataStore.selectedNodes[0] === nodeID
-        : false;
-    });
-    const isSelectedSecond = computed(() => {
-      return dataStore.selectedNodes
-        ? dataStore.selectedNodes[1] === nodeID
-        : false;
-    });
 
     const handleMouseOver = () => {
       isHighlighted.value = true; // Show "Hello" on hover
@@ -92,8 +82,8 @@ export default defineComponent({
     return {
       Position,
       isHighlighted,
-      isSelectedFirst,
-      isSelectedSecond,
+      dataStore,
+      nodeID,
       handleMouseOver,
       handleMouseLeave,
       handleClick,

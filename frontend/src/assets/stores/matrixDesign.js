@@ -39,6 +39,15 @@ export const useMatrixDesignStore = defineStore("useMatrixDesignStore", () => {
     }
 
     layout.value = {
+      margin: {
+        l: 50,
+
+        r: 50,
+
+        b: 50,
+
+        t: 50,
+      },
       xaxis: {
         range: [-0.55, gridSize.value - 0.45],
         tickmode: "array",

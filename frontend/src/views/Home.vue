@@ -48,12 +48,6 @@ export default {
     const currTheme = usedTheme();
 
     const dataStore = useDataStore();
-    const selectedNodes = dataStore.selectedNodes;
-    const dataValues = dataStore.dataValues;
-    const prodCapacities = dataStore.prodCapacities;
-    const getDataValuesCell = dataStore.getDataValuesCell;
-    const updateDataValuesCell = dataStore.updateDataValuesCell;
-    const extractDataValuesCell = dataStore.extractDataValuesCell;
 
     const sliderVals = ref([0, 0]);
     const matrixData = ref(undefined);
@@ -62,11 +56,6 @@ export default {
     const isAutoSimulating = ref(false);
     const stopAutoSimulate = ref(false);
     const newScenarioLoaded = ref(false);
-
-    provide("selectedNodes", selectedNodes);
-    provide("prodCapacities", prodCapacities);
-    provide("dataValues", dataValues);
-    provide("extractDataValuesCell", extractDataValuesCell);
 
     const matrixComp = useTemplateRef("matrixComp");
     const chartsComp = useTemplateRef("chartsComp");
@@ -100,7 +89,7 @@ export default {
           dataStore.prodCapacities.map(() => 0);
           autoSimulateData(propagateChange);
         } else {
-          updateDataValuesCell(dataStore.dataValues, propagateChange);
+          dataStore.updateDataValuesCell(dataStore.dataValues, propagateChange);
           simulateData(propagateChange, propagateChange.sliderVals);
         }
       }
@@ -147,7 +136,7 @@ export default {
 
     function handleNodeSelection(newNode) {
       if (!isAutoSimulating.value) {
-        console.log(selectedNodes);
+        console.log(dataStore.selectedNodes);
         //LIFO-wise selection -> 0 first, 1 subsequently
         const idx = dataStore.selectedNodes.findIndex((el) => {
           return el === newNode;

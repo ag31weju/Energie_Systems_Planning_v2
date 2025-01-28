@@ -1,9 +1,17 @@
 <template>
   <Panel id="matrix-container" :header="null">
     <div id="label-container">
-      <label>Node 1</label>
-      <label>Node 1</label>
-      <label>Node 1</label>
+      <label
+        class="custom-label"
+        :class="{
+          selectedFirst: dataStore.isSelectedFirst(index),
+          selectedSecond: dataStore.isSelectedSecond(index),
+        }"
+        v-for="(_, index) in dataStore.prodCapacities"
+        :key="index"
+      >
+        node {{ index }} : {{ dataStore.prodCapacities[index] }}
+      </label>
     </div>
     <VuePlotly
       :data="[
@@ -35,10 +43,7 @@
 
 <script>
 import { Panel } from "primevue";
-
-import ScrollPanel from "primevue/scrollpanel";
-
-import { ref, watch, inject, onMounted, defineExpose } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { VuePlotly } from "vue3-plotly";
 import { useDataStore } from "../assets/stores/dataValues";
 import { useMatrixDesignStore } from "../assets/stores/matrixDesign";
@@ -69,7 +74,6 @@ export default {
   setup(props) {
     const dataStore = useDataStore();
     const matrixDesignStore = useMatrixDesignStore();
-
     const z = ref(null);
 
     function updateHeatmap(newVal, colIndex, rowIndex) {
@@ -169,11 +173,11 @@ export default {
       z,
       clearMatrix,
       matrixDesignStore,
+      dataStore,
     };
   },
   components: {
     Panel,
-    ScrollPanel,
     VuePlotly,
   },
 };
@@ -181,4 +185,18 @@ export default {
 
 <style>
 @import "../assets/main.css";
+
+.custom-label.selectedFirst {
+  box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.8); /* Red glow effect */
+  border: 2px solid black; /* Optional red border */
+  transform: scale(1.1); /* Slightly larger */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.custom-label.selectedSecond {
+  box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.8); /* Red glow effect */
+  border: 2px solid black; /* Optional red border */
+  transform: scale(1.1); /* Slightly larger */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
 </style>
