@@ -1,5 +1,10 @@
 <template>
   <Panel id="matrix-container" :header="null">
+    <div id="label-container">
+      <label>Node 1</label>
+      <label>Node 1</label>
+      <label>Node 1</label>
+    </div>
     <VuePlotly
       :data="[
         {
@@ -30,6 +35,9 @@
 
 <script>
 import { Panel } from "primevue";
+
+import ScrollPanel from "primevue/scrollpanel";
+
 import { ref, watch, inject, onMounted, defineExpose } from "vue";
 import { VuePlotly } from "vue3-plotly";
 import { useDataStore } from "../assets/stores/dataValues";
@@ -165,6 +173,7 @@ export default {
   },
   components: {
     Panel,
+    ScrollPanel,
     VuePlotly,
   },
 };
