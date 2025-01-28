@@ -1,0 +1,179 @@
+{
+  
+        "nodes": [
+            {
+                "id": "node_1",
+                "position": {
+                    "x": 394,
+                    "y": 417.59999999999997
+                },
+                "type": "consumer",
+                "label": "Industry"
+            },
+            {
+                "id": "node_2",
+                "position": {
+                    "x": 591,
+                    "y": 324.8
+                },
+                "type": "consumer",
+                "label": "Industry"
+            },
+            {
+                "id": "node_3",
+                "position": {
+                    "x": 197,
+                    "y": 324.8
+                },
+                "type": "consumer",
+                "label": "Industry"
+            },
+            {
+                "id": "node_4",
+                "position": {
+                    "x": 0,
+                    "y": 371.2
+                },
+                "type": "consumer",
+                "label": "City"
+            },
+            {
+                "id": "node_5",
+                "position": {
+                    "x": 459.6666666666667,
+                    "y": 324.8
+                },
+                "type": "producer",
+                "label": "Solar"
+            },
+            {
+                "id": "node_6",
+                "position": {
+                    "x": 328.33333333333337,
+                    "y": 185.6
+                },
+                "type": "producer",
+                "label": "Solar"
+            },
+            {
+                "id": "node_7",
+                "position": {
+                    "x": 591,
+                    "y": 464
+                },
+                "type": "producer",
+                "label": "Gas"
+            },
+            {
+                "id": "node_8",
+                "position": {
+                    "x": 459.6666666666667,
+                    "y": 232
+                },
+                "type": "producer",
+                "label": "Coal"
+            },
+            {
+                "id": "node_9",
+                "position": {
+                    "x": 656.6666666666667,
+                    "y": 92.8
+                },
+                "type": "producer",
+                "label": "Wind"
+            }
+        ],
+        "edges": [
+            {
+                "id": "edge_1",
+                "source": "node_8",
+                "target": "node_9",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            },
+            {
+                "id": "edge_2",
+                "source": "node_6",
+                "target": "node_8",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            },
+            {
+                "id": "edge_3",
+                "source": "node_6",
+                "target": "node_5",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            },
+            {
+                "id": "edge_4",
+                "source": "node_3",
+                "target": "node_6",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            },
+            {
+                "id": "edge_5",
+                "source": "node_3",
+                "target": "node_1",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            },
+            {
+                "id": "edge_6",
+                "source": "node_4",
+                "target": "node_3",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            },
+            {
+                "id": "edge_7",
+                "source": "node_1",
+                "target": "node_7",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            },
+            {
+                "id": "edge_8",
+                "source": "node_2",
+                "target": "node_7",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            },
+            {
+                "id": "edge_9",
+                "source": "node_5",
+                "target": "node_2",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            },
+            {
+                "id": "edge_10",
+                "source": "node_9",
+                "target": "node_2",
+                "color": "#000000",
+                "style": {
+                    "strokeWidth": 5
+                }
+            }
+        ]
+    
+}

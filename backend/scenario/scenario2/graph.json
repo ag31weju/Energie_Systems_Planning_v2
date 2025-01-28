@@ -1,0 +1,105 @@
+{
+    "nodes": [
+        {
+            "id": "node_1",
+            "position": {
+                "x": 350,
+                "y": 400
+            },
+            "type": "consumer",
+            "label": "City"
+        },
+        {
+            "id": "node_2",
+            "position": {
+                "x": 600,
+                "y": 500
+            },
+            "type": "consumer",
+            "label": "House"
+        },
+        {
+            "id": "node_3",
+            "position": {
+                "x": 450,
+                "y": 500
+            },
+            "type": "consumer",
+            "label": "Industry"
+        },
+        {
+            "id": "node_4",
+            "position": {
+                "x": 250,
+                "y": 200
+            },
+            "type": "producer",
+            "label": "Wind"
+        },
+        {
+            "id": "node_5",
+            "position": {
+                "x": 650,
+                "y": 250
+            },
+            "type": "producer",
+            "label": "Coal"
+        },
+        {
+            "id": "node_6",
+            "position": {
+                "x": 450,
+                "y": 100
+            },
+            "type": "producer",
+            "label": "Solar"
+        },
+        {
+            "id": "node_7",
+            "position": {
+                "x": 400,
+                "y": 200
+            },
+            "type": "producer",
+            "label": "Wind"
+        }
+    ],
+    "edges": [
+        {
+            "id": "edge_1",
+            "source": "node_5",
+            "target": "node_3",
+            "color": "#000000",
+            "style": {
+                "strokeWidth": 5
+            }
+        },
+        {
+            "id": "edge_2",
+            "source": "node_6",
+            "target": "node_2",
+            "color": "#000000",
+            "style": {
+                "strokeWidth": 5
+            }
+        },
+        {
+            "id": "edge_3",
+            "source": "node_7",
+            "target": "node_3",
+            "color": "#000000",
+            "style": {
+                "strokeWidth": 5
+            }
+        },
+        {
+            "id": "edge_4",
+            "source": "node_4",
+            "target": "node_1",
+            "color": "#000000",
+            "style": {
+                "strokeWidth": 5
+            }
+        }
+    ]
+}

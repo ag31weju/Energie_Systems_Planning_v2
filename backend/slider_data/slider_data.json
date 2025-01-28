@@ -1,0 +1,12 @@
+{
+    "reset": false,
+    "autoSimulate": true,
+    "sliders": [
+        {
+            "value": 0
+        },
+        {
+            "value": 0
+        }
+    ]
+}
