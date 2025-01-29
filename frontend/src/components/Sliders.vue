@@ -122,6 +122,9 @@ export default {
     function changeSliders(newVal) {
       sliderList.value.forEach((slider, idx) => {
         slider.nodeID = newVal[idx];
+        slider.value = dataStore.prodCapacities.get(
+          dataStore.selectedNodes[idx]
+        );
       });
     }
 
