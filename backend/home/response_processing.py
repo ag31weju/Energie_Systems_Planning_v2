@@ -1,4 +1,4 @@
-import json, math, random
+import json, math, random, copy
 
 
 def process_response():
@@ -15,16 +15,16 @@ def process_response():
 
     if not reset: 
         if autoSimulate:
-            prodCapacities = [0 for x in prodCapacities] #reset prodCapacities to 0
+            prodCapacities = [[x[0], 0] for x in prodCapacities] #reset prodCapacities to 0
 
             data = initializeNDarray(len(prodCapacities))
 
-            mainData, bestIdx = fillWholeStructure(data, prodCapacities)
+            mainData = fillWholeStructure(data, prodCapacities, bestIdx)
             data = {"mainData": mainData, "bestIdx": bestIdx}
 
             #just for testing
-            #with open('slider_data/tmp.json', 'w') as file:
-                #   json.dump(data, file, indent=4)
+            with open('slider_data/tmp.json', 'w') as file:
+                  json.dump(data, file, indent=4)
         else:
             data = {"mainData": fill_cell(), "bestIdx": bestIdx}
     else:
@@ -55,23 +55,26 @@ def fill_cell():
                 }
 
 
-def fillWholeStructure(data, prodCapacities):
+def fillWholeStructure(data, prodCapacities, bestIdx):
     #[float("inf")] since it acts as a mutable container for the bestMatrixVal
     bestMatrixVal = [float("inf")]
-    bestIdx = []
 
     def recFillWholeStructure(pointer, prodCapacities, rec_depth):
         if rec_depth == len(prodCapacities):
             value = fill_cell()
             if bestMatrixVal[0] > value["matrixData"]: 
                 bestMatrixVal[0] = value["matrixData"]
-                bestIdx[:] = prodCapacities[:]
+                print(bestIdx, prodCapacities)
+                bestIdx[:] = copy.deepcopy(prodCapacities)
+                print(bestIdx, prodCapacities)
             return value
         else:
-            while prodCapacities[rec_depth] <= 5:
-                pointer[prodCapacities[rec_depth]] = recFillWholeStructure(pointer[prodCapacities[rec_depth]], prodCapacities, rec_depth+1)
-                prodCapacities[rec_depth] += 1
-            prodCapacities[rec_depth] = 0
+            while prodCapacities[rec_depth][1] <= 5:
+                pointer[prodCapacities[rec_depth][1]] = recFillWholeStructure(pointer[prodCapacities[rec_depth][1]], prodCapacities, rec_depth+1)
+                prodCapacities[rec_depth][1] += 1
+            prodCapacities[rec_depth][1] = 0
         return pointer
     
-    return recFillWholeStructure(data, prodCapacities, 0), bestIdx
+    result = recFillWholeStructure(data, prodCapacities, 0)
+    print("bestIdx", bestIdx)
+    return result

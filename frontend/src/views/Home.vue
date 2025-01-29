@@ -86,7 +86,7 @@ export default {
         if (propagateChange.autoSimulate) {
           isAutoSimulating.value = true;
           dataStore.dataValues = propagateChange.simData;
-          dataStore.prodCapacities.map(() => 0);
+
           autoSimulateData(propagateChange);
         } else {
           dataStore.updateDataValuesCell(dataStore.dataValues, propagateChange);
@@ -96,6 +96,16 @@ export default {
     }
     async function autoSimulateData(propagateChange) {
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const bestIdxMap = new Map(propagateChange.bestIdx);
+      for (const [key, _] of dataStore.prodCapacities) {
+        if (dataStore.selectedNodes.some((el) => el === key)) {
+          dataStore.prodCapacities.set(key, 0);
+        } else {
+          dataStore.prodCapacities.set(key, bestIdxMap.get(key));
+        }
+      }
+
       for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
         for (let colIndex = 0; colIndex < 6; colIndex++) {
           if (stopAutoSimulate.value) {
@@ -103,8 +113,8 @@ export default {
             return;
           }
           //Extract desired values from propagateChange.simData or dataValues
-          dataStore.prodCapacities[dataStore.selectedNodes[1]] = rowIndex;
-          dataStore.prodCapacities[dataStore.selectedNodes[0]] = colIndex;
+          dataStore.prodCapacities.set(dataStore.selectedNodes[1], rowIndex);
+          dataStore.prodCapacities.set(dataStore.selectedNodes[0], colIndex);
           let currentSliderVals = [colIndex, rowIndex];
           let cell = {
             simData: dataStore.getDataValuesCell(propagateChange.simData),
@@ -117,7 +127,18 @@ export default {
           await sleep(100);
         }
       }
-      sliderVals.value = propagateChange.bestIdx;
+      dataStore.prodCapacities.set(
+        dataStore.selectedNodes[0],
+        bestIdxMap.get(dataStore.selectedNodes[0])
+      );
+      dataStore.prodCapacities.set(
+        dataStore.selectedNodes[1],
+        bestIdxMap.get(dataStore.selectedNodes[1])
+      );
+      sliderVals.value = [
+        bestIdxMap.get(dataStore.selectedNodes[0]),
+        bestIdxMap.get(dataStore.selectedNodes[1]),
+      ];
       isAutoSimulating.value = false;
     }
 
@@ -188,10 +209,8 @@ export default {
           : Array.from({ length: 6 }, () => initializeNDarray(nProds - 1));
       };
 
-      dataStore.prodCapacities = Array.from({ length: nProds }, () => 0);
+      console.log(dataStore.prodCapacities);
       dataStore.dataValues = initializeNDarray(nProds);
-
-      console.log(dataStore.prodCapacities.length);
     }
 
     provide("prepareNewScenario", prepareNewScenario);

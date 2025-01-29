@@ -59,10 +59,8 @@ export default {
     const dataStore = useDataStore();
     const url = "http://127.0.0.1:8000/api/save-slider-data/";
 
-    let selectedNodes = inject("selectedNodes");
     let moveOutline = inject("moveOutline");
     let isAutoSimulating = inject("isAutoSimulating");
-    let prodCapacities = inject("prodCapacities");
 
     const step = ref(1);
     const sliderList = ref([
@@ -72,13 +70,13 @@ export default {
 
     async function postAndGet(reset, autoSimulate) {
       sliderList.value.forEach((slider) => {
-        dataStore.prodCapacities[slider.nodeID] = slider.value;
+        dataStore.prodCapacities.set(slider.nodeID, slider.value);
       });
       try {
         const data = {
           reset: reset,
           autoSimulate: autoSimulate, // Send the boolean flag for auto simulation
-          prodCapacities: dataStore.prodCapacities,
+          prodCapacities: Array.from(dataStore.prodCapacities),
         };
 
         const response = await axios

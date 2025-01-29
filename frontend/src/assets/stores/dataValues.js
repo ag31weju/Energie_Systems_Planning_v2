@@ -4,7 +4,7 @@ import { ref, computed } from "vue";
 export const useDataStore = defineStore("useDataStore", () => {
   const selectedNodes = ref([-1, -1]);
   const dataValues = ref(null);
-  const prodCapacities = ref(null);
+  const prodCapacities = ref(new Map());
 
   const isSelectedFirst = (nodeID) => {
     return selectedNodes.value ? selectedNodes.value[0] === nodeID : false;
@@ -14,9 +14,10 @@ export const useDataStore = defineStore("useDataStore", () => {
   };
 
   function getDataValuesCell(pointer) {
-    for (let i = 0; i < prodCapacities.value.length; i++) {
-      if (i === prodCapacities.value.length - 1) {
-        return pointer[prodCapacities.value[i]];
+    const prodCapacitiesArr = Array.from(prodCapacities.value);
+    for (let i = 0; i < prodCapacitiesArr.length; i++) {
+      if (i === prodCapacitiesArr.length - 1) {
+        return pointer[prodCapacitiesArr[i][1]];
       }
 
       if (!pointer) {
@@ -26,29 +27,35 @@ export const useDataStore = defineStore("useDataStore", () => {
         );
       }
 
-      pointer = pointer[prodCapacities.value[i]];
+      pointer = pointer[prodCapacitiesArr[i][1]];
     }
   }
 
   function extractDataValuesCell(
-    newZ,
+    matrixToWhichIsAssigned,
     pointer,
-    capacities,
     colID,
     rowID,
     forMatrix,
     forCharts
   ) {
+    console.log(colID);
+    console.log(rowID);
+    const prodCapacitiesArr = Array.from(prodCapacities.value);
     function recExtractDataValuesCell(pointer, rec_depth, colIndex, rowIndex) {
-      if (rec_depth == capacities.length) {
+      if (rec_depth == prodCapacitiesArr.length) {
         return forMatrix
           ? pointer.matrixData
           : forCharts
           ? pointer.chartsData
           : console.error("data cannot be assigned to visualization component");
       } else {
-        if (selectedNodes.value.some((el) => el === rec_depth)) {
-          if (rec_depth === colID) {
+        if (
+          selectedNodes.value.some(
+            (el) => el === prodCapacitiesArr[rec_depth][0]
+          )
+        ) {
+          if (prodCapacitiesArr[rec_depth][0] == colID) {
             for (let currColIndex = 0; currColIndex <= 5; currColIndex++) {
               let tmp = recExtractDataValuesCell(
                 pointer[currColIndex],
@@ -56,12 +63,13 @@ export const useDataStore = defineStore("useDataStore", () => {
                 currColIndex,
                 rowIndex
               );
-              console.log("currColIndex", rec_depth, currColIndex, tmp);
-              newZ[rowIndex][currColIndex] = tmp
-                ? tmp
-                : newZ[rowIndex][currColIndex];
+              console.log("for columns", colID, currColIndex, tmp);
+              matrixToWhichIsAssigned[rowIndex][currColIndex] =
+                tmp !== null && tmp !== undefined
+                  ? tmp
+                  : matrixToWhichIsAssigned[rowIndex][currColIndex];
             }
-          } else if (rec_depth === rowID) {
+          } else if (prodCapacitiesArr[rec_depth][0] == rowID) {
             for (let currRowIndex = 0; currRowIndex <= 5; currRowIndex++) {
               let tmp = recExtractDataValuesCell(
                 pointer[currRowIndex],
@@ -69,18 +77,18 @@ export const useDataStore = defineStore("useDataStore", () => {
                 colIndex,
                 currRowIndex
               );
-              console.log("currRowIndex", rec_depth, currRowIndex, tmp);
-              newZ[currRowIndex][colIndex] = tmp
-                ? tmp
-                : newZ[currRowIndex][colIndex];
+              console.log("for rows", rowID, currRowIndex, tmp);
+              matrixToWhichIsAssigned[currRowIndex][colIndex] =
+                tmp !== null && tmp !== undefined
+                  ? tmp
+                  : matrixToWhichIsAssigned[currRowIndex][colIndex];
             }
           } else {
             console.error("rec_depth does not equal any selected node ID");
           }
         } else {
-          console.log("hello", rec_depth);
           return recExtractDataValuesCell(
-            pointer[capacities[rec_depth]],
+            pointer[prodCapacitiesArr[rec_depth][1]],
             rec_depth + 1,
             colIndex,
             rowIndex
@@ -89,14 +97,15 @@ export const useDataStore = defineStore("useDataStore", () => {
       }
     }
 
-    recExtractDataValuesCell(pointer, 0, 0, 0);
-    return;
+    return recExtractDataValuesCell(pointer, 0, 0, 0);
   }
 
   function updateDataValuesCell(pointer, propagateChange) {
-    for (let i = 0; i < prodCapacities.value.length; i++) {
-      if (i === prodCapacities.value.length - 1) {
-        pointer[prodCapacities.value[i]] = propagateChange.simData;
+    const prodCapacitiesArr = Array.from(prodCapacities.value);
+    for (let i = 0; i < prodCapacitiesArr.length; i++) {
+      if (i === prodCapacitiesArr.length - 1) {
+        pointer[prodCapacitiesArr[i][1]] = propagateChange.simData;
+
         return;
       }
 
@@ -107,7 +116,7 @@ export const useDataStore = defineStore("useDataStore", () => {
         );
       }
 
-      pointer = pointer[prodCapacities.value[i]];
+      pointer = pointer[prodCapacitiesArr[i][1]];
     }
   }
 

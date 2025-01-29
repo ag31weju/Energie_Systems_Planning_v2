@@ -4,13 +4,13 @@
       <label
         class="custom-label"
         :class="{
-          selectedFirst: dataStore.isSelectedFirst(index),
-          selectedSecond: dataStore.isSelectedSecond(index),
+          selectedFirst: dataStore.isSelectedFirst(key),
+          selectedSecond: dataStore.isSelectedSecond(key),
         }"
-        v-for="(_, index) in dataStore.prodCapacities"
-        :key="index"
+        v-for="[key, value] in Array.from(dataStore.prodCapacities)"
+        :key="key"
       >
-        node {{ index }} : {{ dataStore.prodCapacities[index] }}
+        node {{ key }} : {{ value }}
       </label>
     </div>
     <VuePlotly
@@ -77,6 +77,7 @@ export default {
     const z = ref(null);
 
     function updateHeatmap(newVal, colIndex, rowIndex) {
+      console.log(z.value[rowIndex][colIndex], newVal);
       z.value[rowIndex][colIndex] = newVal;
     }
 
@@ -110,23 +111,21 @@ export default {
         Array.from({ length: matrixDesignStore.gridSize }, () => null)
       );
 
-      console.log(dataStore.dataValues);
-
       dataStore.extractDataValuesCell(
         newZ,
         dataStore.dataValues,
-        dataStore.prodCapacities,
         colID,
         rowID,
         true,
         false
       );
 
-      console.log(newZ);
-
       z.value = newZ;
 
-      matrixDesignStore.handleSliderVals([0, 0]);
+      matrixDesignStore.handleSliderVals([
+        dataStore.prodCapacities.get(dataStore.selectedNodes[0]),
+        dataStore.prodCapacities.get(dataStore.selectedNodes[1]),
+      ]);
     }
 
     function handleMatrixData(newVal) {
@@ -136,6 +135,7 @@ export default {
           const colIndex = props.sliderVals[0];
           const rowIndex = props.sliderVals[1];
           updateHeatmap(newVal.matrixValue, colIndex, rowIndex);
+          console.log(z.value);
         } else {
           clearMatrix();
         }

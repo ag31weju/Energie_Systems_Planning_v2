@@ -106,7 +106,8 @@ import Coal from "@/assets/node_images/producer/coal.png";
 import Solar from "@/assets/node_images/producer/solarPanel.png";
 import Wind from "@/assets/node_images/producer/windmill.png";
 import { usedLanguage } from "../assets/stores/pageSettings";
-import { ref, reactive, inject } from "vue";
+import { ref, reactive } from "vue";
+import { useDataStore } from "@/assets/stores/dataValues";
 
 export default {
   inject: ["selectedNodes", "isAutoSimulating", "prepareNewScenario"],
@@ -191,6 +192,8 @@ export default {
 
   methods: {
     async loadRequest() {
+      const dataStore = useDataStore();
+
       if (this.isAutoSimulating) return;
 
       try {
@@ -225,6 +228,7 @@ export default {
         //counts how many prods and cons there are
         let prodCounter = 0;
         let consCounter = 0;
+        dataStore.prodCapacities = new Map();
 
         this.nodes = nodes.map((node) => {
           let newNode = {
@@ -273,6 +277,7 @@ export default {
                   "Provides large-scale base power with low carbon emissions.",
                 prodID: prodCounter,
               };
+              dataStore.prodCapacities.set(node.id.at(-1), 0);
               prodCounter++;
               break;
             case "Coal Power":
@@ -284,6 +289,7 @@ export default {
                 description: "Traditional fossil fuel energy source.",
                 prodID: prodCounter,
               };
+              dataStore.prodCapacities.set(node.id.at(-1), 0);
               prodCounter++;
               break;
             case "Solar Power":
@@ -295,6 +301,7 @@ export default {
                 description: "Generates renewable energy from sunlight.",
                 prodID: prodCounter,
               };
+              dataStore.prodCapacities.set(node.id.at(-1), 0);
               prodCounter++;
               break;
             case "Wind Power":
@@ -306,6 +313,7 @@ export default {
                 description: "Generates renewable energy from wind.",
                 prodID: prodCounter,
               };
+              dataStore.prodCapacities.set(node.id.at(-1), 0);
               prodCounter++;
               break;
             default:

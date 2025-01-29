@@ -179,21 +179,21 @@ export default {
         Array.from({ length: gridSize.value }, () => null)
       );
 
-      console.log(dataStore.dataValues);
-
       dataStore.extractDataValuesCell(
         newChartsCache,
         dataStore.dataValues,
-        dataStore.prodCapacities,
         colID,
         rowID,
         false,
         true
       );
 
-      console.log(newChartsCache);
       chartsCache.value = newChartsCache;
-      assignAllData(chartsCache.value[0][0]);
+      assignAllData(
+        chartsCache.value[
+          dataStore.prodCapacities.get(dataStore.selectedNodes[1])
+        ][dataStore.prodCapacities.get(dataStore.selectedNodes[0])]
+      );
     }
 
     function assignAllData(newVal) {

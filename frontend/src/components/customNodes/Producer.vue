@@ -65,7 +65,7 @@ export default defineComponent({
     let handleNodeSelection = inject("handleNodeSelection");
     const dataStore = useDataStore();
     const isHighlighted = ref(false); // Tracks if the node is hovered
-    const nodeID = props?.data.prodID;
+    const nodeID = context.attrs.id.at(-1);
 
     const handleMouseOver = () => {
       isHighlighted.value = true; // Show "Hello" on hover

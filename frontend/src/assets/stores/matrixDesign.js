@@ -40,7 +40,7 @@ export const useMatrixDesignStore = defineStore("useMatrixDesignStore", () => {
 
     layout.value = {
       margin: {
-        l: 50,
+        l: 80,
 
         r: 50,
 
