@@ -180,6 +180,7 @@ export default {
     provide("handleNodeSelection", handleNodeSelection);
 
     function moveOutline(newVal, idx) {
+      dataStore.prodCapacities.set(dataStore.selectedNodes[idx], newVal);
       sliderVals.value[idx] = newVal;
     }
     provide("moveOutline", moveOutline);

@@ -23,8 +23,8 @@ def process_response():
             data = {"mainData": mainData, "bestIdx": bestIdx}
 
             #just for testing
-            with open('slider_data/tmp.json', 'w') as file:
-                  json.dump(data, file, indent=4)
+            #with open('slider_data/tmp.json', 'w') as file:
+                  #json.dump(data, file, indent=4)
         else:
             data = {"mainData": fill_cell(), "bestIdx": bestIdx}
     else:

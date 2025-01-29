@@ -114,7 +114,9 @@ export default {
     }
 
     function startMoveOutline(event, index) {
-      if (!isAutoSimulating.value) moveOutline(event, index);
+      if (!isAutoSimulating.value) {
+        moveOutline(event, index);
+      }
     }
 
     function changeSliders(newVal) {
