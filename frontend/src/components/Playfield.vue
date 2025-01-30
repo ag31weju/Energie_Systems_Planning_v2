@@ -18,8 +18,8 @@
       <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
         :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
         :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
-        :auto-pan-on-node-drag="false" :nodes-draggable="!locked" :edges-connectable="edgeMode" :autoPanOnConnect="false"
-        :zoomOnDoubleClick="false" @connect="onConnect" />
+        :auto-pan-on-node-drag="false" :nodes-draggable="!locked" :edges-connectable="edgeMode"
+        :autoPanOnConnect="false" :zoomOnDoubleClick="false" @connect="onConnect" />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
@@ -77,7 +77,7 @@ import BatteryNode from "./customNodes/Battery.vue";
 import JunctionNode from "./customNodes/Junction.vue";
 import ProducerNode from "./customNodes/Producer.vue";
 
-import { usedLanguage, usedColorBlindnessTheme } from "../assets/stores/pageSettings";
+import { usedLanguage } from "../assets/stores/pageSettings";
 import { inject, ref, reactive, watch } from "vue";
 import { getNodeData } from "@/utils/nodeUtils.js";
 
@@ -159,7 +159,7 @@ export default {
     toggleLock() {
       this.locked = !this.locked;
     },
-  
+
     async loadRequest() {
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
@@ -191,9 +191,9 @@ export default {
         const { nodes, edges } = graphResponse.data;
 
         this.nodes = nodes.map((node) => ({
-      ...node,
-      data: getNodeData(node.label),
-    }));
+          ...node,
+          data: getNodeData(node.label),
+        }));
 
         this.edges = edges.map((edge) => ({
           ...edge,
@@ -265,7 +265,7 @@ export default {
       const height = vueFlowContainer.offsetHeight / this.gridSize;
 
       const nodeData = getNodeData("Battery");
-    if (!nodeData) return;
+      if (!nodeData) return;
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
@@ -284,7 +284,7 @@ export default {
       const width = vueFlowContainer.offsetWidth / this.gridSize;
       const height = vueFlowContainer.offsetHeight / this.gridSize;
       const nodeData = getNodeData("Junction");
-    if (!nodeData) return;
+      if (!nodeData) return;
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
@@ -306,24 +306,24 @@ export default {
       if (!this.selectedProducer) {
         alert("Please select an energy source type before adding a node.");
         return;
-      } 
+      }
       const nodeData = getNodeData(this.selectedProducer);
-    if (!nodeData) {
+      if (!nodeData) {
         alert("Unknown producer type selected.");
         return;
-    }
+      }
 
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
         type: "producer",
         position: { x: width * 5, y: height * 4 },
-        data: nodeData, 
+        data: nodeData,
         targetPosition: "left",
         sourcePosition: "right",
       };
 
-      
+
 
       this.nodes.push(newNode);
     },
@@ -341,10 +341,10 @@ export default {
       const height = vueFlowContainer.offsetHeight;
 
       const nodeData = getNodeData(this.selectedConsumer);
-    if (!nodeData) {
+      if (!nodeData) {
         alert("Unknown Consumer type selected.");
         return;
-    }
+      }
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
@@ -353,7 +353,7 @@ export default {
         data: nodeData,
       };
 
-   
+
 
       this.nodes.push(newNode);
     },
@@ -392,7 +392,7 @@ export default {
       }
     },
 
-      saveData() {
+    saveData() {
       try {
         // Get node and edge data
         const dataToSave = {
@@ -408,13 +408,13 @@ export default {
             target: edge.target,
             color: edge.color,
             style: edge.style,
-            sourceHandle:edge.sourceHandle,
+            sourceHandle: edge.sourceHandle,
             targetHandle: edge.targetHandle,
 
           })),
         };
 
-      
+
         const jsonString = JSON.stringify(dataToSave);
 
         const jsonBlob = new Blob([jsonString], { type: "application/json" });
@@ -423,8 +423,8 @@ export default {
         jsonLink.download = "scenario_graph.json";
         jsonLink.click();
 
-   
-        
+
+
       } catch (error) {
         console.error("Error saving data:", error);
         alert(`Error: ${error.message}`);
@@ -440,12 +440,6 @@ export default {
       this.$refs.jsonInput.click(); // Trigger JSON upload
     },
 
-    handleFileChange(type, event) {
-      const file = event.target.files[0];
-      if (type === "image") {
-        this.imageFile = file;
-        if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
-        this.imgUrl = URL.createObjectURL(file);
     handleFileChange(type, event) {
       const file = event.target.files[0];
       if (type === "image") {
@@ -489,7 +483,7 @@ export default {
               data: getNodeData(node.label),
             };
 
-            
+
             return newNode;
           });
 
@@ -508,9 +502,6 @@ export default {
         }
       };
 
-      reader.readAsText(this.jsonFile);
-    },
-  },
       reader.readAsText(this.jsonFile);
     },
   },

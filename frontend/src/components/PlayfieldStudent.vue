@@ -54,14 +54,14 @@
         type="submit"
         class="button"
         v-bind:label="usedLang.upload_scenario"
-        >img</Button
+        ></Button
       >
       <Button
         @click="triggerJsonUpload"
         type="submit"
-        class="slider-button"
-        v-bind:label="upload_json"
-        >json</Button
+        class="button"
+        v-bind:label="usedLang.upload_json"
+        ></Button
       >
 
       <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
@@ -86,8 +86,8 @@ import BatteryNode from "./customNodes/Battery.vue";
 
 import { getNodeData } from "@/utils/nodeUtils.js";
 
-import { usedLanguage } from "../assets/stores/pageSettings";
-import { ref, reactive } from "vue";
+import { usedLanguage, usedColorBlindnessTheme } from "../assets/stores/pageSettings";
+import { ref, reactive, watch } from "vue";
 import { useDataStore } from "@/assets/stores/dataValues";
 
 export default {
@@ -161,7 +161,7 @@ export default {
 
     return {
       usedLang,
-
+      currColor,
       //playfield variables
       imgUrl,
       showGrid,
