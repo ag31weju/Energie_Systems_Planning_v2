@@ -58,7 +58,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',  # Vue.js development server
+    'http://localhost:5173', # Vue.js development server
+    "https://ag31weju.github.io",  # Allow your GitHub Pages frontend  
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -133,3 +134,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOW_CREDENTIALS = True
