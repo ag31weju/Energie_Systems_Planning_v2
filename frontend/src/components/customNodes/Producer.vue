@@ -1,23 +1,13 @@
 <template>
-  <div
-    class="custom-node"
-    :class="{
-      highlighted: isHighlighted,
-      selectedFirst: dataStore.isSelectedFirst(nodeID),
-      selectedSecond: dataStore.isSelectedSecond(nodeID),
-    }"
-    @mouseover="handleMouseOver"
-    @mouseleave="handleMouseLeave"
-    @click="handleClick"
-  >
+  <div class="custom-node" :class="{
+    highlighted: isHighlighted,
+    selectedFirst: dataStore.isSelectedFirst(nodeID),
+    selectedSecond: dataStore.isSelectedSecond(nodeID),
+  }" @mouseover="handleMouseOver" @mouseleave="handleMouseLeave" @click="handleClick">
     <div class="producer-icon">
       <img :src="data.icon" alt="Producer Icon" />
     </div>
-    <div
-      v-if="isHighlighted"
-      class="node-name"
-      style="color: crimson; background: black"
-    >
+    <div v-if="isHighlighted" class="node-name" style="color:black; background: rgba(255, 255, 255, 0.7);">
       <!-- color of label -->
       {{ data.label || "Unnamed Node" }}
     </div>
@@ -27,30 +17,10 @@
       <!-- Handles for outputs -->
       <!-- Handles for outputs -->
       <div v-for="(output, index) in data.outputs" :key="'output_' + index">
-        <Handle
-          type="source"
-          :position="'left'"
-          :id="'output_left_' + index"
-          style="background: #555"
-        />
-        <Handle
-          type="source"
-          :position="'top'"
-          :id="'output_top_' + index"
-          style="background: #555"
-        />
-        <Handle
-          type="source"
-          :position="'right'"
-          :id="'output_right_' + index"
-          style="background: #555"
-        />
-        <Handle
-          type="source"
-          :position="'bottom'"
-          :id="'output_bottom_' + index"
-          style="background: #555"
-        />
+        <Handle type="source" :position="'left'" :id="'output_left_' + index" style="background: #555" />
+        <Handle type="source" :position="'top'" :id="'output_top_' + index" style="background: #555" />
+        <Handle type="source" :position="'right'" :id="'output_right_' + index" style="background: #555" />
+        <Handle type="source" :position="'bottom'" :id="'output_bottom_' + index" style="background: #555" />
       </div>
     </div>
   </div>
