@@ -154,7 +154,7 @@ export default {
 
       try {
         const url = "https://energie-systems-planning-v2.onrender.com/api/process-scenario/";
-        let id = null;
+        let id = 1;
         if (this.selectedScenario == "Scene 1") {
           id = 1;
         } else if (this.selectedScenario == "Scene 2") {
