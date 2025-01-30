@@ -6,7 +6,7 @@ import Home from "./views/Home.vue"; //main page
 import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura/";
 import VueApexCharts from "vue3-apexcharts";
-import "./assets/main.css";
+import './assets/main.css';
 import { createPinia } from "pinia";
 
 // Hardcoded password

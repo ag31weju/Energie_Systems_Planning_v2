@@ -16,3 +16,7 @@ export default {
   }
 };
 </script>
+
+<style>
+@import "./assets/main.css";  /* Make sure the path is correct */
+</style>
