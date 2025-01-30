@@ -1,14 +1,10 @@
 <template>
   <Panel id="playfieldS">
-    <div
-      id="vueflow_container"
-      ref="vueFlowContainer"
-      :style="{
-        backgroundImage: 'url(' + imgUrl + ')',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }"
-      style="
+    <div id="vueflow_container" ref="vueFlowContainer" :style="{
+      backgroundImage: 'url(' + imgUrl + ')',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }" style="
         position: absolute;
         top: 0;
         left: 0;
@@ -45,12 +41,7 @@
     <!-- Buttons at the Bottom -->
 
     <div id="buttons_container">
-      <Select
-        v-model="selectedScenario"
-        :options="scenarios"
-        class="Sbutton"
-        placeholder="Choose Scenario"
-      ></Select>
+      <Select v-model="selectedScenario" :options="scenarios" class="Sbutton" :placeholder="usedLang.choose_scenario"></Select>
 
       <Button
         @click="loadRequest"
@@ -73,29 +64,12 @@
         >json</Button
       >
 
-      <Button
-        @click="toggleGridOverlay"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.toggle_grid"
-      ></Button>
+      <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
     </div>
-    <input
-      type="file"
-      id="imageInput"
-      ref="imageInput"
-      @change="handleFileChange('image', $event)"
-      accept="image/*"
-      style="display: none"
-    />
-    <input
-      type="file"
-      id="jsonInput"
-      ref="jsonInput"
-      @change="handleFileChange('json', $event)"
-      accept=".json"
-      style="display: none"
-    />
+    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
+      style="display: none" />
+    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
+      style="display: none" />
   </Panel>
 </template>
 
@@ -124,8 +98,25 @@ export default {
     VueFlow,
     Select,
   },
-  setup() {
+  setup(props, context) {
     const usedLang = usedLanguage();
+    const currColor = usedColorBlindnessTheme();
+
+    watch(() => currColor.currentColorSettings, () => {
+    //   setTimeout(() => {
+    //     var root = document.documentElement;
+    //     var style = getComputedStyle(root);
+    //     var sliderHandleBorder = style.getPropertyValue('--slider-handle-border-color-first').trim();
+    //     console.log(`Slider Handle Border Color: ${sliderHandleBorder}`)
+    //   })
+    })
+
+    watch(() => usedLang.currLang, () => {
+      scenarios.value[0] = usedLang.scene_1;
+      scenarios.value[1] = usedLang.scene_2;
+      scenarios.value[2] = usedLang.scene_3;
+    });
+
 
     //Playfield variables
     const imgUrl = ref(null); // URL for the image
@@ -140,7 +131,7 @@ export default {
     const selectedNodeId = ref(null); // Track the selected node for edge creation
     const locked = ref(false); // Lock flag
     const jsonUrl = ref(null); // JSON file URL
-    const scenarios = ref(["Scene 1", "Scene 2", "Scene 3"]); // Scenario options
+    const scenarios = ref([usedLang.scene_1, usedLang.scene_2, usedLang.scene_3]); // Scenario options
     const selectedScenario = ref("");
 
     // Reactive object for edge properties
@@ -204,11 +195,11 @@ export default {
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
         let id = null;
-        if (this.selectedScenario == "Scene 1") {
+        if (this.selectedScenario == "Scene 1" || this.selectedScenario == "Szene 1") {
           id = 1;
-        } else if (this.selectedScenario == "Scene 2") {
+        } else if (this.selectedScenario == "Scene 2" || this.selectedScenario == "Szene 2") {
           id = 2;
-        } else if (this.selectedScenario == "Scene 3") {
+        } else if (this.selectedScenario == "Scene 3" || this.selectedScenario == "Szene 3") {
           id = 3;
         }
 

@@ -80,6 +80,18 @@ export default {
   },
   setup(props) {
     const usedLang = usedLanguage();
+
+    watch(() => usedLang.currLang, () => {
+      lineChartSet.value.datasets[0].label = usedLang.storage_text;
+      barChartSet.value.datasets[0].label = usedLang.purchased_power;
+      barChartSet.value.datasets[1].label = usedLang.demand;
+      barChartSet.value.datasets[2].label = usedLang.pv_production;
+      barChartSet.value.datasets[3].label = usedLang.pv_curtailment;
+      barChartSet.value.datasets[4].label = usedLang.storage_charge;
+      barChartSet.value.datasets[5].label = usedLang.storage_discharge;
+    })
+
+    let selectedNodes = inject("selectedNodes");
     const dataStore = useDataStore();
     const chartsDesignStore = useChartsDesignStore();
 

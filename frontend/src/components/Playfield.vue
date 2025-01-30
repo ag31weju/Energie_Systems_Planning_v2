@@ -77,8 +77,8 @@ import BatteryNode from "./customNodes/Battery.vue";
 import JunctionNode from "./customNodes/Junction.vue";
 import ProducerNode from "./customNodes/Producer.vue";
 
-import { usedLanguage } from "../assets/stores/pageSettings";
-import { inject, ref, reactive } from "vue";
+import { usedLanguage, usedColorBlindnessTheme } from "../assets/stores/pageSettings";
+import { inject, ref, reactive, watch } from "vue";
 import { getNodeData } from "@/utils/nodeUtils.js";
 
 
@@ -446,6 +446,12 @@ export default {
         this.imageFile = file;
         if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
         this.imgUrl = URL.createObjectURL(file);
+    handleFileChange(type, event) {
+      const file = event.target.files[0];
+      if (type === "image") {
+        this.imageFile = file;
+        if (this.imgUrl) URL.revokeObjectURL(this.imgUrl);
+        this.imgUrl = URL.createObjectURL(file);
 
         // Show alert for JSON upload
         alert("Please upload the corresponding JSON file.");
@@ -502,6 +508,9 @@ export default {
         }
       };
 
+      reader.readAsText(this.jsonFile);
+    },
+  },
       reader.readAsText(this.jsonFile);
     },
   },
