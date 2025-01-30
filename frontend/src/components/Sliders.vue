@@ -59,7 +59,7 @@ export default {
     async function reset() {
       sliderList.value.forEach((slider) => (slider.value = 0));
       // Send reset flag to the backend
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";
+      const url = "https://energie-systems-planning-v2.onrender.com/api/save-slider-data/";
       const sliderData = {
         autoSimulate: false,
         reset: true, // Flag to indicate reset action to reset graphs and matrix
@@ -71,7 +71,7 @@ export default {
       await postAndGet(url, sliderData);
     }
     async function simulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";
+      const url = "https://energie-systems-planning-v2.onrender.com/api/save-slider-data/";
       const sliderData = {
         autoSimulate: false,
         reset: false,
@@ -86,7 +86,7 @@ export default {
     }
 
     async function autoSimulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";
+      const url = "https://energie-systems-planning-v2.onrender.com/api/save-slider-data/";
       const sliderData = {
         reset: false,
         autoSimulate: true, // Send the boolean flag for auto simulation

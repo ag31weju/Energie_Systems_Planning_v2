@@ -20,7 +20,7 @@ def process_scenario(request):
     if request.method == "GET":
         try:
             # request holds ID for scenario selection
-            id = 1
+            id =  request.GET.get("id")
             filetype = request.GET.get("filetype")
             print(id, filetype)
 

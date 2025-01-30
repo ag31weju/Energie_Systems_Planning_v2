@@ -171,7 +171,7 @@ export default {
     },
     async loadRequest() {
       try {
-        const url = "http://127.0.0.1:8000/api/process-scenario/";
+        const url = "https://energie-systems-planning-v2.onrender.com/api/process-scenario/";
         let id = null;
         if (this.selectedScenario == "Scene 1") {
           id = 1;

@@ -154,7 +154,7 @@ export default {
 
       try {
         const url = "https://energie-systems-planning-v2.onrender.com/api/process-scenario/";
-        let id = 1;
+        let id = null;
         if (this.selectedScenario == "Scene 1") {
           id = 1;
         } else if (this.selectedScenario == "Scene 2") {
@@ -328,7 +328,7 @@ case "Junction":
         })),
       };
       try{
-      const url = "http://127.0.0.1:8000/api/save-scenario/";
+      const url = "https://energie-systems-planning-v2.onrender.com/api/save-scenario/";
       const response = await axios.post(
         url,
         { data: dataToSave },
@@ -578,7 +578,7 @@ case "Junction":
         })),
       };
 
-      const url = "http://127.0.0.1:8000/api/save-scenario/";
+      const url = "https://energie-systems-planning-v2.onrender.com/api/save-scenario/";
       const response = await axios.post(
         url,
         { data: dataToSave },
