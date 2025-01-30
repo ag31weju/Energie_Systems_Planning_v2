@@ -1,4 +1,3 @@
-import json
 from PIL import Image
 import io
 from graph_to_scenario.scenario import Scenario
@@ -8,7 +7,7 @@ This does image and JSON processing of the Scenario uploaded by the user.
 Image is cropped and Json file is parsed and printed out(just for testing)
 
 """
-
+#not in use
 def process_image(image_file):
     try:
         # Open the image using Pillow
@@ -50,6 +49,8 @@ def parse_json(json_file):
     Get the json file from frontend and using create_scenario.py, parse the json file for optimizer
     '''
     scenario = Scenario(json_file)
+    scenario.initialize()
+    
 
 
 

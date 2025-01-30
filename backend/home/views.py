@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
-from .scenario_processing import process_image,parse_json  # Import the external processing method
+from .scenario_processing import process_image, parse_json  # Import the external processing method
 from PIL import Image, ImageOps
 import json
 import os, io
@@ -121,6 +121,8 @@ def save_scenario(request):
         try:
             # Parse the incoming JSON data
             data = json.loads(request.body)
+            parse_json(data)
+            
             nodes = data.get('nodes')
             edges = data.get('edges')
             image_url = data.get('imageUrl')
@@ -143,6 +145,7 @@ def save_scenario(request):
     return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
 
 #Scenario upload: gets an image, crops it and sends it back as response to be displayed, Json file is also recieved-> printed out for now
+#not in use atm
 @csrf_exempt  # Use CSRF protection in production
 def upload_files(request):
     if request.method == "POST" and request.FILES:
