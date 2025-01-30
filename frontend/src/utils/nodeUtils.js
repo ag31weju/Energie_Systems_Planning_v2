@@ -18,22 +18,21 @@ export function getNodeData(label) {
       return {
         label: "Industry",
         icon: Industry,
-        inputs: [0, 1,2,3],
-        
+        inputs: [0, 1, 2, 3],
       };
 
     case "City":
       return {
         label: "City",
         icon: City,
-        inputs: [0, 1,2,3],
+        inputs: [0, 1, 2, 3],
       };
 
     case "House":
       return {
         label: "House",
         icon: House,
-        inputs: [0, 1,2,3],
+        inputs: [0, 1, 2, 3],
       };
 
     case "Battery":
@@ -41,7 +40,7 @@ export function getNodeData(label) {
         label: "Battery",
         icon: Battery,
         inputs: [0, 1],
-        outputs: [2, 3 ],
+        outputs: [2, 3],
         description: "Stores excess energy and releases it when needed.",
       };
 
@@ -50,7 +49,7 @@ export function getNodeData(label) {
         label: "Junction",
         icon: Junction,
         inputs: [0, 1],
-        outputs: [2,3 ],
+        outputs: [2, 3],
         description: "Connects multiple energy sources and consumers.",
       };
 
@@ -58,23 +57,25 @@ export function getNodeData(label) {
       return {
         label: "Gas",
         icon: Gas,
-        outputs: [0, 1,2,3],
-        description: "Provides large-scale base power with low carbon emissions.",
+        outputs: [0, 1, 2, 3],
+        description:
+          "Provides large-scale base power with low carbon emissions.",
       };
 
     case "Coal":
       return {
         label: "Coal",
         icon: Coal,
-        outputs: [0, 1,2,3],
+        outputs: [0, 1, 2, 3],
         description: "Traditional fossil fuel energy source.",
       };
 
     case "Solar":
+      console.log("test");
       return {
         label: "Solar",
         icon: Solar,
-        outputs: [0, 1,2,3],
+        outputs: [0, 1, 2, 3],
         description: "Generates renewable energy from sunlight.",
       };
 
@@ -82,7 +83,7 @@ export function getNodeData(label) {
       return {
         label: "Wind",
         icon: Wind,
-        outputs: [0, 1,2,3],
+        outputs: [0, 1, 2, 3],
         description: "Generates renewable energy from wind.",
       };
 

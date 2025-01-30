@@ -5,7 +5,7 @@
         <Chart
           type="line"
           :data="lineChartSet"
-          :options="lineChartOptions"
+          :options="chartsDesignStore.lineChartOptions"
           class="h-[30rem]"
           style="height: 15rem; width: 52rem"
         />
@@ -13,7 +13,7 @@
       <Chart
         type="bar"
         :data="barChartSet"
-        :options="barChartOptions"
+        :options="chartsDesignStore.barChartOptions"
         class="h-[30rem]"
         style="height: 15rem; width: 52rem"
       />
@@ -26,7 +26,8 @@ import Chart from "primevue/chart";
 import Panel from "primevue/panel";
 import { ref, watch, inject, onMounted, defineExpose } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
-
+import { useDataStore } from "../assets/stores/dataValues";
+import { useChartsDesignStore } from "../assets/stores/chartsDesign";
 export default {
   props: {
     chartsData: {
@@ -78,10 +79,9 @@ export default {
     },
   },
   setup(props) {
-    let chartsCollection = [];
-
     const usedLang = usedLanguage();
-    let selectedNodes = inject("selectedNodes");
+    const dataStore = useDataStore();
+    const chartsDesignStore = useChartsDesignStore();
 
     const chartsCache = ref(null);
 
@@ -98,17 +98,6 @@ export default {
           data: null,
         },
       ],
-    });
-
-    const lineChartOptions = ref({
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: "bottom",
-        },
-      },
     });
 
     const barChartSet = ref({
@@ -159,25 +148,6 @@ export default {
       ],
     });
 
-    const barChartOptions = ref({
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: "bottom",
-        },
-      },
-      scales: {
-        x: {
-          stacked: true,
-        },
-        y: {
-          stacked: true,
-        },
-      },
-    });
-
     onMounted(() => {
       chartsCache.value = Array.from(
         { length: gridSize.value },
@@ -191,10 +161,7 @@ export default {
         { length: gridSize.value },
         (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
       );
-      chartsCollection = [];
     };
-
-    defineExpose({ clearCharts });
 
     function changeCharts(newVal) {
       if (newVal[0] === -1 || newVal[1] === -1) {
@@ -206,25 +173,27 @@ export default {
         return;
       }
 
-      let selectedCharts = chartsCollection.find((el) => {
-        const nodeIDs = el.selectedNodes;
-        return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
-      })?.chartsData;
+      let rowID = dataStore.selectedNodes[1];
+      let colID = dataStore.selectedNodes[0];
+      const newChartsCache = Array.from({ length: gridSize.value }, () =>
+        Array.from({ length: gridSize.value }, () => null)
+      );
 
-      if (!selectedCharts) {
-        const newCharts = Array.from(
-          { length: gridSize.value },
-          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
-        );
-        selectedCharts = newCharts;
-        chartsCollection.push({
-          selectedNodes: newVal,
-          chartsData: selectedCharts,
-        });
-      }
+      dataStore.extractDataValuesCell(
+        newChartsCache,
+        dataStore.dataValues,
+        colID,
+        rowID,
+        false,
+        true
+      );
 
-      chartsCache.value = selectedCharts;
-      assignAllData(selectedCharts[0][0]);
+      chartsCache.value = newChartsCache;
+      assignAllData(
+        chartsCache.value[
+          dataStore.prodCapacities.get(dataStore.selectedNodes[1])
+        ][dataStore.prodCapacities.get(dataStore.selectedNodes[0])]
+      );
     }
 
     function assignAllData(newVal) {
@@ -267,18 +236,6 @@ export default {
       chartsCache.value = Array.from({ length: gridSize.value }, () =>
         Array.from({ length: gridSize.value }, () => null)
       );
-
-      let idx = chartsCollection.findIndex((el) => {
-        const nodeIDs = el.selectedNodes;
-        return (
-          nodeIDs[0] === selectedNodes.value[0] &&
-          nodeIDs[1] === selectedNodes.value[1]
-        );
-      });
-
-      if (idx >= 0) {
-        chartsCollection[idx].chartsData = chartsCache.value;
-      }
     }
 
     watch(
@@ -294,7 +251,7 @@ export default {
     );
 
     watch(
-      () => selectedNodes.value,
+      () => dataStore.selectedNodes,
       (newVal) => changeCharts(newVal),
       {
         deep: true,
@@ -304,8 +261,7 @@ export default {
     return {
       lineChartSet,
       barChartSet,
-      lineChartOptions,
-      barChartOptions,
+      chartsDesignStore,
       usedLang,
       clearCharts,
     };

@@ -1,21 +1,43 @@
 <template>
   <Panel id="playfieldS">
-    <div id="vueflow_container" ref="vueFlowContainer" :style="{
-      backgroundImage: 'url(' + imgUrl + ')',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }" style="
+    <div
+      id="vueflow_container"
+      ref="vueFlowContainer"
+      :style="{
+        backgroundImage: 'url(' + imgUrl + ')',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }"
+      style="
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 92%;
         z-index: 2;
-      ">
-      <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
-        :panOnDrag="false" :pan-on-scroll="false" :disableKeyboardA11y="true" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
-        :connection-mode="connectionMode" :node-types="customNodeTypes" :auto-pan-on-node-drag="false"
-        :nodes-draggable="locked" :edges-connectable="false" :zoomOnDoubleClick="false" @connect="onConnect" :autoPanOnConnect="false" />
+      "
+    >
+      <vue-flow
+        v-model:nodes="nodes"
+        v-model:edges="edges"
+        :fit-view="true"
+        :zoomOnScroll="false"
+        :zoomOnPinch="false"
+        :panOnDrag="false"
+        :pan-on-scroll="false"
+        :disableKeyboardA11y="true"
+        :preventScrolling="true"
+        :snap-grid="snapGrid"
+        :snap-to-grid="true"
+        :connection-mode="connectionMode"
+        :node-types="customNodeTypes"
+        :auto-pan-on-node-drag="false"
+        :nodes-draggable="locked"
+        :edges-connectable="false"
+        :zoomOnDoubleClick="false"
+        @connect="onConnect"
+        :autoPanOnConnect="false"
+      />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay1"></canvas>
@@ -23,19 +45,57 @@
     <!-- Buttons at the Bottom -->
 
     <div id="buttons_container">
-      <Select v-model="selectedScenario" :options="scenarios" class="Sbutton" placeholder="Choose Scenario"></Select>
+      <Select
+        v-model="selectedScenario"
+        :options="scenarios"
+        class="Sbutton"
+        placeholder="Choose Scenario"
+      ></Select>
 
-      <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
-      <Button @click="triggerImageUpload" type="submit" class="button"
-        v-bind:label="usedLang.upload_scenario">img</Button>
-      <Button @click="triggerJsonUpload" type="submit" class="slider-button" v-bind:label="upload_json">json</Button>
+      <Button
+        @click="loadRequest"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.load_scenario"
+      ></Button>
+      <Button
+        @click="triggerImageUpload"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.upload_scenario"
+        >img</Button
+      >
+      <Button
+        @click="triggerJsonUpload"
+        type="submit"
+        class="slider-button"
+        v-bind:label="upload_json"
+        >json</Button
+      >
 
-      <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
+      <Button
+        @click="toggleGridOverlay"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.toggle_grid"
+      ></Button>
     </div>
-    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
-      style="display: none" />
-    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
-      style="display: none" />
+    <input
+      type="file"
+      id="imageInput"
+      ref="imageInput"
+      @change="handleFileChange('image', $event)"
+      accept="image/*"
+      style="display: none"
+    />
+    <input
+      type="file"
+      id="jsonInput"
+      ref="jsonInput"
+      @change="handleFileChange('json', $event)"
+      accept=".json"
+      style="display: none"
+    />
   </Panel>
 </template>
 
@@ -50,14 +110,14 @@ import ProducerNode from "./customNodes/Producer.vue";
 import JunctionNode from "./customNodes/Junction.vue";
 import BatteryNode from "./customNodes/Battery.vue";
 
-
 import { getNodeData } from "@/utils/nodeUtils.js";
 
 import { usedLanguage } from "../assets/stores/pageSettings";
-import { ref, reactive, inject } from "vue";
+import { ref, reactive } from "vue";
+import { useDataStore } from "@/assets/stores/dataValues";
 
 export default {
-  inject: ["selectedNodes", "isAutoSimulating", "newScenarioLoaded"],
+  inject: ["selectedNodes", "isAutoSimulating", "prepareNewScenario"],
   components: {
     Panel,
     Button,
@@ -103,11 +163,7 @@ export default {
 
     // Reactive state for selected consumer/producer and their options
     const selectedConsumer = ref(""); // Selected value for consumers
-    const optionsConsumer = ref([
-      "Industry",
-      "City",
-      "House",
-    ]); // Consumer options
+    const optionsConsumer = ref(["Industry", "City", "House"]); // Consumer options
 
     const selectedProducer = ref(""); // Selected value for producers
     const optionsProducers = ref(["Gas", "Coal", "Solar", "Wind"]); // Producer options
@@ -141,6 +197,10 @@ export default {
 
   methods: {
     async loadRequest() {
+      const dataStore = useDataStore();
+
+      if (this.isAutoSimulating) return;
+
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
         let id = null;
@@ -170,10 +230,17 @@ export default {
 
         const { nodes, edges } = graphResponse.data;
 
-        this.nodes = nodes.map((node) => ({
-      ...node,
-      data: getNodeData(node.label),
-    }));
+        //counts how many prods and cons there are
+        dataStore.prodCapacities = new Map();
+
+        this.nodes = nodes.map((node) => {
+          if (node.type === "producer" || node.type === "battery")
+            dataStore.prodCapacities.set(node.id.at(-1), 0);
+          return {
+            ...node,
+            data: getNodeData(node.label),
+          };
+        });
 
         this.edges = edges.map((edge) => ({
           ...edge,
@@ -181,12 +248,14 @@ export default {
           style: this.edgeProps.style,
           color: this.edgeProps.color,
         }));
+
+        //new scenario loading finished and assigned each node a prod or cons id
+        this.prepareNewScenario();
       } catch (error) {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
       }
     },
-
 
     toggleGridOverlay() {
       this.showGrid = !this.showGrid;
@@ -238,10 +307,10 @@ export default {
       }
     },
 
-
     // Handle file changes for both image and JSON
     triggerImageUpload() {
-      if (this.isAutoSimulating) return; this.$refs.imageInput.click(); // Trigger image upload
+      if (this.isAutoSimulating) return;
+      this.$refs.imageInput.click(); // Trigger image upload
     },
     // Trigger the JSON file input
     triggerJsonUpload() {
@@ -250,7 +319,7 @@ export default {
       this.$refs.jsonInput.click(); // Trigger JSON upload
     },
 
-  handleFileChange(type, event) {
+    handleFileChange(type, event) {
       const file = event.target.files[0];
       if (type === "image") {
         this.imageFile = file;
@@ -261,8 +330,7 @@ export default {
         alert("Please upload the corresponding JSON file.");
       } else if (type === "json") {
         this.jsonFile = file;
-        
-    
+
         this.loadScenarioData(); // Handle JSON after image upload
       }
     },
@@ -295,8 +363,6 @@ export default {
               data: getNodeData(node.label), // Will be populated based on label
             };
 
-            
-
             return newNode;
           });
 
@@ -310,49 +376,48 @@ export default {
           console.log("Nodes processed:", this.nodes);
           console.log("Edges processed:", this.edges);
           const dataToSave = {
-        nodes: this.nodes.map((node) => ({
-          id: node.id,
-          position: node.position,
-          type: node.type,
-          label: node.data.label,
-        })),
-        edges: this.edges.map((edge) => ({
-          id: edge.id,
-          source: edge.source,
-          target: edge.target,
-          color: edge.color,
-          style: edge.style,
-          sourceHandle: edge.sourceHandle,
-          targetHandle: edge.targetHandle,
-        })),
+            nodes: this.nodes.map((node) => ({
+              id: node.id,
+              position: node.position,
+              type: node.type,
+              label: node.data.label,
+            })),
+            edges: this.edges.map((edge) => ({
+              id: edge.id,
+              source: edge.source,
+              target: edge.target,
+              color: edge.color,
+              style: edge.style,
+              sourceHandle: edge.sourceHandle,
+              targetHandle: edge.targetHandle,
+            })),
+          };
+
+          const url = "http://127.0.0.1:8000/api/save-scenario/";
+          const response = await axios.post(
+            url,
+            { data: dataToSave },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            alert("Data saved successfully!");
+          } else {
+            alert("Error saving data.");
+          }
+        } catch (error) {
+          console.error("Error processing or saving JSON:", error);
+          alert(`Error: ${error.message}`);
+        }
       };
 
-      const url = "http://127.0.0.1:8000/api/save-scenario/";
-      const response = await axios.post(
-        url,
-        { data: dataToSave },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          }
-        }
-      );
-
-      if (response.status === 200) {
-        alert("Data saved successfully!");
-      } else {
-        alert("Error saving data.");
-      }
-    } catch (error) {
-      console.error("Error processing or saving JSON:", error);
-      alert(`Error: ${error.message}`);
-    }
-  };
-
-  reader.readAsText(this.jsonFile);
-}
-
-},
+      reader.readAsText(this.jsonFile);
+    },
+  },
 };
 </script>
 

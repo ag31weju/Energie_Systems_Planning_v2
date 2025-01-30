@@ -6,7 +6,7 @@
         :min="0"
         :max="5"
         :step="step"
-        :disabled="isAutoSimulating"
+        :disabled="isAutoSimulating || sliderList[index].nodeID === -1"
         class="w-56"
         :id="`slider${index}`"
         @change="(event) => startMoveOutline(event, index)"
@@ -17,20 +17,27 @@
 
     <div id="slider-buttons-container">
       <Button
-        @click="reset"
+        @click="postAndGet(true, false)"
         class="button"
         v-bind:label="usedLang.reset_text"
+        :disabled="sliderList.some((node) => node.nodeID === -1)"
       ></Button>
       <Button
-        @click="autoSimulateRequest"
+        @click="postAndGet(false, true)"
         class="button"
         v-bind:label="usedLang.auto"
+        :disabled="
+          isAutoSimulating || sliderList.some((node) => node.nodeID === -1)
+        "
       >
       </Button>
       <Button
-        @click="simulateRequest"
+        @click="postAndGet(false, false)"
         class="button"
         v-bind:label="usedLang.simulate"
+        :disabled="
+          isAutoSimulating || sliderList.some((node) => node.nodeID === -1)
+        "
       ></Button>
     </div>
   </Panel>
@@ -43,68 +50,34 @@ import Panel from "primevue/panel";
 import axios from "axios";
 import { ref, watch, onMounted, inject } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
+import { useDataStore } from "../assets/stores/dataValues";
 
 export default {
   props: ["auto", "simulate", "reset_text"],
   setup(props, context) {
     const usedLang = usedLanguage();
+    const dataStore = useDataStore();
+    const url = "http://127.0.0.1:8000/api/save-slider-data/";
 
-    let selectedNodes = inject("selectedNodes");
     let moveOutline = inject("moveOutline");
     let isAutoSimulating = inject("isAutoSimulating");
 
     const step = ref(1);
-    const sliderList = ref([]);
+    const sliderList = ref([
+      { value: 0, nodeID: -1 },
+      { value: 0, nodeID: -1 },
+    ]);
 
-    async function reset() {
-      sliderList.value.forEach((slider) => (slider.value = 0));
-      // Send reset flag to the backend
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";
-      const sliderData = {
-        autoSimulate: false,
-        reset: true, // Flag to indicate reset action to reset graphs and matrix
-        sliders: sliderList.value.map((slider) => ({
-          type: slider.type,
-          value: slider.value,
-        })),
-      };
-      await postAndGet(url, sliderData);
-    }
-    async function simulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";
-      const sliderData = {
-        autoSimulate: false,
-        reset: false,
-        sliders: sliderList.value.map((slider) => ({
-          type: slider.type,
-          value: slider.value,
-        })),
-      };
-
-      // Send the full slider data to the backend
-      await postAndGet(url, sliderData);
-    }
-
-    async function autoSimulateRequest() {
-      const url = "http://127.0.0.1:8000/api/save-slider-data/";
-      const sliderData = {
-        reset: false,
-        autoSimulate: true, // Send the boolean flag for auto simulation
-        sliders: sliderList.value.map((slider) => ({
-          type: slider.type,
-          value: slider.value,
-        })),
-      };
-
-      // Send the auto-simulation request with the flag
-      await postAndGet(url, sliderData);
-    }
-
-    async function postAndGet(url, data) {
+    async function postAndGet(reset, autoSimulate) {
+      sliderList.value.forEach((slider) => {
+        dataStore.prodCapacities.set(slider.nodeID, slider.value);
+      });
       try {
-        const autoSimulate = data.autoSimulate;
-        const reset = data.reset;
-        const sliderVals = data.sliders;
+        const data = {
+          reset: reset,
+          autoSimulate: autoSimulate, // Send the boolean flag for auto simulation
+          prodCapacities: Array.from(dataStore.prodCapacities),
+        };
 
         const response = await axios
           .post(url, data, {
@@ -122,6 +95,10 @@ export default {
           })
           .catch((e) => console.error("GET did not work:", e));
 
+        const sliderVals = sliderList.value.map((slider) => {
+          return slider.value;
+        });
+
         const propagateChange = {
           simData: simData.mainData,
           reset: reset,
@@ -137,25 +114,24 @@ export default {
     }
 
     function startMoveOutline(event, index) {
-      if (!isAutoSimulating.value) moveOutline(event, index);
+      if (!isAutoSimulating.value) {
+        moveOutline(event, index);
+      }
     }
 
     function changeSliders(newVal) {
-      sliderList.value = [
-        { value: 0, nodeID: selectedNodes.value[0] },
-        { value: 0, nodeID: selectedNodes.value[1] },
-      ];
+      sliderList.value.forEach((slider, idx) => {
+        slider.nodeID = newVal[idx];
+        slider.value = dataStore.prodCapacities.has(
+          dataStore.selectedNodes[idx]
+        )
+          ? dataStore.prodCapacities.get(dataStore.selectedNodes[idx])
+          : 0;
+      });
     }
 
-    onMounted(() => {
-      sliderList.value = [
-        { value: 0, nodeID: selectedNodes.value[0] },
-        { value: 0, nodeID: selectedNodes.value[1] },
-      ];
-    });
-
     watch(
-      () => selectedNodes.value,
+      () => dataStore.selectedNodes,
       (newVal) => changeSliders(newVal),
       {
         deep: true,
@@ -166,9 +142,7 @@ export default {
       usedLang,
       sliderList,
       step,
-      reset,
-      autoSimulateRequest,
-      simulateRequest,
+      postAndGet,
       startMoveOutline,
       isAutoSimulating,
     };

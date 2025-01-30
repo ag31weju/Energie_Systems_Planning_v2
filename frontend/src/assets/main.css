@@ -18,7 +18,7 @@
 
 .dark-theme {
   --primary-background-color: rgb(24, 24, 24);
-  --primary-text-color: black;
+  --primary-text-color: white;
   --primary-panel-color: rgb(39, 39, 39);
   --primary-border: 2px solid rgb(22, 22, 22);
   --primary-panel-radius: 6px;
@@ -470,7 +470,42 @@ body {
   gap: 1rem; /* Space between buttons */
 }
 .matrix-plotly {
-  height: 100%;
+  height: 80%;
   width: 100%;
   cursor: default;
+}
+
+.custom-label {
+  display: inline-block;
+  color: var(--primary-text-color);
+  background-color: var(--primary-background-color);
+  padding: 8px 24px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+#label-container {
+  display: flex;
+  justify-content: space-around;
+  min-width: 100%;
+  min-height: 8%;
+  margin-top: 3%;
+  margin-bottom: 2%;
+}
+
+.custom-label.selectedFirst {
+  box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.8); /* Red glow effect */
+  border: 2px solid black; /* Optional red border */
+  transform: scale(1.1); /* Slightly larger */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.custom-label.selectedSecond {
+  box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.8); /* Red glow effect */
+  border: 2px solid black; /* Optional red border */
+  transform: scale(1.1); /* Slightly larger */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
