@@ -243,9 +243,7 @@ export default {
                 icon: Commercial,
                 inputs: [0],
                 outputs: [0, 1],
-                consID: consCounter,
               };
-              consCounter++;
               break;
             case "Residential Large":
               newNode.data = {
@@ -253,7 +251,6 @@ export default {
                 icon: ResidentialLarge,
                 inputs: [0],
                 outputs: [0, 1],
-                consID: consCounter,
               };
               consCounter++;
               break;
@@ -263,9 +260,7 @@ export default {
                 icon: ResidentialSmall,
                 inputs: [0],
                 outputs: [0, 1],
-                consID: consCounter,
               };
-              consCounter++;
               break;
             case "Nuclear Power":
               newNode.data = {
@@ -275,10 +270,8 @@ export default {
                 outputs: [0],
                 description:
                   "Provides large-scale base power with low carbon emissions.",
-                prodID: prodCounter,
               };
               dataStore.prodCapacities.set(node.id.at(-1), 0);
-              prodCounter++;
               break;
             case "Coal Power":
               newNode.data = {
@@ -287,10 +280,8 @@ export default {
                 inputs: [1],
                 outputs: [0],
                 description: "Traditional fossil fuel energy source.",
-                prodID: prodCounter,
               };
               dataStore.prodCapacities.set(node.id.at(-1), 0);
-              prodCounter++;
               break;
             case "Solar Power":
               newNode.data = {
@@ -299,10 +290,8 @@ export default {
                 inputs: [1],
                 outputs: [0],
                 description: "Generates renewable energy from sunlight.",
-                prodID: prodCounter,
               };
               dataStore.prodCapacities.set(node.id.at(-1), 0);
-              prodCounter++;
               break;
             case "Wind Power":
               newNode.data = {
@@ -311,10 +300,8 @@ export default {
                 inputs: [1],
                 outputs: [0],
                 description: "Generates renewable energy from wind.",
-                prodID: prodCounter,
               };
               dataStore.prodCapacities.set(node.id.at(-1), 0);
-              prodCounter++;
               break;
             default:
               console.warn(`Unknown label: ${node.label}`);

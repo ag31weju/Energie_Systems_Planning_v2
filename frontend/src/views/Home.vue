@@ -185,24 +185,11 @@ export default {
     }
     provide("moveOutline", moveOutline);
 
-    //for testing
-    onMounted(() => {
-      /*
-      let prodCapacities = dataStore.prodCapacities;
-      dataStore.prodCapacities = "hm";
-      prodCapacities = "hm";
-      console.log(prodCapacities === dataStore.prodCapacities);
-      console.log(prodCapacities);*/
-    });
-
     function prepareNewScenario(nProds, nCons) {
       dataStore.selectedNodes = [-1, -1];
 
       matrixComp.value?.clearMatrix();
       chartsComp.value?.clearCharts();
-
-      numberConsumers = nCons;
-      numberProducers = nProds;
 
       const initializeNDarray = (nProds) => {
         return nProds === 0
@@ -210,8 +197,7 @@ export default {
           : Array.from({ length: 6 }, () => initializeNDarray(nProds - 1));
       };
 
-      console.log(dataStore.prodCapacities);
-      dataStore.dataValues = initializeNDarray(nProds);
+      dataStore.dataValues = initializeNDarray(dataStore.prodCapacities.size);
     }
 
     provide("prepareNewScenario", prepareNewScenario);

@@ -185,18 +185,4 @@ export default {
 
 <style>
 @import "../assets/main.css";
-
-.custom-label.selectedFirst {
-  box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.8); /* Red glow effect */
-  border: 2px solid black; /* Optional red border */
-  transform: scale(1.1); /* Slightly larger */
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.custom-label.selectedSecond {
-  box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.8); /* Red glow effect */
-  border: 2px solid black; /* Optional red border */
-  transform: scale(1.1); /* Slightly larger */
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
 </style>
