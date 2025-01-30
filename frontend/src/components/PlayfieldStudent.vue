@@ -11,29 +11,12 @@
         width: 100%;
         height: 92%;
         z-index: 2;
-      "
-    >
-      <vue-flow
-        v-model:nodes="nodes"
-        v-model:edges="edges"
-        :fit-view="true"
-        :zoomOnScroll="false"
-        :zoomOnPinch="false"
-        :panOnDrag="false"
-        :pan-on-scroll="false"
-        :disableKeyboardA11y="true"
-        :preventScrolling="true"
-        :snap-grid="snapGrid"
-        :snap-to-grid="true"
-        :connection-mode="connectionMode"
-        :node-types="customNodeTypes"
-        :auto-pan-on-node-drag="false"
-        :nodes-draggable="locked"
-        :edges-connectable="false"
-        :zoomOnDoubleClick="false"
-        @connect="onConnect"
-        :autoPanOnConnect="false"
-      />
+      ">
+      <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
+        :panOnDrag="false" :pan-on-scroll="false" :disableKeyboardA11y="true" :preventScrolling="true"
+        :snap-grid="snapGrid" :snap-to-grid="true" :connection-mode="connectionMode" :node-types="customNodeTypes"
+        :auto-pan-on-node-drag="false" :nodes-draggable="locked" :edges-connectable="false" :zoomOnDoubleClick="false"
+        @connect="onConnect" :autoPanOnConnect="false" />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay1"></canvas>
@@ -41,28 +24,12 @@
     <!-- Buttons at the Bottom -->
 
     <div id="buttons_container">
-      <Select v-model="selectedScenario" :options="scenarios" class="Sbutton" :placeholder="usedLang.choose_scenario"></Select>
+      <Select v-model="selectedScenario" :options="scenarios" class="Sbutton"
+        :placeholder="usedLang.choose_scenario"></Select>
 
-      <Button
-        @click="loadRequest"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.load_scenario"
-      ></Button>
-      <Button
-        @click="triggerImageUpload"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.upload_scenario"
-        ></Button
-      >
-      <Button
-        @click="triggerJsonUpload"
-        type="submit"
-        class="button"
-        v-bind:label="usedLang.upload_json"
-        ></Button
-      >
+      <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
+      <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario"></Button>
+      <Button @click="triggerJsonUpload" type="submit" class="button" v-bind:label="usedLang.upload_json"></Button>
 
       <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
     </div>
@@ -103,12 +70,12 @@ export default {
     const currColor = usedColorBlindnessTheme();
 
     watch(() => currColor.currentColorSettings, () => {
-    //   setTimeout(() => {
-    //     var root = document.documentElement;
-    //     var style = getComputedStyle(root);
-    //     var sliderHandleBorder = style.getPropertyValue('--slider-handle-border-color-first').trim();
-    //     console.log(`Slider Handle Border Color: ${sliderHandleBorder}`)
-    //   })
+      //   setTimeout(() => {
+      //     var root = document.documentElement;
+      //     var style = getComputedStyle(root);
+      //     var sliderHandleBorder = style.getPropertyValue('--slider-handle-border-color-first').trim();
+      //     console.log(`Slider Handle Border Color: ${sliderHandleBorder}`)
+      //   })
     })
 
     watch(() => usedLang.currLang, () => {
@@ -246,7 +213,38 @@ export default {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
       }
+      const dataToSave = {
+        nodes: this.nodes.map((node) => ({
+          id: node.id,
+          position: node.position,
+          type: node.type,
+          label: node.data.label,
+        })),
+        edges: this.edges.map((edge) => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          color: edge.color,
+          style: edge.style,
+          sourceHandle: edge.sourceHandle,
+          targetHandle: edge.targetHandle,
+        })),
+      };
+
+      const url = "http://127.0.0.1:8000/api/save-scenario/";
+      const response = await axios.post(
+        url,
+        { data: dataToSave },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+
     },
+
+
 
     toggleGridOverlay() {
       this.showGrid = !this.showGrid;
