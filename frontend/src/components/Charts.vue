@@ -7,7 +7,7 @@
           :data="lineChartSet"
           :options="chartsDesignStore.lineChartOptions"
           class="h-[30rem]"
-          style="height: 15rem; width: 52rem"
+          style="height: 10%; width: 100%"
         />
       </div>
       <Chart
@@ -15,7 +15,7 @@
         :data="barChartSet"
         :options="chartsDesignStore.barChartOptions"
         class="h-[30rem]"
-        style="height: 15rem; width: 52rem"
+        style="height: 10%; width: 100%"
       />
     </div>
   </Panel>
