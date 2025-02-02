@@ -1,6 +1,6 @@
 <template>
   <div class="custom-node" :class="{ highlighted: isHighlighted }" @mouseover="handleMouseOver"
-    @mouseleave="handleMouseLeave" @click="handleClick">
+    @mouseleave="handleMouseLeave">
     <div class="consumer-icon" :style="{ width: iconSize, height: iconSize }">
       <img :src="data.icon" alt="Consumer Icon" />
     </div>
@@ -54,9 +54,6 @@ export default defineComponent({
       isHighlighted.value = false;
     };
 
-    const handleClick = () => {
-      alert("Node clicked");
-    };
 
     return {
       Position,
@@ -64,7 +61,6 @@ export default defineComponent({
       iconSize,
       handleMouseOver,
       handleMouseLeave,
-      handleClick,
     };
   },
 });
