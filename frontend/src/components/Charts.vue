@@ -1,23 +1,19 @@
 <template>
   <Panel id="charts-container">
-    <div id="chart1-box">
-      <div id="chart2-box">
-        <Chart
+    <Chart
           type="line"
           :data="lineChartSet"
           :options="chartsDesignStore.lineChartOptions"
           class="h-[30rem]"
-          style="height: 15rem; width: 52rem"
-        />
-      </div>
-      <Chart
-        type="bar"
-        :data="barChartSet"
-        :options="chartsDesignStore.barChartOptions"
-        class="h-[30rem]"
-        style="height: 15rem; width: 52rem"
-      />
-    </div>
+          style="height: 25vh; width: 45vw"
+    />
+    <Chart
+      type="bar"
+      :data="barChartSet"
+      :options="chartsDesignStore.barChartOptions"
+      class="h-[30rem]"
+      style="height: 25vh; width: 45vw;"
+    />
   </Panel>
 </template>
 

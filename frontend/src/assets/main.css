@@ -198,6 +198,7 @@ body {
   background-color: var(--primary-panel-color);
   border: var(--primary-border);
   display: block;
+  overflow: hidden;
 }
 
 #matrix-container .p-panel-header {
@@ -242,6 +243,15 @@ body {
   height: 100%;
   background-color: var(--primary-panel-color);
   border: var(--primary-border);
+  overflow: auto;
+}
+
+#charts-container .p-panel-header{
+  display: none;
+}
+
+#charts-container .p-panel-content{
+  padding: 0;
 }
 
 #checkboxes {
@@ -507,7 +517,7 @@ body {
   gap: 1rem; /* Space between buttons */
 }
 .matrix-plotly {
-  height: 80%;
+  height: 30vh;
   width: 100%;
   cursor: default;
 }
