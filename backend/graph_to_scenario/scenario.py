@@ -1,17 +1,20 @@
 from pathlib import Path
 import math
-#from .node_types import Producer, Consumer, Battery
-#from . import Utils
 
-from node_types import Producer, Consumer, Battery
+# from .node_types import Producer, Consumer, Battery
+# from . import Utils
+
+from node_types import Producer, Consumer, Battery, Timesteps
 import Utils
+import model_input
 
 
 class Scenario:
     def __init__(self, graph_data):
         self.nodes = []  # contains nodes parsed from json sent from frontend
         self.edges = []  # contains edges parsed from json sent from frontend
-        self.timestep_chosen = None  # the timestep from the excel file
+        self.timestepfile_chosen = None  # the timestep from the excel file
+        self.timesteps = []
         self.graph_data = graph_data  # the graph json from frontend
         # folder paths
         self.current_dir = Path(__file__).parent
@@ -76,13 +79,12 @@ class Scenario:
                     )
 
                 if (
-                    "demand_profile" in tech_defaults
-                    and tech_defaults["demand_profile"] != None
+                    "demand_profile_name" in tech_defaults
+                    and tech_defaults["demand_profile_name"] != None
                 ):
                     processed_demand_profile = self.process_profile(
-                        tech_defaults["demand_profile"]
+                        tech_defaults["demand_profile_name"]
                     )
-
                 # Create the appropriate node based on type
                 if node_type == "producer":
                     self.nodes.append(
@@ -112,6 +114,9 @@ class Scenario:
                             capacity=tech_defaults.get("capacity"),
                         )
                     )
+            self.nodes.append(
+                Timesteps(timesteplist=self.timesteps)
+            )  # at end append timestep list
         except Exception as e:
             print(f"Error processing graph data: {e}")
 
@@ -122,12 +127,14 @@ class Scenario:
 
     def get_time_steps(self, scenario_name="default"):
         """
-        Gets the timestep for a specific scenario name from excel file and saves it to self.timestep_chosen.
+        Gets the timestep for a specific scenario name from excel file and saves it to self.timestepfile_chosen.
 
         Parameters:
             scenario_name (str): The name of the scenario to fetch the timestep for (default is "default").
         """
-        self.timestep_chosen = Utils.get_timestep(self.excel_file_path, scenario_name)
+        self.timestepfile_chosen = Utils.get_timestep(
+            self.excel_file_path, scenario_name
+        )
 
     def get_edges(self):
         """
@@ -157,7 +164,7 @@ class Scenario:
         """
         Prints the timestep chosen for the scenario.
         """
-        print(f"Time step chosen: {self.timestep_chosen}")
+        print(f"Time step chosen: {self.timestepfile_chosen}")
 
     def process_profile(self, profile_name):
         """
@@ -179,7 +186,7 @@ class Scenario:
 
             # Construct paths using pathlib
             profile_file_path = self.volume_data_folder / profile_name
-            indices_file_path = self.volume_data_folder / self.timestep_chosen
+            indices_file_path = self.volume_data_folder / self.timestepfile_chosen
 
             # Read and process the profile data
             with open(profile_file_path, "r") as profile_file:
@@ -188,6 +195,7 @@ class Scenario:
             # Read and process the indices data
             with open(indices_file_path, "r") as indices_file:
                 indices = [int(index.strip()) for index in indices_file.readlines()]
+                self.timesteps = indices  # assign timesteps from file to list
 
             # Extract the corresponding values
             selected_data = [
@@ -212,6 +220,10 @@ class Scenario:
             print(f"Error processing profile {profile_name}: {e}")
             return []
 
+    def process_timesteps():
+        # indices_file_path = self.volume_data_folder / self.timestepfile_chosen
+        pass
+
 
 def main():
     current_dir = Path(__file__).parent
@@ -220,8 +232,14 @@ def main():
     # Initialize the Scenario class
     scenario = Scenario(graph_data)
     scenario.initialize()
+    m = model_input.OptNetworkInput()
+    m.populate1(scenario.nodes)
+    m.write("test.dat")
+
+
+# print(scenario.timesteps)
 
 
 if __name__ == "__main__":
-    #pass
+    # pass
     main()

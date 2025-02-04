@@ -10,7 +10,6 @@ import numpy as np
 import node_types
 
 
-
 from abc import ABC, abstractmethod
 import random
 
@@ -80,12 +79,18 @@ class ModelParam:
         if not self.vals:
             return
         f.write(f"param {self.name} := \n")
+
         if self.dim == 0:
-            f.write(f"{self.vals}\n")
+            f.write(
+                f"{self.vals:.6f}\n"
+            )  # Ensure fixed-point notation for single values
         else:
             for key, value in self.vals.items():
                 if not math.isnan(value):
-                    f.write(f"{key} {value}\n")
+                    f.write(
+                        f"{key} {value:.6f}\n"
+                    )  # Format all numbers to six decimal places
+
         f.write(";\n\n")
 
 
@@ -157,7 +162,7 @@ class AbstractModelInput(ABC):
         for s in self._sets:
             s.write(f)
         for p in self._params:
-            p.write(f)
+            p.write(f)  # This calls the updated ModelParam.write method
         f.close()
         pass
 
@@ -196,6 +201,12 @@ class OptNetworkInput(AbstractModelInput):
         technologies = set()
 
         for item in scenario_list:
+            # Handle Timesteps first to avoid AttributeError
+            if isinstance(item, node_types.Timesteps):
+                if hasattr(item, "timesteps"):
+                    self["T"].val = item.timesteps  # Use the correct attribute name
+                continue  # Skip the rest of the loop for Timesteps
+
             node_id = item.node_id
             tech = item.technology
             nodes.add(node_id)
@@ -259,13 +270,38 @@ class OptNetworkInput(AbstractModelInput):
 
 
 if __name__ == "__main__":
-    
+    #for testing
     entity_list = [
-        node_types.Producer(node_id="node_1", technology="Solar", capacity_cost=1000, operation_cost=36526, operation_lifetime=25.0, availability_profile=['0.000000', '0.000000']),
-        node_types.Consumer(node_id="node_2", technology="City", yearly_demand=50000000.0, demand_profile=['0.000076', '0.000072']),
+        node_types.Producer(
+            node_id="node_1",
+            technology="Solar",
+            capacity_cost=1000,
+            operation_cost=36526,
+            operation_lifetime=25.0,
+            availability_profile=["0.000000", "0.000000"],
+        ),
+        node_types.Consumer(
+            node_id="node_2",
+            technology="City",
+            yearly_demand=50000000.0,
+            demand_profile=["0.000076", "0.000072"],
+        ),
         node_types.Battery(node_id="node_3", technology="Battery", capacity=10000.0),
-        node_types.Consumer(node_id="node_5", technology="Industry", yearly_demand=100000000.0, demand_profile=['0.000076', '0.000072']),
-        node_types.Producer(node_id="node_6", technology="Coal", capacity_cost=2000, operation_cost=0.08, operation_lifetime=40.0, availability_profile=[]),
+        node_types.Consumer(
+            node_id="node_5",
+            technology="Industry",
+            yearly_demand=100000000.0,
+            demand_profile=["0.000076", "0.000072"],
+        ),
+        node_types.Producer(
+            node_id="node_6",
+            technology="Coal",
+            capacity_cost=2000,
+            operation_cost=0.08,
+            operation_lifetime=40.0,
+            availability_profile=[],
+        ),
+        node_types.Timesteps([1, 2]),
     ]
     h = OptNetworkInput()
     h.populate1(entity_list)

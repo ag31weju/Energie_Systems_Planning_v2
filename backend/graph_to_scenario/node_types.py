@@ -50,3 +50,11 @@ class Battery:
             f"Battery(node_id={self.node_id}, technology={self.technology}, "
             f"capacity={self.capacity})"
         )
+
+
+class Timesteps:
+    def __init__(self, timesteplist):
+        self.timesteps = timesteplist
+
+    def __repr__(self):
+        return(f"Timesteps({self.timesteps})")
