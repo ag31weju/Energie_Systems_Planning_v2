@@ -25,17 +25,17 @@ class Producer:
 
 
 class Consumer:
-    def __init__(self, node_id, technology, yearly_demand, demand_profile_name):
+    def __init__(self, node_id, technology, yearly_demand, demand_profile):
         self.node_id = node_id
         self.technology = technology
         self.yearly_demand = yearly_demand
-        self.demand_profile_name = demand_profile_name
+        self.demand_profile = demand_profile
 
     def __repr__(self):
         return (
             f"Consumer(node_id={self.node_id}, technology={self.technology}, "
             f"yearly_demand={self.yearly_demand}, "
-            f"demand_profile_name={self.demand_profile_name})"
+            f"demand_profile={self.demand_profile})"
         )
 
 

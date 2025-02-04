@@ -1,10 +1,10 @@
 from pathlib import Path
 import math
-from .node_types import Producer, Consumer, Battery
-from . import Utils
+#from .node_types import Producer, Consumer, Battery
+#from . import Utils
 
-# from node_types import Producer, Consumer, Battery
-# import Utils
+from node_types import Producer, Consumer, Battery
+import Utils
 
 
 class Scenario:
@@ -63,7 +63,7 @@ class Scenario:
                 if not tech_defaults:
                     raise ValueError(f"No defaults found for technology: {technology}")
 
-                # Process availability_profile_name or demand_profile_name
+                # Process availability_profile_name or demand_profile
                 processed_availability_profile = None
                 processed_demand_profile = None
 
@@ -76,11 +76,11 @@ class Scenario:
                     )
 
                 if (
-                    "demand_profile_name" in tech_defaults
-                    and tech_defaults["demand_profile_name"] != None
+                    "demand_profile" in tech_defaults
+                    and tech_defaults["demand_profile"] != None
                 ):
                     processed_demand_profile = self.process_profile(
-                        tech_defaults["demand_profile_name"]
+                        tech_defaults["demand_profile"]
                     )
 
                 # Create the appropriate node based on type
@@ -101,7 +101,7 @@ class Scenario:
                             node_id=node["id"],
                             technology=node["label"],
                             yearly_demand=tech_defaults.get("yearly_demand"),
-                            demand_profile_name=processed_demand_profile,
+                            demand_profile=processed_demand_profile,
                         )
                     )
                 elif node_type == "battery":
@@ -223,5 +223,5 @@ def main():
 
 
 if __name__ == "__main__":
-    pass
-    #main()
+    #pass
+    main()

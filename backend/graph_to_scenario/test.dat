@@ -1,0 +1,67 @@
+set T := 
+0 
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8 
+9 
+10 
+11 
+12 
+13 
+14 
+15 
+16 
+17 
+18 
+19 
+20 
+21 
+22 
+23 
+; 
+
+set N := 
+Node1 
+Node2 
+Node3 
+; 
+
+set H := 
+City 
+PV 
+; 
+
+set U := 
+City Node1
+PV Node2
+; 
+
+param capacity_cost := 
+PV 100
+;
+
+param operational_cost := 
+PV 10
+;
+
+param operational_lifetime := 
+PV 8
+;
+
+param yearly_demand := 
+City 10000
+;
+
+param is_consumer := 
+City 1
+;
+
+param is_producer := 
+PV 1
+;
+
