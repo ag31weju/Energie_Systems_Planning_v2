@@ -8,6 +8,7 @@ import math
 from typing import Any
 import numpy as np
 import node_types
+from pathlib import Path
 
 
 from abc import ABC, abstractmethod
@@ -158,13 +159,16 @@ class AbstractModelInput(ABC):
         return p
 
     def write(self, file: str):
-        f = open(file, "w")
-        for s in self._sets:
-            s.write(f)
-        for p in self._params:
-            p.write(f)  # This calls the updated ModelParam.write method
-        f.close()
-        pass
+        script_dir = (
+            Path(__file__).resolve().parent
+        )  # Get the directory where the script is located
+        file_path = script_dir / file  # Construct the full file path
+
+        with file_path.open("w") as f:  # Use Path's open() method
+            for s in self._sets:
+                s.write(f)
+            for p in self._params:
+                p.write(f)  # This calls the updated ModelParam.write method
 
     pass
 
@@ -270,7 +274,7 @@ class OptNetworkInput(AbstractModelInput):
 
 
 if __name__ == "__main__":
-    #for testing
+    # for testing
     entity_list = [
         node_types.Producer(
             node_id="node_1",
