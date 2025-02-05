@@ -7,6 +7,7 @@
 # Importing Libraries
 import pyomo.environ as pyo
 from pyomo.dataportal import DataPortal
+from pathlib import Path
 
 OPT_DEBUG = False  # Debugging flag
 
@@ -46,13 +47,13 @@ def get_abstract_pyomo_model():
    # Cost Variables
    model.OPEX = pyo.Var() # Operational Expenditure
    model.CAPEX = pyo.Var() # Capital Expenditure
-   model.TOTEX = pyo.Var() # Total Expenditure
+   model.TOTEX = pyo.Var() # Total Expenditure #send to frontend
 
    # Power Variables
-   model.Pg = pyo.Var(model.Ug, model.T, within=pyo.NonNegativeReals) # Generation
-   model.Pd = pyo.Var(model.Uc, model.T, within=pyo.NonNegativeReals) # Demand
+   model.Pg = pyo.Var(model.Ug, model.T, within=pyo.NonNegativeReals) # Generation #send to frontend
+   model.Pd = pyo.Var(model.Uc, model.T, within=pyo.NonNegativeReals) # Demand      #send to frontend
 
-   model.Pi = pyo.Var(model.N, model.T)
+   model.Pi = pyo.Var(model.N, model.T) 
 
    model.Cg = pyo.Var(model.Ug, within=pyo.NonNegativeReals) # Generation Capacity
    #e.g x^2 function, around 0 being best
@@ -123,12 +124,18 @@ def get_abstract_pyomo_model():
 
    return model
 
-def load_input(model, dat_file = 'test.dat'):
-   data = pyo.DataPortal()
-   data.load(filename=dat_file)
+def load_input(model, dat_file='test.dat'):
+    # Get the absolute path of the .dat file in the current folder
+    dat_file_path = Path(__file__).parent / dat_file
 
-   instance = model.create_instance(data)
-   return instance
+    if not dat_file_path.exists():
+        raise FileNotFoundError(f"Data file '{dat_file_path}' not found.")
+
+    data = pyo.DataPortal()
+    data.load(filename=str(dat_file_path))
+
+    instance = model.create_instance(data)
+    return instance
 
 def solve_instance(model_instance):
    solver = pyo.SolverFactory('glpk')

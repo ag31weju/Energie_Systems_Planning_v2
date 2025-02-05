@@ -40,11 +40,12 @@ class ModelParam:
     Parameter Class
     """
 
-    def __init__(self, name, set_list: list[ModelSet], scaling_factor=1):
+    def __init__(self, name, set_list: list[ModelSet], scaling_factor=1, model=None):
         self.name = name
         self.set_list = set_list
         self.dim: int = 0
         self.set_names = []
+        self.model = model
 
         for s in set_list:
             self.dim = self.dim + s.dim
@@ -79,20 +80,44 @@ class ModelParam:
     def write(self, f):
         if not self.vals:
             return
-        f.write(f"param {self.name} := \n")
 
-        if self.dim == 0:
-            f.write(
-                f"{self.vals:.6f}\n"
-            )  # Ensure fixed-point notation for single values
+        if self.name in ["demand_profile", "availability_profile"]:
+            if not self.model:
+                raise ValueError(f"Model reference is missing in ModelParam {self.name}.")
+
+            # Get timesteps from `T` set
+            T_set = self.model.get_set("T")
+            if not T_set or not T_set.val:
+                raise ValueError(f"Set T is missing or empty in the model for {self.name}.")
+
+            time_indices = sorted(T_set.val)  # Get actual T values (e.g., [1, 2, 3])
+            num_timesteps = len(time_indices)  # Keep count of timesteps
+
+            # Get the unique entities (e.g., City, Industry, Solar)
+            entities = sorted(set(k.split()[0] for k in self.vals.keys()))
+
+            # Write the header using `T` values instead of 0-based indices
+            f.write(f'param {self.name}:   ' + "   ".join(map(str, time_indices)) + " :=\n")
+
+            # Write each entity's values **in the original order** but with `T` as headers
+            for entity in entities:
+                values = [f"{self.vals.get(f'{entity} {t_index}', 0):.6f}" for t_index in range(num_timesteps)]
+                f.write(f"{entity:<15} " + "   ".join(values) + "\n")
+
+            f.write(";\n\n")  # Ensure correct semicolon placement
+
         else:
-            for key, value in self.vals.items():
-                if not math.isnan(value):
-                    f.write(
-                        f"{key} {value:.6f}\n"
-                    )  # Format all numbers to six decimal places
+            f.write(f'param {self.name} := \n')
 
-        f.write(";\n\n")
+            if self.dim == 0:
+                f.write(f'{self.vals}\n')
+            else:
+                for key, value in self.vals.items():
+                    if not math.isnan(value):
+                        f.write(f'{key} {value}\n')
+
+            f.write(";\n\n")  # Ensure a semicolon at the end of normal parameters
+
 
 
 class AbstractModelInput(ABC):
@@ -154,7 +179,7 @@ class AbstractModelInput(ABC):
         return s
 
     def add_param(self, name: str, set_list: list[ModelSet], scaling_factor=1):
-        p = ModelParam(name, set_list, scaling_factor)
+        p = ModelParam(name, set_list, scaling_factor, model=self)
         self._params.append(p)
         return p
 
@@ -200,6 +225,7 @@ class OptNetworkInput(AbstractModelInput):
         pass
 
     # Takes the list generated from scenario and prepares it for conversion to .dat
+ 
     def populate1(self, scenario_list: list):
         nodes = set()
         technologies = set()
@@ -218,14 +244,12 @@ class OptNetworkInput(AbstractModelInput):
 
             if isinstance(item, node_types.Producer):
                 self["is_producer"].add_value(1, tech)
-                if hasattr(item, "capayity_cost"):
+                if hasattr(item, "capacity_cost"):  # Fixed typo
                     self["capacity_cost"].add_value(item.capacity_cost, tech)
                 if hasattr(item, "operation_cost"):
                     self["operational_cost"].add_value(item.operation_cost, tech)
                 if hasattr(item, "operation_lifetime"):
-                    self["operational_lifetime"].add_value(
-                        item.operation_lifetime, tech
-                    )
+                    self["operational_lifetime"].add_value(item.operation_lifetime, tech)
                 if hasattr(item, "availability_profile"):
                     for t, value in enumerate(item.availability_profile):
                         self["availability_profile"].add_value(float(value), (tech, t))
@@ -239,7 +263,7 @@ class OptNetworkInput(AbstractModelInput):
                         self["demand_profile"].add_value(float(value), (tech, t))
 
             elif isinstance(item, node_types.Battery):
-                pass
+                pass  # No specific action for Battery
 
         # Populate sets
         self["N"].val = list(nodes)
@@ -247,6 +271,7 @@ class OptNetworkInput(AbstractModelInput):
 
         # Generate connections (U set)
         self["U"].val = [(tech, node) for node in nodes for tech in technologies]
+
 
     def populate(self):
         # This is a simple example. The input probably should come ffrom a scenario class
@@ -308,7 +333,8 @@ if __name__ == "__main__":
         node_types.Timesteps([1, 2]),
     ]
     h = OptNetworkInput()
-    h.populate1(entity_list)
+    # h.populate1(entity_list)
+    h.populate()
 
     h.write("test2.dat")
 

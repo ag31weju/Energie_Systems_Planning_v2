@@ -1,13 +1,12 @@
 from pathlib import Path
 import math
-
 # from .node_types import Producer, Consumer, Battery
 # from . import Utils
-
 from node_types import Producer, Consumer, Battery, Timesteps
 import Utils
 import model_input
 import model
+import pyomo.environ as pyo
 
 
 class Scenario:
@@ -31,11 +30,8 @@ class Scenario:
         self.get_time_steps()
         self.get_default_node_values()
         self.process_graph_data()
-
         self.get_edges()
         self.print_nodes()
-        # self.print_time_step()
-        # self.print_edges()
 
     def process_graph_data(self):
         """
@@ -221,16 +217,16 @@ class Scenario:
             print(f"Error processing profile {profile_name}: {e}")
             return []
 
-
     def optimize(self):
         m = model_input.OptNetworkInput()
         m.populate1(self.nodes)
-        #m.write("test.dat")
+        m.write("test.dat")
         optimizer = model.get_abstract_pyomo_model()
-        instance = model.load_input(optimizer,"test.dat")
-        instance = model.solve_instance(instance)   
- 
-
+        instance = model.load_input(optimizer, "test.dat")
+        instance = model.solve_instance(instance)
+        print("Total Expenditure (TOTEX):", pyo.value(instance.TOTEX))
+        print("CapEx:", pyo.value(instance.CAPEX))
+        print("OpEx:", pyo.value(instance.OPEX))
 
 
 def main():
@@ -242,9 +238,6 @@ def main():
     scenario.initialize()
     scenario.optimize()
 
-
-
-# print(scenario.timesteps)
 
 
 if __name__ == "__main__":
