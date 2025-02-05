@@ -69,43 +69,5 @@ export default defineComponent({
 
 
 <style>
-.custom-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  /* Smooth animation */
-}
-
-.custom-node.highlighted {
-  transform: scale(1.2);
-  /* Enlarge the node */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  /* Add a shadow for highlighting */
-}
-
-.consumer-icon {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.consumer-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.node-name {
-  margin-top: 8px;
-  /* Adds space between the image and "Hello" */
-  font-size: 14px;
-  color: #333;
-  text-align: center;
-}
+@import "../../assets/main.css";
 </style>

@@ -1,8 +1,8 @@
 <template>
   <div class="custom-node" :class="{
     highlighted: isHighlighted,
-    selectedFirst: isSelectedFirst,
-    selectedSecond: isSelectedSecond,
+    selectedFirst: dataStore.isSelectedFirst(nodeID),
+    selectedSecond: dataStore.isSelectedSecond(nodeID),
   }" @mouseover="handleMouseOver" @mouseleave="handleMouseLeave" @click="handleClick">
     <div class="battery-icon">
       <img :src="data.icon" alt="Battery Icon" />
@@ -31,6 +31,7 @@
 <script>
 import { ref, inject, defineComponent, computed } from "vue";
 import { Handle, Position } from "@vue-flow/core";
+import { useDataStore } from "../../assets/stores/dataValues";
 
 export default defineComponent({
   name: "BatteryNode",
@@ -44,18 +45,10 @@ export default defineComponent({
     Handle,
   },
   setup(props, context) {
-    const handleNodeSelection = inject("handleNodeSelection");
-    let selectedNodes = inject("selectedNodes")
-      ? inject("selectedNodes")
-      : undefined;
+    let handleNodeSelection = inject("handleNodeSelection");
+    const dataStore = useDataStore();
     const isHighlighted = ref(false); // Tracks if the node is hovered
     const nodeID = context.attrs.id.at(-1);
-    const isSelectedFirst = computed(() => {
-      return selectedNodes ? selectedNodes.value[0] === nodeID : false;
-    });
-    const isSelectedSecond = computed(() => {
-      return selectedNodes ? selectedNodes.value[1] === nodeID : false;
-    });
 
     const handleMouseOver = () => {
       isHighlighted.value = true; // Show "Hello" on hover
@@ -66,14 +59,14 @@ export default defineComponent({
     };
 
     const handleClick = () => {
-      handleNodeSelection(nodeID);
+      if (handleNodeSelection) handleNodeSelection(nodeID);
     };
 
     return {
       Position,
       isHighlighted,
-      isSelectedFirst,
-      isSelectedSecond,
+      dataStore,
+      nodeID,
       handleMouseOver,
       handleMouseLeave,
       handleClick,
@@ -83,53 +76,5 @@ export default defineComponent({
 </script>
 
 <style>
-.custom-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.custom-node.highlighted {
-  transform: scale(1.2);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-.custom-node.selectedFirst {
-  box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.8);
-  border: 2px solid black;
-  transform: scale(1.1);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.custom-node.selectedSecond {
-  box-shadow: 0 0 15px 5px rgba(0, 0, 255, 0.8);
-  border: 2px solid black;
-  transform: scale(1.1);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.battery-icon {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.battery-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.node-name {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #333;
-  text-align: center;
-}
+@import "../../assets/main.css";
 </style>
