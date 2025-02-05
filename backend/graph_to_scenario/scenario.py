@@ -7,6 +7,7 @@ import math
 from node_types import Producer, Consumer, Battery, Timesteps
 import Utils
 import model_input
+import model
 
 
 class Scenario:
@@ -220,9 +221,16 @@ class Scenario:
             print(f"Error processing profile {profile_name}: {e}")
             return []
 
-    def process_timesteps():
-        # indices_file_path = self.volume_data_folder / self.timestepfile_chosen
-        pass
+
+    def optimize(self):
+        m = model_input.OptNetworkInput()
+        m.populate1(self.nodes)
+        #m.write("test.dat")
+        optimizer = model.get_abstract_pyomo_model()
+        instance = model.load_input(optimizer,"test.dat")
+        instance = model.solve_instance(instance)   
+ 
+
 
 
 def main():
@@ -232,9 +240,8 @@ def main():
     # Initialize the Scenario class
     scenario = Scenario(graph_data)
     scenario.initialize()
-    m = model_input.OptNetworkInput()
-    m.populate1(scenario.nodes)
-    m.write("test.dat")
+    scenario.optimize()
+
 
 
 # print(scenario.timesteps)
