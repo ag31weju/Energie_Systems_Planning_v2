@@ -234,8 +234,7 @@ export default {
         source: edge.source,
         target: edge.target,
       
-        sourceHandle: edge.sourceHandle,
-        targetHandle: edge.targetHandle,
+       
       })),
     };
 

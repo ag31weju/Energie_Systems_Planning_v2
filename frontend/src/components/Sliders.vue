@@ -51,6 +51,7 @@ import axios from "axios";
 import { ref, watch, onMounted, inject } from "vue";
 import { usedLanguage } from "../assets/stores/pageSettings";
 import { useDataStore } from "../assets/stores/dataValues";
+import { useScenarioStore } from "../assets/stores/scenarioStore";
 
 export default {
   props: ["auto", "simulate", "reset_text"],
@@ -58,6 +59,7 @@ export default {
     const usedLang = usedLanguage();
     const dataStore = useDataStore();
     const url = "http://127.0.0.1:8000/api/save-slider-data/";
+    const scenarioStore = useScenarioStore();
 
     let moveOutline = inject("moveOutline");
     let isAutoSimulating = inject("isAutoSimulating");
@@ -74,10 +76,13 @@ export default {
       });
       try {
         const data = {
+          nodes: scenarioStore.nodes, 
+          edges: scenarioStore.edges,
+          sliderData:{
           reset: reset,
           autoSimulate: autoSimulate, // Send the boolean flag for auto simulation
           prodCapacities: Array.from(dataStore.prodCapacities),
-        };
+        }};
 
         const response = await axios
           .post(url, data, {
