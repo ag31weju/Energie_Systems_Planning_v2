@@ -5,7 +5,7 @@
   <div id="rootdiv" class="grid-row">
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
-        <Playfield></Playfield>
+        <Playfield @keydown.stop></Playfield>
       </div>
       <div id="slider-box">
         <Sliders @getSimulationData="handleSimulationData"></Sliders>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { ref, provide, watch, onMounted, useTemplateRef } from "vue";
+import { ref, provide, watch, onMounted, onUnmounted, useTemplateRef } from "vue";
 import Chart from "primevue/chart";
 import Sliders from "../components/Sliders.vue";
 import Playfield from "../components/PlayfieldStudent.vue";
@@ -42,8 +42,29 @@ import Drawerbox from "../components/Drawerbox.vue";
 import { usedTheme } from "../assets/stores/pageSettings";
 import { useDataStore } from "../assets/stores/dataValues";
 
+
 export default {
   setup(props, context) {
+    
+    const disableKeyboardInput = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    
+    onMounted(() => {
+      window.addEventListener("keydown", disableKeyboardInput);
+      window.addEventListener("keypress", disableKeyboardInput);
+      window.addEventListener("keyup", disableKeyboardInput);
+    });
+
+    
+    onUnmounted(() => {
+      window.removeEventListener("keydown", disableKeyboardInput);
+      window.removeEventListener("keypress", disableKeyboardInput);
+      window.removeEventListener("keyup", disableKeyboardInput);
+    });
+
     const first = ref(true);
     const currTheme = usedTheme();
 

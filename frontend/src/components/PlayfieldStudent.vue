@@ -56,6 +56,7 @@ import { getNodeData } from "@/utils/nodeUtils.js";
 import { usedLanguage, usedColorBlindnessTheme } from "../assets/stores/pageSettings";
 import { ref, reactive, watch } from "vue";
 import { useDataStore } from "@/assets/stores/dataValues";
+import { useScenarioStore } from "../assets/stores/scenarioStore";
 
 export default {
   inject: ["selectedNodes", "isAutoSimulating", "prepareNewScenario"],
@@ -213,39 +214,33 @@ export default {
         console.error("Error fetching data:", error);
         alert(`Error: ${error.message}`);
       }
-      const dataToSave = {
-        nodes: this.nodes.map((node) => ({
-          id: node.id,
-          position: node.position,
-          type: node.type,
-          label: node.data.label,
-        })),
-        edges: this.edges.map((edge) => ({
-          id: edge.id,
-          source: edge.source,
-          target: edge.target,
-          color: edge.color,
-          style: edge.style,
-          sourceHandle: edge.sourceHandle,
-          targetHandle: edge.targetHandle,
-        })),
-      };
-
-      const url = "http://127.0.0.1:8000/api/save-scenario/";
-      const response = await axios.post(
-        url,
-        { data: dataToSave },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          }
-        }
-      );
+      this.saveScenario();
+    
 
     },
 
+    async saveScenario() {
+    const scenarioStore = useScenarioStore();
 
+    const dataToSave = {
+      nodes: this.nodes.map((node) => ({
+        id: node.id,
+        position: node.position,
+        type: node.type,
+        label: node.data.label, // Correct access for label
+      })),
+      edges: this.edges.map((edge) => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+      
+        sourceHandle: edge.sourceHandle,
+        targetHandle: edge.targetHandle,
+      })),
+    };
 
+    scenarioStore.saveScenario(dataToSave.nodes, dataToSave.edges);
+  },
     toggleGridOverlay() {
       this.showGrid = !this.showGrid;
       if (this.showGrid) {
@@ -364,49 +359,17 @@ export default {
 
           console.log("Nodes processed:", this.nodes);
           console.log("Edges processed:", this.edges);
-          const dataToSave = {
-            nodes: this.nodes.map((node) => ({
-              id: node.id,
-              position: node.position,
-              type: node.type,
-              label: node.data.label,
-            })),
-            edges: this.edges.map((edge) => ({
-              id: edge.id,
-              source: edge.source,
-              target: edge.target,
-              color: edge.color,
-              style: edge.style,
-              sourceHandle: edge.sourceHandle,
-              targetHandle: edge.targetHandle,
-            })),
-          };
+          this.saveScenario();
+      } catch (error) {
+        console.error("Error processing JSON:", error);
+        alert(`Error: ${error.message}`);
+      }
+    };
 
-          const url = "http://127.0.0.1:8000/api/save-scenario/";
-          const response = await axios.post(
-            url,
-            { data: dataToSave },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (response.status === 200) {
-            alert("Data saved successfully!");
-          } else {
-            alert("Error saving data.");
-          }
-        } catch (error) {
-          console.error("Error processing or saving JSON:", error);
-          alert(`Error: ${error.message}`);
-        }
-      };
-
-      reader.readAsText(this.jsonFile);
-    },
+    reader.readAsText(this.jsonFile);
   },
+  
+}
 };
 </script>
 
