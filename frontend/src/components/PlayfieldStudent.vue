@@ -16,7 +16,7 @@
         :panOnDrag="false" :pan-on-scroll="false" :disableKeyboardA11y="true" :preventScrolling="true"
         :snap-grid="snapGrid" :snap-to-grid="true" :connection-mode="connectionMode" :node-types="customNodeTypes"
         :auto-pan-on-node-drag="false" :nodes-draggable="locked" :edges-connectable="false" :zoomOnDoubleClick="false"
-        @connect="onConnect" :autoPanOnConnect="false" />
+         :autoPanOnConnect="false" :edgesUpdatable="false" />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay1"></canvas>
