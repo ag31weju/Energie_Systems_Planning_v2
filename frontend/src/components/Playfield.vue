@@ -393,43 +393,97 @@ export default {
     },
 
     saveData() {
-      try {
-        // Get node and edge data
-        const dataToSave = {
-          nodes: this.nodes.map((node) => ({
-            id: node.id,
-            position: node.position,
-            type: node.type,
-            label: node.data.label,
-          })),
-          edges: this.edges.map((edge) => ({
-            id: edge.id,
-            source: edge.source,
-            target: edge.target,
-            color: edge.color,
-            style: edge.style,
-            sourceHandle: edge.sourceHandle,
-            targetHandle: edge.targetHandle,
+  try {
+   
+    const nodesConnected = this.depthFirstSearch();
+    if (!nodesConnected) {
+      alert("Error: Graph is not fully connected");
+      return;
+    }
 
-          })),
-        };
+    
+    const producerAndBatteryCount = this.countProducersAndBatteries();
+    if (producerAndBatteryCount > 5) {
+      alert("Error: The total number of producers and batteries cannot exceed 5.");
+      return;
+    }
+
+    
+    const dataToSave = {
+      nodes: this.nodes.map((node) => ({
+        id: node.id,
+        position: node.position,
+        type: node.type,
+        label: node.data.label,
+      })),
+      edges: this.edges.map((edge) => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        
+        sourceHandle: edge.sourceHandle,
+        targetHandle: edge.targetHandle,
+      })),
+    };
+
+   
+    const jsonString = JSON.stringify(dataToSave);
+
+    
+    const jsonBlob = new Blob([jsonString], { type: "application/json" });
+    const jsonLink = document.createElement("a");
+    jsonLink.href = URL.createObjectURL(jsonBlob);
+    jsonLink.download = "scenario_graph.json";
+    jsonLink.click();
+
+  } catch (error) {
+    console.error("Error saving data:", error);
+    alert(`Error: ${error.message}`);
+  }
+},
 
 
-        const jsonString = JSON.stringify(dataToSave);
+depthFirstSearch() {
+  const visited = new Set();
+  
+  
+  const dfs = (nodeId) => {
+    if (visited.has(nodeId)) return;
+    visited.add(nodeId);
 
-        const jsonBlob = new Blob([jsonString], { type: "application/json" });
-        const jsonLink = document.createElement("a");
-        jsonLink.href = URL.createObjectURL(jsonBlob);
-        jsonLink.download = "scenario_graph.json";
-        jsonLink.click();
-
-
-
-      } catch (error) {
-        console.error("Error saving data:", error);
-        alert(`Error: ${error.message}`);
+  
+    this.edges.forEach((edge) => {
+      if (edge.source === nodeId && !visited.has(edge.target)) {
+        dfs(edge.target);
+      } else if (edge.target === nodeId && !visited.has(edge.source)) {
+        dfs(edge.source);
       }
-    },
+    });
+  };
+
+ 
+  if (this.nodes.length > 0) {
+    dfs(this.nodes[0].id);
+  }
+
+  
+  return this.nodes.every((node) => visited.has(node.id));
+},
+
+
+countProducersAndBatteries() {
+  let count = 0;
+
+  this.nodes.forEach((node) => {
+    if (node.type === "producer" || node.type === "battery") {
+      count++;
+    }
+  });
+
+  return count;
+},
+
+
 
     triggerImageUpload() {
       this.$refs.imageInput.click(); // Trigger image upload
