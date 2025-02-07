@@ -60,6 +60,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173', # Vue.js development server
     "https://ag31weju.github.io",  # Allow your GitHub Pages frontend  
+    "https://myowntmprepo.onrender.com", #Allow dennis frontend
 ]
 
 ROOT_URLCONF = 'backend.urls'
