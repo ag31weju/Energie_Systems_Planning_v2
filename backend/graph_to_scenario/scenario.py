@@ -1,17 +1,20 @@
 from pathlib import Path
 import math
-from .node_types import Producer, Consumer, Battery
-from . import Utils
-
-# from node_types import Producer, Consumer, Battery
-# import Utils
+# from .node_types import Producer, Consumer, Battery
+# from . import Utils
+from node_types import Producer, Consumer, Battery, Timesteps
+import Utils
+import model_input
+import model
+import pyomo.environ as pyo
 
 
 class Scenario:
     def __init__(self, graph_data):
         self.nodes = []  # contains nodes parsed from json sent from frontend
         self.edges = []  # contains edges parsed from json sent from frontend
-        self.timestep_chosen = None  # the timestep from the excel file
+        self.timestepfile_chosen = None  # the timestep from the excel file
+        self.timesteps = []
         self.graph_data = graph_data  # the graph json from frontend
         # folder paths
         self.current_dir = Path(__file__).parent
@@ -27,11 +30,8 @@ class Scenario:
         self.get_time_steps()
         self.get_default_node_values()
         self.process_graph_data()
-
         self.get_edges()
         self.print_nodes()
-        # self.print_time_step()
-        # self.print_edges()
 
     def process_graph_data(self):
         """
@@ -63,7 +63,7 @@ class Scenario:
                 if not tech_defaults:
                     raise ValueError(f"No defaults found for technology: {technology}")
 
-                # Process availability_profile_name or demand_profile_name
+                # Process availability_profile_name or demand_profile
                 processed_availability_profile = None
                 processed_demand_profile = None
 
@@ -82,7 +82,6 @@ class Scenario:
                     processed_demand_profile = self.process_profile(
                         tech_defaults["demand_profile_name"]
                     )
-
                 # Create the appropriate node based on type
                 if node_type == "producer":
                     self.nodes.append(
@@ -101,7 +100,7 @@ class Scenario:
                             node_id=node["id"],
                             technology=node["label"],
                             yearly_demand=tech_defaults.get("yearly_demand"),
-                            demand_profile_name=processed_demand_profile,
+                            demand_profile=processed_demand_profile,
                         )
                     )
                 elif node_type == "battery":
@@ -112,6 +111,9 @@ class Scenario:
                             capacity=tech_defaults.get("capacity"),
                         )
                     )
+            self.nodes.append(
+                Timesteps(timesteplist=self.timesteps)
+            )  # at end append timestep list
         except Exception as e:
             print(f"Error processing graph data: {e}")
 
@@ -122,12 +124,14 @@ class Scenario:
 
     def get_time_steps(self, scenario_name="default"):
         """
-        Gets the timestep for a specific scenario name from excel file and saves it to self.timestep_chosen.
+        Gets the timestep for a specific scenario name from excel file and saves it to self.timestepfile_chosen.
 
         Parameters:
             scenario_name (str): The name of the scenario to fetch the timestep for (default is "default").
         """
-        self.timestep_chosen = Utils.get_timestep(self.excel_file_path, scenario_name)
+        self.timestepfile_chosen = Utils.get_timestep(
+            self.excel_file_path, scenario_name
+        )
 
     def get_edges(self):
         """
@@ -157,7 +161,7 @@ class Scenario:
         """
         Prints the timestep chosen for the scenario.
         """
-        print(f"Time step chosen: {self.timestep_chosen}")
+        print(f"Time step chosen: {self.timestepfile_chosen}")
 
     def process_profile(self, profile_name):
         """
@@ -179,7 +183,7 @@ class Scenario:
 
             # Construct paths using pathlib
             profile_file_path = self.volume_data_folder / profile_name
-            indices_file_path = self.volume_data_folder / self.timestep_chosen
+            indices_file_path = self.volume_data_folder / self.timestepfile_chosen
 
             # Read and process the profile data
             with open(profile_file_path, "r") as profile_file:
@@ -188,6 +192,7 @@ class Scenario:
             # Read and process the indices data
             with open(indices_file_path, "r") as indices_file:
                 indices = [int(index.strip()) for index in indices_file.readlines()]
+                self.timesteps = indices  # assign timesteps from file to list
 
             # Extract the corresponding values
             selected_data = [
@@ -212,6 +217,17 @@ class Scenario:
             print(f"Error processing profile {profile_name}: {e}")
             return []
 
+    def optimize(self):
+        m = model_input.OptNetworkInput()
+        m.populate1(self.nodes)
+        m.write("test.dat")
+        optimizer = model.get_abstract_pyomo_model()
+        instance = model.load_input(optimizer, "test.dat")
+        instance = model.solve_instance(instance)
+        print("Total Expenditure (TOTEX):", pyo.value(instance.TOTEX))
+        print("CapEx:", pyo.value(instance.CAPEX))
+        print("OpEx:", pyo.value(instance.OPEX))
+
 
 def main():
     current_dir = Path(__file__).parent
@@ -220,8 +236,10 @@ def main():
     # Initialize the Scenario class
     scenario = Scenario(graph_data)
     scenario.initialize()
+    scenario.optimize()
+
 
 
 if __name__ == "__main__":
-    pass
-    #main()
+    # pass
+    main()
