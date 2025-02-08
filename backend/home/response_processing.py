@@ -9,9 +9,10 @@ def process_response():
 
     with open("slider_data/slider_data.json", "r") as sliderData:
         json_data = json.load(sliderData)
-        prodCapacities = [capacity for capacity in json_data.get("prodCapacities")]
-        autoSimulate = json_data.get("autoSimulate")
-        reset = json_data.get("reset")
+        slider_data = json_data.get("sliderData")
+        prodCapacities = [capacity for capacity in slider_data.get("prodCapacities")]
+        autoSimulate = slider_data.get("autoSimulate")
+        reset = slider_data.get("reset")
 
     if not reset: 
         if autoSimulate:
