@@ -29,7 +29,7 @@ class Scenario:
         self.process_graph_data()
 
         self.get_edges()
-        self.print_nodes()
+        #self.print_nodes()
         # self.print_time_step()
         # self.print_edges()
 
