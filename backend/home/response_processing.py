@@ -65,9 +65,7 @@ def fillWholeStructure(data, prodCapacities, bestIdx):
             value = fill_cell()
             if bestMatrixVal[0] > value["matrixData"]: 
                 bestMatrixVal[0] = value["matrixData"]
-                print(bestIdx, prodCapacities)
                 bestIdx[:] = copy.deepcopy(prodCapacities)
-                print(bestIdx, prodCapacities)
             return value
         else:
             while prodCapacities[rec_depth][1] <= 5:
@@ -77,5 +75,4 @@ def fillWholeStructure(data, prodCapacities, bestIdx):
         return pointer
     
     result = recFillWholeStructure(data, prodCapacities, 0)
-    print("bestIdx", bestIdx)
     return result
