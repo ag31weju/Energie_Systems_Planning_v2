@@ -1,12 +1,18 @@
 {
     "reset": false,
-    "autoSimulate": true,
-    "sliders": [
-        {
-            "value": 0
-        },
-        {
-            "value": 0
-        }
+    "autoSimulate": false,
+    "prodCapacities": [
+        [
+            "1",
+            0
+        ],
+        [
+            "3",
+            0
+        ],
+        [
+            "6",
+            0
+        ]
     ]
 }

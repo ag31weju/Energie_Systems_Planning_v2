@@ -42,6 +42,10 @@ export const usedTheme = defineStore("usedTheme", {
 
 export const usedLanguage = defineStore("usedLanguage", {
   state: () => {
+<<<<<<< HEAD
+=======
+    const colorBlindnessStore = usedColorBlindnessTheme();
+>>>>>>> originalRepo/main
     let currLang = "EN";
     let currLangFile = ENLang;
     let capacity = currLangFile.capacity;
@@ -75,6 +79,47 @@ export const usedLanguage = defineStore("usedLanguage", {
     let upload_json = currLangFile.upload_json;
     let selector_text_consumer = currLangFile.selector_text_consumer;
     let selector_text_producer = currLangFile.selector_text_producer;
+<<<<<<< HEAD
+=======
+    let group_no_color_blindness = currLangFile.group_no_color_blindness;
+    let group_monochrome = currLangFile.group_monochrome;
+    let group_red_green = currLangFile.group_red_green;
+    let group_blue_yellow = currLangFile.group_blue_yellow;
+    let noColorBlindness = currLangFile.noColorBlindness;
+    let achromatopsia = currLangFile.achromatopsia;
+    let tritanopia = currLangFile.tritanopia;
+    let tritanomaly = currLangFile.tritanomaly;
+    let protanopia = currLangFile.protanopia;
+    let protanomaly = currLangFile.protanomaly;
+    let deuteranopia = currLangFile.deuteranopia;
+    let deuteranomaly = currLangFile.deuteranomaly;
+    let nuclear = currLangFile.nuclear;
+    let nuclear_power = currLangFile.nuclear_power;
+    let nuclear_desc = currLangFile.nuclear_desc;
+    let coal = currLangFile.coal;
+    let coal_power = currLangFile.coal_power;
+    let coal_desc = currLangFile.coal_desc;
+    let solar = currLangFile.solar;
+    let solar_power = currLangFile.solar_power;
+    let solar_desc = currLangFile.solar_desc;
+    let wind = currLangFile.wind;
+    let wind_power = currLangFile.wind_power;
+    let wind_desc = currLangFile.wind_desc;
+    let commercial = currLangFile.commercial;
+    let residential_small = currLangFile.residential_small;
+    let residential_large = currLangFile.residential_large;
+    let choose_scenario = currLangFile.choose_scenario;
+    let scene_1 = currLangFile.scene_1;
+    let scene_2 = currLangFile.scene_2;
+    let scene_3 = currLangFile.scene_3;
+    let unknown_label = currLangFile.unknown_label;
+    let error_parsing_json = currLangFile.error_parsing_json;
+    let files_loaded_locally = currLangFile.files_loaded_locally;
+    let error_saving_data = currLangFile.error_saving_data;
+    let invalid_json_struc_node = currLangFile.invalid_json_struc_node;
+    let invalid_json_struc_edge = currLangFile.invalid_json_struc_edge;
+    let invalid_json = currLangFile.invalid_json;
+>>>>>>> originalRepo/main
 
     return {
       currLang,
@@ -110,20 +155,71 @@ export const usedLanguage = defineStore("usedLanguage", {
       selector_text_consumer,
       selector_text_producer,
       storage_text,
+<<<<<<< HEAD
+=======
+      noColorBlindness,
+      achromatopsia,
+      tritanopia,
+      tritanomaly,
+      protanopia,
+      protanomaly,
+      deuteranopia,
+      deuteranomaly,
+      colorBlindnessStore,
+      nuclear,
+      nuclear_power,
+      nuclear_desc,
+      coal,
+      coal_power,
+      coal_desc,
+      solar,
+      solar_power,
+      solar_desc,
+      wind,
+      wind_power,
+      wind_desc,
+      commercial,
+      residential_small,
+      residential_large,
+      choose_scenario,
+      scene_1,
+      scene_2,
+      scene_3,
+      unknown_label,
+      error_parsing_json,
+      files_loaded_locally,
+      error_saving_data,
+      invalid_json_struc_node,
+      invalid_json_struc_edge,
+      invalid_json,
+      group_no_color_blindness,
+      group_monochrome,
+      group_red_green,
+      group_blue_yellow,
+>>>>>>> originalRepo/main
     };
   },
   actions: {
     changeLang(language) {
+<<<<<<< HEAD
       console.log("Change has been called!");
+=======
+>>>>>>> originalRepo/main
       if (this.currLang == language) {
         return;
       }
       if (language == "EN") {
+<<<<<<< HEAD
         console.log("Changed to EN");
         this.currLang = "EN";
         this.currLangFile = ENLang;
       } else if (language == "DE") {
         console.log("Changed to DE");
+=======
+        this.currLang = "EN";
+        this.currLangFile = ENLang;
+      } else if (language == "DE") {
+>>>>>>> originalRepo/main
         this.currLang = "DE";
         this.currLangFile = DELang;
       } else {
@@ -160,6 +256,114 @@ export const usedLanguage = defineStore("usedLanguage", {
       this.upload_json = this.currLangFile.upload_json;
       this.selector_text_consumer = this.currLangFile.selector_text_consumer;
       this.selector_text_producer = this.currLangFile.selector_text_producer;
+<<<<<<< HEAD
+=======
+      this.group_no_color_blindness =
+        this.currLangFile.group_no_color_blindness;
+      this.group_monochrome = this.currLangFile.group_monochrome;
+      this.group_red_green = this.currLangFile.group_red_green;
+      this.group_blue_yellow = this.currLangFile.group_blue_yellow;
+      this.noColorBlindness = this.currLangFile.noColorBlindness;
+      this.achromatopsia = this.currLangFile.achromatopsia;
+      this.tritanopia = this.currLangFile.tritanopia;
+      this.tritanomaly = this.currLangFile.tritanomaly;
+      this.protanopia = this.currLangFile.protanopia;
+      this.protanomaly = this.currLangFile.protanomaly;
+      this.deuteranopia = this.currLangFile.deuteranopia;
+      this.deuteranomaly = this.currLangFile.deuteranomaly;
+      this.nuclear = this.currLangFile.nuclear;
+      this.nuclear_power = this.currLangFile.nuclear_power;
+      this.nuclear_desc = this.currLangFile.nuclear_desc;
+      this.coal = this.currLangFile.coal;
+      this.coal_power = this.currLangFile.coal_power;
+      this.coal_desc = this.currLangFile.coal_desc;
+      this.solar = this.currLangFile.solar;
+      this.solar_power = this.currLangFile.solar_power;
+      this.solar_desc = this.currLangFile.solar_desc;
+      this.wind = this.currLangFile.wind;
+      this.wind_power = this.currLangFile.wind_power;
+      this.wind_desc = this.currLangFile.wind_desc;
+      this.commercial = this.currLangFile.commercial;
+      this.residential_small = this.currLangFile.residential_small;
+      this.residential_large = this.currLangFile.residential_large;
+      this.choose_scenario = this.currLangFile.choose_scenario;
+      this.scene_1 = this.currLangFile.scene_1;
+      this.scene_2 = this.currLangFile.scene_2;
+      this.scene_3 = this.currLangFile.scene_3;
+      this.unknown_label = this.currLangFile.unknown_label;
+      this.error_parsing_json = this.currLangFile.error_parsing_json;
+      this.files_loaded_locally = this.currLangFile.files_loaded_locally;
+      this.error_saving_data = this.currLangFile.error_saving_data;
+      this.invalid_json_struc_node = this.currLangFile.invalid_json_struc_node;
+      this.invalid_json_struc_edge = this.currLangFile.invalid_json_struc_edge;
+      this.invalid_json = this.currLangFile.invalid_json;
+      this.colorBlindnessStore.updateColorBlindnessLang(this);
+    },
+  },
+});
+
+export const usedColorBlindnessTheme = defineStore("usedColorBlindnessTheme", {
+  state: () => {
+    let colorBlindnessTypes = [
+      {
+        label: "NO COLOR BLINDNESS",
+        items: [
+          { label: "Color blindness filter off", value: "noColorBlindness" },
+        ],
+      },
+      {
+        label: "MONOCHROME",
+        items: [{ label: "Achromatopsia", value: "achromatopsia" }],
+      },
+      {
+        label: "RED-GREEN",
+        items: [
+          { label: "Protanopia", value: "protanopia" },
+          { label: "Protanomaly", value: "protanomaly" },
+          { label: "Deuteranopia", value: "deuteranopia" },
+          { label: "Deuteranomaly", value: "deuteranomaly" },
+        ],
+      },
+      {
+        label: "BLUE-YELLOW",
+        items: [
+          { label: "Tritanopia", value: "tritanopia" },
+          { label: "Tritanomaly", value: "tritanomaly" },
+        ],
+      },
+    ];
+
+    var currentColorSettings = colorBlindnessTypes[0];
+    document.body.classList.toggle(currentColorSettings.value);
+
+    return {
+      colorBlindnessTypes,
+      currentColorSettings,
+    };
+  },
+  actions: {
+    setColorBlindness(colorBlindnessType) {
+      if (colorBlindnessType.value == this.currentColorSettings.value) {
+        return;
+      }
+      document.body.classList.toggle(this.currentColorSettings.value);
+      document.body.classList.toggle(colorBlindnessType.value);
+      this.currentColorSettings = colorBlindnessType;
+    },
+    updateColorBlindnessLang(langStore) {
+      this.colorBlindnessTypes[0].label = langStore.group_no_color_blindness;
+      this.colorBlindnessTypes[1].label = langStore.group_monochrome;
+      this.colorBlindnessTypes[2].label = langStore.group_red_green;
+      this.colorBlindnessTypes[3].label = langStore.group_blue_yellow;
+      this.colorBlindnessTypes[0].items[0].label = langStore.noColorBlindness;
+      this.colorBlindnessTypes[1].items[0].label = langStore.achromatopsia;
+      this.colorBlindnessTypes[2].items[0].label = langStore.tritanopia;
+      this.colorBlindnessTypes[2].items[1].label = langStore.tritanomaly;
+      this.colorBlindnessTypes[2].items[2].label = langStore.protanopia;
+      this.colorBlindnessTypes[2].items[3].label = langStore.protanomaly;
+      this.colorBlindnessTypes[3].items[0].label = langStore.deuteranopia;
+      this.colorBlindnessTypes[3].items[1].label = langStore.deuteranomaly;
+>>>>>>> originalRepo/main
     },
   },
 });

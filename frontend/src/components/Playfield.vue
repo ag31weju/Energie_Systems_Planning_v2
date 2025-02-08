@@ -18,8 +18,8 @@
       <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
         :panOnDrag="false" :pan-on-scroll="false" :preventScrolling="true" :snap-grid="snapGrid" :snap-to-grid="true"
         :coordinateExtent="coordinateExtent" :connection-mode="connectionMode" :node-types="customNodeTypes"
-        :auto-pan-on-node-drag="false" :nodes-draggable="!locked" :edges-connectable="edgeMode" :autoPanOnConnect="false"
-        :zoomOnDoubleClick="false" @connect="onConnect" />
+        :auto-pan-on-node-drag="false" :nodes-draggable="!locked" :edges-connectable="edgeMode"
+        :autoPanOnConnect="false" :zoomOnDoubleClick="false" @connect="onConnect" />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay"></canvas>
@@ -77,20 +77,10 @@ import BatteryNode from "./customNodes/Battery.vue";
 import JunctionNode from "./customNodes/Junction.vue";
 import ProducerNode from "./customNodes/Producer.vue";
 
-import Industry from "@/assets/node_images/consumer/Industry.png";
-import City from "@/assets/node_images/consumer/City.png";
-import House from "@/assets/node_images/consumer/House.png";
-
-import Battery from "@/assets/node_images/misc/battery.png";
-import Junction from "@/assets/node_images/misc/junction.png";
-
-import Gas from "@/assets/node_images/producer/Gas.png";
-import Coal from "@/assets/node_images/producer/Coal.png";
-import Solar from "@/assets/node_images/producer/Solar.png";
-import Wind from "@/assets/node_images/producer/Wind.png";
-
 import { usedLanguage } from "../assets/stores/pageSettings";
-import { inject, ref, reactive } from "vue";
+import { inject, ref, reactive, watch } from "vue";
+import { getNodeData } from "@/utils/nodeUtils.js";
+
 
 export default {
   components: {
@@ -169,6 +159,7 @@ export default {
     toggleLock() {
       this.locked = !this.locked;
     },
+
     async loadRequest() {
       try {
         const url = "https://energie-systems-planning-v2.onrender.com/api/process-scenario/";
@@ -199,99 +190,10 @@ export default {
 
         const { nodes, edges } = graphResponse.data;
 
-        this.nodes = nodes.map((node) => {
-          let newNode = {
-            ...node,
-            data: {},
-          };
-
-          switch (node.label) {
-            case "Industry":
-              newNode.data = {
-                label: "Industry",
-                icon: Industry,
-                inputs: [0, 1],
-                outputs: [2, 3],
-              };
-              break;
-            case "City":
-              newNode.data = {
-                label: "City",
-                icon: City,
-                inputs: [0, 1],
-                outputs: [2, 3],
-              };
-              break;
-            case "House":
-              newNode.data = {
-                label: "House",
-                icon: ResidentialSmall,
-                inputs: [0, 1],
-                outputs: [2, 3],
-              };
-              break;
-            case "Gas":
-              newNode.data = {
-                label: "Gas",
-                icon: Gas,
-                inputs: [0, 1],
-                outputs: [2, 3],
-                description:
-                  "Provides large-scale base power with low carbon emissions.",
-              };
-              break;
-            case "Coal":
-              newNode.data = {
-                label: "Coal",
-                icon: Coal,
-                inputs: [0, 1],
-                outputs: [2, 3],
-                description: "Traditional fossil fuel energy source.",
-              };
-              break;
-            case "Solar":
-              newNode.data = {
-                label: "Solar",
-                icon: Solar,
-                inputs: [0, 1],
-                outputs: [2, 3],
-                description: "Generates renewable energy from sunlight.",
-              };
-              break;
-            case "Wind":
-              newNode.data = {
-                label: "Wind",
-                icon: Wind,
-                inputs: [0, 1],
-                outputs: [2, 3],
-                description: "Generates renewable energy from wind.",
-              };
-              break;
-              case "Battery":
-  newNode.data = {
-    label: "Battery",
-    icon: Battery, 
-    inputs: [0, 1], 
-    outputs: [2, 3], 
-    description: "Stores energy for later use and provides backup power.",
-  };
-  break;
-
-case "Junction":
-  newNode.data = {
-    label: "Junction",
-    icon: Junction, 
-    inputs: [0, 1,], 
-    outputs: [2, 3], 
-    description: "Connects and distributes inputs to various outputs.",
-  };
-  break;
-            default:
-              console.warn(`Unknown label: ${node.label}`);
-          }
-
-          return newNode;
-        });
+        this.nodes = nodes.map((node) => ({
+          ...node,
+          data: getNodeData(node.label),
+        }));
 
         this.edges = edges.map((edge) => ({
           ...edge,
@@ -362,16 +264,14 @@ case "Junction":
       const width = vueFlowContainer.offsetWidth / this.gridSize;
       const height = vueFlowContainer.offsetHeight / this.gridSize;
 
+      const nodeData = getNodeData("Battery");
+      if (!nodeData) return;
+
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
         type: "battery",
         position: { x: width * 5, y: height * 3 },
-        data: {
-          label: "Battery",
-          icon: Battery,
-          inputs: [0, 1],
-          outputs: [2, 3],
-        },
+        data: nodeData
 
       };
       this.nodes.push(newNode);
@@ -383,17 +283,14 @@ case "Junction":
 
       const width = vueFlowContainer.offsetWidth / this.gridSize;
       const height = vueFlowContainer.offsetHeight / this.gridSize;
+      const nodeData = getNodeData("Junction");
+      if (!nodeData) return;
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
         type: "junction",
         position: { x: width * 7, y: height * 3 },
-        data: {
-          label: "Junction",
-          icon: Junction,
-          inputs: [0, 1],
-          outputs: [2, 3],
-        },
+        data: nodeData
       };
       this.nodes.push(newNode);
     },
@@ -410,63 +307,23 @@ case "Junction":
         alert("Please select an energy source type before adding a node.");
         return;
       }
+      const nodeData = getNodeData(this.selectedProducer);
+      if (!nodeData) {
+        alert("Unknown producer type selected.");
+        return;
+      }
+
 
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
         type: "producer",
         position: { x: width * 5, y: height * 4 },
-        data: {}, // To be filled based on producer type
+        data: nodeData,
         targetPosition: "left",
         sourcePosition: "right",
       };
 
-      // Use switch to configure the data property
-      switch (this.selectedProducer) {
-        case "Gas":
-          newNode.data = {
-            label: "Gas",
-            icon: Gas, // Add an icon path if available
-            inputs: [0, 1],
-            outputs: [2, 3],
-            description:
-              "Provides large-scale base power with low carbon emissions.",
-          };
-          break;
 
-        case "Coal":
-          newNode.data = {
-            label: "Coal",
-            icon: Coal, // Add an icon path if available
-            inputs: [0, 1],
-          outputs: [2, 3],
-            description: "Traditional fossil fuel energy source.",
-          };
-          break;
-
-        case "Solar":
-          newNode.data = {
-            label: "Solar",
-            icon: Solar, // Add an icon path if available
-            inputs: [0, 1],
-          outputs: [2, 3],
-            description: "Generates renewable energy from sunlight.",
-          };
-          break;
-
-        case "Wind":
-          newNode.data = {
-            label: "Wind",
-            icon: Wind, // Add an icon path if available
-            inputs: [0, 1],
-          outputs: [2, 3],
-            description: "Generates renewable energy from wind.",
-          };
-          break;
-
-        default:
-          alert("Unknown producer type selected.");
-          return;
-      }
 
       this.nodes.push(newNode);
     },
@@ -483,46 +340,20 @@ case "Junction":
       const width = vueFlowContainer.offsetWidth;
       const height = vueFlowContainer.offsetHeight;
 
+      const nodeData = getNodeData(this.selectedConsumer);
+      if (!nodeData) {
+        alert("Unknown Consumer type selected.");
+        return;
+      }
+
       const newNode = {
         id: `node_${this.nodeIdCounter++}`,
         type: "consumer",
         position: { x: (2 * width) / 3, y: (2 * height) / 3 },
-        data: {}, // To be populated by switch case
+        data: nodeData,
       };
 
-      // Use switch to set the data field based on the selected producer
-      switch (this.selectedConsumer) {
-        case "Industry":
-          newNode.data = {
-            label: "Industry",
-            icon: Industry,
-            inputs: [0, 1],
-          outputs: [2, 3],
-          };
-          break;
 
-        case "City":
-          newNode.data = {
-            label: "City",
-            icon: City,
-            inputs: [0, 1],
-          outputs: [2, 3],
-          };
-          break;
-
-        case "House":
-          newNode.data = {
-            label: "House",
-            icon: ResidentialSmall,
-            inputs: [0, 1],
-          outputs: [2, 3],
-          };
-          break;
-
-        default:
-          alert("Unknown producer type selected.");
-          return;
-      }
 
       this.nodes.push(newNode);
     },
@@ -543,6 +374,7 @@ case "Junction":
       this.edges = [];
     },
 
+
     onConnect(connection) {
       if (this.edgeMode) {
         const newEdge = {
@@ -560,7 +392,7 @@ case "Junction":
       }
     },
 
-      saveData() {
+    saveData() {
       try {
         // Get node and edge data
         const dataToSave = {
@@ -576,20 +408,13 @@ case "Junction":
             target: edge.target,
             color: edge.color,
             style: edge.style,
-            sourceHandle:edge.sourceHandle,
+            sourceHandle: edge.sourceHandle,
             targetHandle: edge.targetHandle,
 
           })),
         };
 
-        // Convert to JSON
 
-        // Send to backend (Django)
-
-        // Send to backend (Django)
-
-
-        // Optionally, download the JSON file
         const jsonString = JSON.stringify(dataToSave);
 
         const jsonBlob = new Blob([jsonString], { type: "application/json" });
@@ -598,8 +423,8 @@ case "Junction":
         jsonLink.download = "scenario_graph.json";
         jsonLink.click();
 
-   
-        
+
+
       } catch (error) {
         console.error("Error saving data:", error);
         alert(`Error: ${error.message}`);
@@ -655,99 +480,9 @@ case "Junction":
           this.nodes = nodes.map((node) => {
             const newNode = {
               ...node,
-              data: {}, // Will be populated based on label
+              data: getNodeData(node.label),
             };
 
-            switch (node.label) {
-              case "Industry":
-                newNode.data = {
-                  label: "Industry",
-                  icon: Industry, // Ensure Industry is imported or defined
-                  inputs: [0, 1],
-                  outputs: [2, 3],
-                };
-                break;
-              case "City":
-                newNode.data = {
-                  label: "City",
-                  icon: City, // Ensure City is imported or defined
-                  inputs: [0, 1],
-                  outputs: [2, 3],
-                };
-                break;
-              case "House":
-                newNode.data = {
-                  label: "House",
-                  icon: ResidentialSmall,
-                  inputs: [0, 1],
-                  outputs: [2, 3],
-                };
-                break;
-              case "Gas":
-                newNode.data = {
-                  label: "Gas",
-                  icon: Gas,
-                  inputs: [0, 1],
-                  outputs: [2, 3],
-                  description:
-                    "Provides large-scale base power with low carbon emissions.",
-                };
-                break;
-              case "Coal":
-                newNode.data = {
-                  label: "Coal",
-                  icon: Coal,
-                  inputs: [0, 1],
-                  outputs: [2, 3],
-                  description: "Traditional fossil fuel energy source.",
-                };
-                break;
-              case "Solar":
-                newNode.data = {
-                  label: "Solar",
-                  icon: Solar,
-                  inputs: [0, 1],
-                  outputs: [2, 3],
-                  description: "Generates renewable energy from sunlight.",
-                };
-                break;
-              case "Wind":
-                newNode.data = {
-                  label: "Wind",
-                  icon: Wind,
-                  inputs: [0, 1],
-                  outputs: [2, 3],
-                  description: "Generates renewable energy from wind.",
-                };
-                break;
-                case "Battery":
-  newNode.data = {
-    label: "Battery",
-    icon: Battery, 
-    inputs: [0, 1], 
-    outputs: [2, 3], 
-    description: "Stores energy for later use and provides backup power.",
-  };
-  break;
-
-case "Junction":
-  newNode.data = {
-    label: "Junction",
-    icon: Junction, 
-    inputs: [0, 1,], 
-    outputs: [2, 3], 
-    description: "Connects and distributes inputs to various outputs.",
-  };
-  break;
-              default:
-                console.warn(`Unknown label: ${node.label}`);
-                newNode.data = {
-                  label: "Unknown",
-                  icon: null,
-                  inputs: [],
-                  outputs: [],
-                };
-            }
 
             return newNode;
           });

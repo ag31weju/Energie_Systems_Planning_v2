@@ -1,62 +1,31 @@
 <template>
-  <div
-    class="custom-node"
-    :class="{
-      highlighted: isHighlighted,
-      selectedFirst: isSelectedFirst,
-      selectedSecond: isSelectedSecond,
-    }"
-    @mouseover="handleMouseOver"
-    @mouseleave="handleMouseLeave"
-    @click="handleClick"
-  >
+  <div class="custom-node" :class="{
+    highlighted: isHighlighted,
+    selectedFirst: isSelectedFirst,
+    selectedSecond: isSelectedSecond,
+  }" @mouseover="handleMouseOver" @mouseleave="handleMouseLeave" @click="handleClick">
     <div class="battery-icon">
       <img :src="data.icon" alt="Battery Icon" />
     </div>
-    <div
-      v-if="isHighlighted"
-      class="node-name"
-      style="color: crimson; background: black"
-    >
-      <!-- color of label -->
+    <div v-if="isHighlighted" class="node-name" style="color:black; background: rgba(255, 255, 255, 0.7);"  > <!-- color of label -->
       {{ data.label || "Battery" }}
     </div>
     <div class="handles">
-  <!-- Handles for inputs -->
-     <div v-for="(input, index) in data.inputs" :key="'input_' + index">
-    <Handle
-      type="target"
-      :position="'left'"   
-      :id="'input_' + index"
-      style="background: #555"
-    />
-    <Handle
-      type="target"
-      :position="'top'"    
-      :id="'input_top_' + index"
-      style="background: #555"
-    />
+      <!-- Handles for inputs -->
+      <div v-for="(input, index) in data.inputs" :key="'input_' + index">
+        <Handle type="target" :position="'left'" :id="'input_' + index" style="background: #555" />
+        <Handle type="target" :position="'top'" :id="'input_top_' + index" style="background: #555" />
+      </div>
+
+      <!-- Handles for outputs -->
+      <div v-for="(output, index) in data.outputs" :key="'output_' + index">
+        <Handle type="source" :position="'right'" :id="'output_' + index" style="background: #555" />
+        <Handle type="source" :position="'bottom'" :id="'output_bottom_' + index" style="background: #555" />
+      </div>
+      />
+    </div>
   </div>
 
-  <!-- Handles for outputs -->
-  <div v-for="(output, index) in data.outputs" :key="'output_' + index">
-    <Handle
-      type="source"
-      :position="'right'"  
-      :id="'output_' + index"
-      style="background: #555"
-    />
-    <Handle
-      type="source"
-      :position="'bottom'" 
-      :id="'output_bottom_' + index"
-      style="background: #555"
-    />
-  </div>
-        />
-      </div>
-    </div>
-  
 </template>
 
 <script>

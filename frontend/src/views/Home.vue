@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { ref, provide, watch, useTemplateRef } from "vue";
+import { ref, provide, watch, onMounted, useTemplateRef } from "vue";
 import Chart from "primevue/chart";
 import Sliders from "../components/Sliders.vue";
 import Playfield from "../components/PlayfieldStudent.vue";
@@ -40,23 +40,29 @@ import Matrix from "../components/Matrix.vue";
 import Charts from "../components/Charts.vue";
 import Drawerbox from "../components/Drawerbox.vue";
 import { usedTheme } from "../assets/stores/pageSettings";
+import { useDataStore } from "../assets/stores/dataValues";
 
 export default {
   setup(props, context) {
     const first = ref(true);
     const currTheme = usedTheme();
+
+    const dataStore = useDataStore();
+
     const sliderVals = ref([0, 0]);
     const matrixData = ref(undefined);
     const chartsData = ref(undefined);
+
     const isAutoSimulating = ref(false);
     const stopAutoSimulate = ref(false);
     const newScenarioLoaded = ref(false);
-    const selectedNodes = ref([-1, -1]);
 
     const matrixComp = useTemplateRef("matrixComp");
     const chartsComp = useTemplateRef("chartsComp");
 
-    provide("selectedNodes", selectedNodes);
+    let numberProducers = 0;
+    let numberConsumers = 0;
+
     provide("isAutoSimulating", isAutoSimulating);
     provide("newScenarioLoaded", newScenarioLoaded);
     provide("sliderVals", sliderVals);
@@ -64,99 +70,137 @@ export default {
     const matrixTheme = ref({ backgroundColor: "white", gridColor: "black" });
 
     function handleSimulationData(propagateChange) {
-      if (selectedNodes.value[0] === -1 || selectedNodes.value[1] === -1)
+      if (
+        dataStore.selectedNodes[0] === -1 ||
+        dataStore.selectedNodes[1] === -1
+      )
         return;
 
       if (propagateChange.reset) {
         isAutoSimulating.value = false;
         stopAutoSimulate.value = true;
+        if (!isAutoSimulating.value)
+          prepareNewScenario(numberProducers, numberConsumers);
       }
       if (!isAutoSimulating.value) {
         if (propagateChange.autoSimulate) {
           isAutoSimulating.value = true;
+          dataStore.dataValues = propagateChange.simData;
+
           autoSimulateData(propagateChange);
         } else {
-          const currentSliderVals = propagateChange.sliderVals.map((el) => {
-            return el.value;
-          });
-          simulateData(propagateChange, currentSliderVals);
+          dataStore.updateDataValuesCell(dataStore.dataValues, propagateChange);
+          simulateData(propagateChange, propagateChange.sliderVals);
         }
       }
     }
     async function autoSimulateData(propagateChange) {
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const bestIdxMap = new Map(propagateChange.bestIdx);
+      for (const [key, _] of dataStore.prodCapacities) {
+        if (dataStore.selectedNodes.some((el) => el === key)) {
+          dataStore.prodCapacities.set(key, 0);
+        } else {
+          dataStore.prodCapacities.set(key, bestIdxMap.get(key));
+        }
+      }
+
       for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
         for (let colIndex = 0; colIndex < 6; colIndex++) {
           if (stopAutoSimulate.value) {
             stopAutoSimulate.value = false;
             return;
           }
+          //Extract desired values from propagateChange.simData or dataValues
+          dataStore.prodCapacities.set(dataStore.selectedNodes[1], rowIndex);
+          dataStore.prodCapacities.set(dataStore.selectedNodes[0], colIndex);
           let currentSliderVals = [colIndex, rowIndex];
-          simulateData(propagateChange, currentSliderVals);
-          await sleep(700);
+          let cell = {
+            simData: dataStore.getDataValuesCell(propagateChange.simData),
+            reset: propagateChange.reset,
+            autoSimulate: propagateChange.autoSimulate,
+            sliderVals: propagateChange.sliderVals,
+            bestIdx: propagateChange.bestIdx,
+          };
+          simulateData(cell, currentSliderVals);
+          await sleep(100);
         }
       }
-      sliderVals.value = propagateChange.bestIdx;
+      dataStore.prodCapacities.set(
+        dataStore.selectedNodes[0],
+        bestIdxMap.get(dataStore.selectedNodes[0])
+      );
+      dataStore.prodCapacities.set(
+        dataStore.selectedNodes[1],
+        bestIdxMap.get(dataStore.selectedNodes[1])
+      );
+      sliderVals.value = [
+        bestIdxMap.get(dataStore.selectedNodes[0]),
+        bestIdxMap.get(dataStore.selectedNodes[1]),
+      ];
       isAutoSimulating.value = false;
     }
+
     function simulateData(propagateChange, currentSliderVals) {
-      const newValues =
-        propagateChange.simData[currentSliderVals[1]][currentSliderVals[0]];
       sliderVals.value = currentSliderVals;
       matrixData.value = {
         reset: propagateChange.reset,
-        matrixValue: newValues.matrixData,
+        matrixValue: propagateChange.simData.matrixData,
       };
       chartsData.value = {
         reset: propagateChange.reset,
-        chartsValues: newValues.chartsData,
+        chartsValues: propagateChange.simData.chartsData,
       };
+      console.log(dataStore.dataValues);
     }
 
     function handleNodeSelection(newNode) {
       if (!isAutoSimulating.value) {
-        console.log(selectedNodes);
+        console.log(dataStore.selectedNodes);
         //LIFO-wise selection -> 0 first, 1 subsequently
-        const idx = selectedNodes.value.findIndex((el) => {
+        const idx = dataStore.selectedNodes.findIndex((el) => {
           return el === newNode;
         });
         //if idx >= 0, that means that the node is supposed to be de-highlighted (shifted with idx = 0, popped with idx = 1). Otherwise, it is going to be highlighted (pushed)
         if (idx >= 0) {
           idx === 0
-            ? (selectedNodes.value = [selectedNodes.value[1], -1])
-            : (selectedNodes.value = [selectedNodes.value[0], -1]);
+            ? (dataStore.selectedNodes = [dataStore.selectedNodes[1], -1])
+            : (dataStore.selectedNodes = [dataStore.selectedNodes[0], -1]);
         } else {
-          if (selectedNodes.value[0] === -1) {
-            selectedNodes.value = [newNode, -1];
+          if (dataStore.selectedNodes[0] === -1) {
+            dataStore.selectedNodes = [newNode, -1];
           } else {
-            selectedNodes.value = [selectedNodes.value[0], newNode];
+            dataStore.selectedNodes = [dataStore.selectedNodes[0], newNode];
           }
         }
-        console.log(selectedNodes.value[0], selectedNodes.value[1]);
+        console.log(dataStore.selectedNodes[0], dataStore.selectedNodes[1]);
       }
     }
     provide("handleNodeSelection", handleNodeSelection);
 
     function moveOutline(newVal, idx) {
+      dataStore.prodCapacities.set(dataStore.selectedNodes[idx], newVal);
       sliderVals.value[idx] = newVal;
     }
     provide("moveOutline", moveOutline);
 
-    function clearAll() {
-      if (newScenarioLoaded) {
-        matrixComp.value?.clearMatrix();
-        chartsComp.value?.clearCharts();
-        newScenarioLoaded.value = false;
-      }
+    function prepareNewScenario() {
+      dataStore.selectedNodes = [-1, -1];
+
+      matrixComp.value?.clearMatrix();
+      chartsComp.value?.clearCharts();
+
+      const initializeNDarray = (nProds) => {
+        return nProds === 0
+          ? { matrixData: null, chartsData: null }
+          : Array.from({ length: 6 }, () => initializeNDarray(nProds - 1));
+      };
+
+      dataStore.dataValues = initializeNDarray(dataStore.prodCapacities.size);
     }
 
-    watch(
-      () => newScenarioLoaded,
-      (newVal) => clearAll(),
-      {
-        deep: true,
-      }
-    );
+    provide("prepareNewScenario", prepareNewScenario);
 
     return {
       handleSimulationData,

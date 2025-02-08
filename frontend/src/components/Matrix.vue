@@ -1,11 +1,24 @@
 <template>
   <Panel id="matrix-container" :header="null">
+    <div id="label-container">
+      <label
+        class="custom-label"
+        :class="{
+          selectedFirst: dataStore.isSelectedFirst(key),
+          selectedSecond: dataStore.isSelectedSecond(key),
+        }"
+        v-for="[key, value] in Array.from(dataStore.prodCapacities)"
+        :key="key"
+      >
+        node {{ key }} : {{ value }}
+      </label>
+    </div>
     <VuePlotly
       :data="[
         {
           z: z,
-          x: axisDimension,
-          y: axisDimension,
+          x: matrixDesignStore.axisDimension,
+          y: matrixDesignStore.axisDimension,
           type: 'heatmap',
           text:
             z !== null
@@ -18,19 +31,10 @@
           zmax: 100,
         },
       ]"
-      :layout="layout"
+      :layout="matrixDesignStore.layout"
       :display-mode-bar="true"
       :config="{
         displayModeBar: false,
-        /*displaylogo: false,
-        modeBarButtonsToRemove: [
-          'zoomIn',
-          'zoomOut',
-          'zoom',
-          'pan2d',
-          'resetScale2d',
-          'toImage',
-        ],*/
       }"
       class="matrix-plotly"
     ></VuePlotly>
@@ -39,9 +43,10 @@
 
 <script>
 import { Panel } from "primevue";
-import { ref, watch, inject, onMounted, defineExpose } from "vue";
-import VueApexCharts from "vue3-apexcharts";
+import { ref, watch, onMounted } from "vue";
 import { VuePlotly } from "vue3-plotly";
+import { useDataStore } from "../assets/stores/dataValues";
+import { useMatrixDesignStore } from "../assets/stores/matrixDesign";
 
 export default {
   props: {
@@ -67,249 +72,76 @@ export default {
     },
   },
   setup(props) {
-    let heatmapCollection = [];
-    const outLinePosition = ref(null);
+    const dataStore = useDataStore();
+    const matrixDesignStore = useMatrixDesignStore();
     const z = ref(null);
-    const layout = ref(null);
-    const gridSize = ref(6);
-    const gridColor = ref("black");
-    const gridLines = ref([]);
-    const axisDimension = ref(Array.from({ length: 6 }, (_, i) => i));
-
-    let selectedNodes = inject("selectedNodes");
 
     function updateHeatmap(newVal, colIndex, rowIndex) {
+      console.log(z.value[rowIndex][colIndex], newVal);
       z.value[rowIndex][colIndex] = newVal;
-    }
-    function resetHeatmap() {
-      z.value = Array.from({ length: gridSize.value }, () =>
-        Array.from({ length: gridSize.value }, () => null)
-      );
-
-      let idx = heatmapCollection.findIndex((el) => {
-        const nodeIDs = el.selectedNodes;
-        return (
-          nodeIDs[0] === selectedNodes.value[0] &&
-          nodeIDs[1] === selectedNodes.value[1]
-        );
-      });
-
-      if (idx >= 0) {
-        heatmapCollection[idx].z = z.value;
-      }
     }
 
     const clearMatrix = () => {
-      z.value = Array.from({ length: gridSize.value }, () =>
-        Array.from({ length: gridSize.value }, () => null)
+      z.value = Array.from({ length: matrixDesignStore.gridSize }, () =>
+        Array.from({ length: matrixDesignStore.gridSize }, () => null)
       );
-      heatmapCollection = [];
-      console.log(heatmapCollection);
     };
 
-    defineExpose({ clearMatrix });
-
-    function initHeatmap() {
-      for (let i = 0; i <= gridSize.value; i++) {
-        // Horizontal lines
-        gridLines.value.push({
-          type: "line",
-          x0: -0.5,
-          x1: gridSize.value - 0.5,
-          y0: i - 0.5,
-          y1: i - 0.5,
-          line: {
-            color: "black",
-            width: 1,
-          },
-        });
-
-        // Vertical lines
-        gridLines.value.push({
-          type: "line",
-          x0: i - 0.5,
-          x1: i - 0.5,
-          y0: -0.5,
-          y1: gridSize.value - 0.5,
-          line: {
-            color: "black",
-            width: 1,
-          },
-        });
-      }
-
-      layout.value = {
-        xaxis: {
-          range: [-0.55, gridSize.value - 0.45],
-          tickmode: "array",
-          ticks: "outside",
-          showgrid: false,
-          zeroline: false,
-          fixedrange: true,
-          tickvals: [0, 1, 2, 3, 4, 5],
-        },
-        yaxis: {
-          range: [-0.55, gridSize.value - 0.45], //-0.5 to 5.5 in order to display the cells with their axis values centered
-          tickmode: "array",
-          ticks: "outside", //for the - at the numbers at the axis baselines
-          showgrid: false, //for the grid lines inside the coordinate system
-          zeroline: false, //for the baseline of an x axis (the thick one)
-          fixedrange: true,
-          tickvals: [0, 1, 2, 3, 4, 5], //values where the ticks should be located
-        },
-        paper_bgcolor: "white", // Background color outside the plotting area
-        plot_bgcolor: "white",
-        shapes: [
-          ...gridLines.value,
-          {
-            type: "rect",
-            x0: outLinePosition.value[0] - 0.5, // Left boundary of the cell
-            x1: outLinePosition.value[0] + 0.48, // Right boundary of the cell
-            y0: outLinePosition.value[1] - 0.45, // Bottom boundary of the cell
-            y1: outLinePosition.value[1] + 0.45, // Top boundary of the cell
-            xref: "x",
-            yref: "y",
-            line: {
-              color: "green", // Outline color
-              width: 3, // Outline width
-            },
-            fillcolor: "rgba(0,0,0,0)", // Transparent fill
-          },
-        ],
-      };
-    }
-
     onMounted(() => {
-      z.value = Array.from({ length: gridSize.value }, (_, rowIndex) =>
-        Array.from({ length: gridSize.value }, () => null)
+      z.value = Array.from(
+        { length: matrixDesignStore.gridSize },
+        (_, rowIndex) =>
+          Array.from({ length: matrixDesignStore.gridSize }, () => null)
       );
-      outLinePosition.value = props.sliderVals;
-      initHeatmap();
-      /*heatmapCollection.push({
-        selectedNodes: selectedNodes.value,
-        z: z.value,
-      });*/ //Not required at mount time since the initial selectedNode value is going to be [-1, -1]
+      matrixDesignStore.outLinePosition = props.sliderVals;
+      matrixDesignStore.initHeatmap();
     });
 
     function changeMatrix(newVal) {
       if (newVal[0] === -1 || newVal[1] === -1) {
-        z.value = Array.from({ length: gridSize.value }, () =>
-          Array.from({ length: gridSize.value }, () => null)
+        z.value = Array.from({ length: matrixDesignStore.gridSize }, () =>
+          Array.from({ length: matrixDesignStore.gridSize }, () => null)
         );
         return;
       }
 
-      let selectedHeatmap = heatmapCollection.find((el) => {
-        const nodeIDs = el.selectedNodes;
-        return nodeIDs[0] === newVal[0] && nodeIDs[1] === newVal[1];
-      })?.z;
+      let rowID = dataStore.selectedNodes[1];
+      let colID = dataStore.selectedNodes[0];
+      const newZ = Array.from({ length: matrixDesignStore.gridSize }, () =>
+        Array.from({ length: matrixDesignStore.gridSize }, () => null)
+      );
 
-      if (!selectedHeatmap) {
-        const newHeatmap = Array.from(
-          { length: gridSize.value },
-          (_, rowIndex) => Array.from({ length: gridSize.value }, () => null)
-        );
-        selectedHeatmap = newHeatmap;
-        heatmapCollection.push({ selectedNodes: newVal, z: selectedHeatmap });
-      }
+      dataStore.extractDataValuesCell(
+        newZ,
+        dataStore.dataValues,
+        colID,
+        rowID,
+        true,
+        false
+      );
 
-      z.value = selectedHeatmap;
+      z.value = newZ;
 
-      handleSliderVals([0, 0]);
+      matrixDesignStore.handleSliderVals([
+        dataStore.prodCapacities.get(dataStore.selectedNodes[0]),
+        dataStore.prodCapacities.get(dataStore.selectedNodes[1]),
+      ]);
     }
 
     function handleMatrixData(newVal) {
       if (newVal && Object.keys(newVal).length > 0) {
+        console.log(newVal.reset);
         if (!newVal.reset) {
           const colIndex = props.sliderVals[0];
           const rowIndex = props.sliderVals[1];
           updateHeatmap(newVal.matrixValue, colIndex, rowIndex);
+          console.log(z.value);
         } else {
-          resetHeatmap();
+          clearMatrix();
         }
       } else {
         console.error("Not good, matrix is not receiving data");
       }
-    }
-
-    function handleSliderVals(newVal) {
-      outLinePosition.value = newVal;
-
-      layout.value = {
-        ...layout.value,
-        shapes: [
-          ...gridLines.value,
-          {
-            type: "rect",
-            x0: outLinePosition.value[0] - 0.5, // Left boundary of the cell
-            x1: outLinePosition.value[0] + 0.48, // Right boundary of the cell
-            y0: outLinePosition.value[1] - 0.45, // Bottom boundary of the cell
-            y1: outLinePosition.value[1] + 0.45, // Top boundary of the cell
-            xref: "x",
-            yref: "y",
-            line: {
-              color: "green",
-              width: 3,
-            },
-            fillcolor: "rgba(0,0,0,0)",
-          },
-        ],
-      };
-    }
-
-    function handleMatrixTheme(newVal) {
-      gridColor.value = newVal.gridColor;
-      gridLines.value = [];
-      for (let i = 0; i <= gridSize.value; i++) {
-        // Horizontal lines
-        gridLines.value.push({
-          type: "line",
-          x0: -0.5,
-          x1: gridSize.value - 0.5,
-          y0: i - 0.5,
-          y1: i - 0.5,
-          line: {
-            color: newVal.gridColor,
-            width: 1,
-          },
-        });
-
-        // Vertical lines
-        gridLines.value.push({
-          type: "line",
-          x0: i - 0.5,
-          x1: i - 0.5,
-          y0: -0.5,
-          y1: gridSize.value - 0.5,
-          line: {
-            color: newVal.gridColor,
-            width: 1,
-          },
-        });
-      }
-
-      layout.value = {
-        ...layout.value,
-        paper_bgcolor: newVal.backgroundColor,
-        plot_bgcolor: newVal.backgroundColor,
-        shapes: [
-          ...gridLines.value,
-          {
-            type: "rect",
-            x0: outLinePosition.value[0] - 0.5, // Left boundary of the cell
-            x1: outLinePosition.value[0] + 0.48, // Right boundary of the cell
-            y0: outLinePosition.value[1] - 0.45, // Bottom boundary of the cell
-            y1: outLinePosition.value[1] + 0.45, // Top boundary of the cell
-            xref: "x",
-            yref: "y",
-            line: {
-              color: "green",
-              width: 3,
-            },
-            fillcolor: "rgba(0,0,0,0)",
-          },
-        ],
-      };
     }
 
     //watchers
@@ -320,17 +152,17 @@ export default {
     );
     watch(
       () => props.sliderVals,
-      (newVal) => handleSliderVals(newVal),
+      (newVal) => matrixDesignStore.handleSliderVals(newVal),
       { deep: true }
     );
     watch(
       () => props.matrixTheme,
-      (newVal) => handleMatrixTheme(newVal),
+      (newVal) => matrixDesignStore.handleMatrixTheme(newVal),
       { deep: true }
     );
 
     watch(
-      () => selectedNodes.value,
+      () => dataStore.selectedNodes,
       (newVal) => changeMatrix(newVal),
       {
         deep: true,
@@ -338,19 +170,14 @@ export default {
     );
 
     return {
-      outLinePosition,
       z,
-      layout,
-      gridSize,
-      gridColor,
-      gridLines,
-      axisDimension,
       clearMatrix,
+      matrixDesignStore,
+      dataStore,
     };
   },
   components: {
     Panel,
-    apexchart: VueApexCharts,
     VuePlotly,
   },
 };
