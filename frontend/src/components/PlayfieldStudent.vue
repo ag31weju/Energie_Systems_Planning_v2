@@ -415,6 +415,7 @@ export default {
           }
 
           //counts how many prods and cons there are
+          const dataStore = useDataStore();
           dataStore.prodCapacities = new Map();
 
           this.nodes = nodes.map((node) => {

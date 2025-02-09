@@ -77,7 +77,6 @@ export default {
     const z = ref(null);
 
     function updateHeatmap(newVal, colIndex, rowIndex) {
-      console.log(z.value[rowIndex][colIndex], newVal);
       z.value[rowIndex][colIndex] = newVal;
     }
 
@@ -130,12 +129,10 @@ export default {
 
     function handleMatrixData(newVal) {
       if (newVal && Object.keys(newVal).length > 0) {
-        console.log(newVal.reset);
         if (!newVal.reset) {
           const colIndex = props.sliderVals[0];
           const rowIndex = props.sliderVals[1];
           updateHeatmap(newVal.matrixValue, colIndex, rowIndex);
-          console.log(z.value);
         } else {
           clearMatrix();
         }

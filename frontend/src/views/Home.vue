@@ -32,7 +32,14 @@
 </template>
 
 <script>
-import { ref, provide, watch, onMounted, onUnmounted, useTemplateRef } from "vue";
+import {
+  ref,
+  provide,
+  watch,
+  onMounted,
+  onUnmounted,
+  useTemplateRef,
+} from "vue";
 import Chart from "primevue/chart";
 import Sliders from "../components/Sliders.vue";
 import Playfield from "../components/PlayfieldStudent.vue";
@@ -42,23 +49,19 @@ import Drawerbox from "../components/Drawerbox.vue";
 import { usedTheme } from "../assets/stores/pageSettings";
 import { useDataStore } from "../assets/stores/dataValues";
 
-
 export default {
   setup(props, context) {
-    
     const disableKeyboardInput = (e) => {
       e.preventDefault();
       e.stopPropagation();
     };
 
-    
     onMounted(() => {
       window.addEventListener("keydown", disableKeyboardInput);
       window.addEventListener("keypress", disableKeyboardInput);
       window.addEventListener("keyup", disableKeyboardInput);
     });
 
-    
     onUnmounted(() => {
       window.removeEventListener("keydown", disableKeyboardInput);
       window.removeEventListener("keypress", disableKeyboardInput);
@@ -100,8 +103,7 @@ export default {
       if (propagateChange.reset) {
         isAutoSimulating.value = false;
         stopAutoSimulate.value = true;
-        if (!isAutoSimulating.value)
-          prepareNewScenario(numberProducers, numberConsumers);
+        prepareNewScenario(numberProducers, numberConsumers);
       }
       if (!isAutoSimulating.value) {
         if (propagateChange.autoSimulate) {
@@ -145,7 +147,7 @@ export default {
             bestIdx: propagateChange.bestIdx,
           };
           simulateData(cell, currentSliderVals);
-          await sleep(100);
+          await sleep(1000);
         }
       }
       dataStore.prodCapacities.set(
@@ -173,12 +175,10 @@ export default {
         reset: propagateChange.reset,
         chartsValues: propagateChange.simData.chartsData,
       };
-      console.log(dataStore.dataValues);
     }
 
     function handleNodeSelection(newNode) {
       if (!isAutoSimulating.value) {
-        console.log(dataStore.selectedNodes);
         //LIFO-wise selection -> 0 first, 1 subsequently
         const idx = dataStore.selectedNodes.findIndex((el) => {
           return el === newNode;
@@ -195,7 +195,6 @@ export default {
             dataStore.selectedNodes = [dataStore.selectedNodes[0], newNode];
           }
         }
-        console.log(dataStore.selectedNodes[0], dataStore.selectedNodes[1]);
       }
     }
     provide("handleNodeSelection", handleNodeSelection);

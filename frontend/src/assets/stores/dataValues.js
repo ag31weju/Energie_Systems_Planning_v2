@@ -39,8 +39,6 @@ export const useDataStore = defineStore("useDataStore", () => {
     forMatrix,
     forCharts
   ) {
-    console.log(colID);
-    console.log(rowID);
     const prodCapacitiesArr = Array.from(prodCapacities.value);
     function recExtractDataValuesCell(pointer, rec_depth, colIndex, rowIndex) {
       if (rec_depth == prodCapacitiesArr.length) {
@@ -63,7 +61,6 @@ export const useDataStore = defineStore("useDataStore", () => {
                 currColIndex,
                 rowIndex
               );
-              console.log("for columns", colID, currColIndex, tmp);
               matrixToWhichIsAssigned[rowIndex][currColIndex] =
                 tmp !== null && tmp !== undefined
                   ? tmp
@@ -77,7 +74,6 @@ export const useDataStore = defineStore("useDataStore", () => {
                 colIndex,
                 currRowIndex
               );
-              console.log("for rows", rowID, currRowIndex, tmp);
               matrixToWhichIsAssigned[currRowIndex][colIndex] =
                 tmp !== null && tmp !== undefined
                   ? tmp
