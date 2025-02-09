@@ -76,13 +76,14 @@ export default {
       });
       try {
         const data = {
-          nodes: scenarioStore.nodes, 
+          nodes: scenarioStore.nodes,
           edges: scenarioStore.edges,
-          sliderData:{
-          reset: reset,
-          autoSimulate: autoSimulate, // Send the boolean flag for auto simulation
-          prodCapacities: Array.from(dataStore.prodCapacities),
-        }};
+          sliderData: {
+            reset: reset,
+            autoSimulate: autoSimulate, // Send the boolean flag for auto simulation
+            prodCapacities: Array.from(dataStore.prodCapacities),
+          },
+        };
 
         const response = await axios
           .post(url, data, {
@@ -111,6 +112,7 @@ export default {
           sliderVals: sliderVals,
           bestIdx: simData.bestIdx,
         };
+        console.log("happens");
         context.emit("getSimulationData", propagateChange);
       } catch (error) {
         console.error("Error sending data to backend:", error);

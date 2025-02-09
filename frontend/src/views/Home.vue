@@ -35,7 +35,7 @@
 import {
   ref,
   provide,
-  watch,
+  toRaw,
   onMounted,
   onUnmounted,
   useTemplateRef,
@@ -109,7 +109,6 @@ export default {
         if (propagateChange.autoSimulate) {
           isAutoSimulating.value = true;
           dataStore.dataValues = propagateChange.simData;
-
           autoSimulateData(propagateChange);
         } else {
           dataStore.updateDataValuesCell(dataStore.dataValues, propagateChange);
@@ -117,6 +116,7 @@ export default {
         }
       }
     }
+
     async function autoSimulateData(propagateChange) {
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

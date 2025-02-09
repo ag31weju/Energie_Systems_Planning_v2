@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, shallowRef } from "vue";
 
 export const useDataStore = defineStore("useDataStore", () => {
   const selectedNodes = ref([-1, -1]);
   const dataValues = ref(null);
-  const prodCapacities = ref(new Map());
+  const prodCapacities = shallowRef(new Map());
 
   const isSelectedFirst = (nodeID) => {
     return selectedNodes.value ? selectedNodes.value[0] === nodeID : false;
