@@ -1,22 +1,43 @@
 <template>
   <Panel id="playfieldS">
-    <div id="vueflow_container" ref="vueFlowContainer" :style="{
-      backgroundImage: 'url(' + imgUrl + ')',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }" style="
+    <div
+      id="vueflow_container"
+      ref="vueFlowContainer"
+      :style="{
+        backgroundImage: 'url(' + imgUrl + ')',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }"
+      style="
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 92%;
         z-index: 2;
-      ">
-      <vue-flow v-model:nodes="nodes" v-model:edges="edges" :fit-view="true" :zoomOnScroll="false" :zoomOnPinch="false"
-        :panOnDrag="false" :pan-on-scroll="false" :disableKeyboardA11y="true" :preventScrolling="true"
-        :snap-grid="snapGrid" :snap-to-grid="true" :connection-mode="connectionMode" :node-types="customNodeTypes"
-        :auto-pan-on-node-drag="false" :nodes-draggable="locked" :edges-connectable="false" :zoomOnDoubleClick="false"
-         :autoPanOnConnect="false" :edgesUpdatable="false" />
+      "
+    >
+      <vue-flow
+        v-model:nodes="nodes"
+        v-model:edges="edges"
+        :fit-view="true"
+        :zoomOnScroll="false"
+        :zoomOnPinch="false"
+        :panOnDrag="false"
+        :pan-on-scroll="false"
+        :disableKeyboardA11y="true"
+        :preventScrolling="true"
+        :snap-grid="snapGrid"
+        :snap-to-grid="true"
+        :connection-mode="connectionMode"
+        :node-types="customNodeTypes"
+        :auto-pan-on-node-drag="false"
+        :nodes-draggable="locked"
+        :edges-connectable="false"
+        :zoomOnDoubleClick="false"
+        :autoPanOnConnect="false"
+        :edgesUpdatable="false"
+      />
     </div>
 
     <canvas v-if="showGrid" ref="gridCanvas" id="grid_overlay1"></canvas>
@@ -24,19 +45,55 @@
     <!-- Buttons at the Bottom -->
 
     <div id="buttons_container">
-      <Select v-model="selectedScenario" :options="scenarios" class="Sbutton"
-        :placeholder="usedLang.choose_scenario"></Select>
+      <Select
+        v-model="selectedScenario"
+        :options="scenarios"
+        class="Sbutton"
+        :placeholder="usedLang.choose_scenario"
+      ></Select>
 
-      <Button @click="loadRequest" type="submit" class="button" v-bind:label="usedLang.load_scenario"></Button>
-      <Button @click="triggerImageUpload" type="submit" class="button" v-bind:label="usedLang.upload_scenario"></Button>
-      <Button @click="triggerJsonUpload" type="submit" class="button" v-bind:label="usedLang.upload_json"></Button>
+      <Button
+        @click="loadRequest"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.load_scenario"
+      ></Button>
+      <Button
+        @click="triggerImageUpload"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.upload_scenario"
+      ></Button>
+      <Button
+        @click="triggerJsonUpload"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.upload_json"
+      ></Button>
 
-      <Button @click="toggleGridOverlay" type="submit" class="button" v-bind:label="usedLang.toggle_grid"></Button>
+      <Button
+        @click="toggleGridOverlay"
+        type="submit"
+        class="button"
+        v-bind:label="usedLang.toggle_grid"
+      ></Button>
     </div>
-    <input type="file" id="imageInput" ref="imageInput" @change="handleFileChange('image', $event)" accept="image/*"
-      style="display: none" />
-    <input type="file" id="jsonInput" ref="jsonInput" @change="handleFileChange('json', $event)" accept=".json"
-      style="display: none" />
+    <input
+      type="file"
+      id="imageInput"
+      ref="imageInput"
+      @change="handleFileChange('image', $event)"
+      accept="image/*"
+      style="display: none"
+    />
+    <input
+      type="file"
+      id="jsonInput"
+      ref="jsonInput"
+      @change="handleFileChange('json', $event)"
+      accept=".json"
+      style="display: none"
+    />
   </Panel>
 </template>
 
@@ -53,7 +110,10 @@ import BatteryNode from "./customNodes/Battery.vue";
 
 import { getNodeData } from "@/utils/nodeUtils.js";
 
-import { usedLanguage, usedColorBlindnessTheme } from "../assets/stores/pageSettings";
+import {
+  usedLanguage,
+  usedColorBlindnessTheme,
+} from "../assets/stores/pageSettings";
 import { ref, reactive, watch } from "vue";
 import { useDataStore } from "@/assets/stores/dataValues";
 import { useScenarioStore } from "../assets/stores/scenarioStore";
@@ -70,21 +130,26 @@ export default {
     const usedLang = usedLanguage();
     const currColor = usedColorBlindnessTheme();
 
-    watch(() => currColor.currentColorSettings, () => {
-      //   setTimeout(() => {
-      //     var root = document.documentElement;
-      //     var style = getComputedStyle(root);
-      //     var sliderHandleBorder = style.getPropertyValue('--slider-handle-border-color-first').trim();
-      //     console.log(`Slider Handle Border Color: ${sliderHandleBorder}`)
-      //   })
-    })
+    watch(
+      () => currColor.currentColorSettings,
+      () => {
+        //   setTimeout(() => {
+        //     var root = document.documentElement;
+        //     var style = getComputedStyle(root);
+        //     var sliderHandleBorder = style.getPropertyValue('--slider-handle-border-color-first').trim();
+        //     console.log(`Slider Handle Border Color: ${sliderHandleBorder}`)
+        //   })
+      }
+    );
 
-    watch(() => usedLang.currLang, () => {
-      scenarios.value[0] = usedLang.scene_1;
-      scenarios.value[1] = usedLang.scene_2;
-      scenarios.value[2] = usedLang.scene_3;
-    });
-
+    watch(
+      () => usedLang.currLang,
+      () => {
+        scenarios.value[0] = usedLang.scene_1;
+        scenarios.value[1] = usedLang.scene_2;
+        scenarios.value[2] = usedLang.scene_3;
+      }
+    );
 
     //Playfield variables
     const imgUrl = ref(null); // URL for the image
@@ -99,7 +164,11 @@ export default {
     const selectedNodeId = ref(null); // Track the selected node for edge creation
     const locked = ref(false); // Lock flag
     const jsonUrl = ref(null); // JSON file URL
-    const scenarios = ref([usedLang.scene_1, usedLang.scene_2, usedLang.scene_3]); // Scenario options
+    const scenarios = ref([
+      usedLang.scene_1,
+      usedLang.scene_2,
+      usedLang.scene_3,
+    ]); // Scenario options
     const selectedScenario = ref("");
 
     // Reactive object for edge properties
@@ -163,11 +232,20 @@ export default {
       try {
         const url = "http://127.0.0.1:8000/api/process-scenario/";
         let id = null;
-        if (this.selectedScenario == "Scene 1" || this.selectedScenario == "Szene 1") {
+        if (
+          this.selectedScenario == "Scene 1" ||
+          this.selectedScenario == "Szene 1"
+        ) {
           id = 1;
-        } else if (this.selectedScenario == "Scene 2" || this.selectedScenario == "Szene 2") {
+        } else if (
+          this.selectedScenario == "Scene 2" ||
+          this.selectedScenario == "Szene 2"
+        ) {
           id = 2;
-        } else if (this.selectedScenario == "Scene 3" || this.selectedScenario == "Szene 3") {
+        } else if (
+          this.selectedScenario == "Scene 3" ||
+          this.selectedScenario == "Szene 3"
+        ) {
           id = 3;
         }
 
@@ -215,31 +293,27 @@ export default {
         alert(`Error: ${error.message}`);
       }
       this.saveScenario();
-    
-
     },
 
     async saveScenario() {
-    const scenarioStore = useScenarioStore();
+      const scenarioStore = useScenarioStore();
 
-    const dataToSave = {
-      nodes: this.nodes.map((node) => ({
-        id: node.id,
-        position: node.position,
-        type: node.type,
-        label: node.data.label, // Correct access for label
-      })),
-      edges: this.edges.map((edge) => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-      
-       
-      })),
-    };
+      const dataToSave = {
+        nodes: this.nodes.map((node) => ({
+          id: node.id,
+          position: node.position,
+          type: node.type,
+          label: node.data.label, // Correct access for label
+        })),
+        edges: this.edges.map((edge) => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+        })),
+      };
 
-    scenarioStore.saveScenario(dataToSave.nodes, dataToSave.edges);
-  },
+      scenarioStore.saveScenario(dataToSave.nodes, dataToSave.edges);
+    },
     toggleGridOverlay() {
       this.showGrid = !this.showGrid;
       if (this.showGrid) {
@@ -340,7 +414,12 @@ export default {
             );
           }
 
+          //counts how many prods and cons there are
+          dataStore.prodCapacities = new Map();
+
           this.nodes = nodes.map((node) => {
+            if (node.type === "producer" || node.type === "battery")
+              dataStore.prodCapacities.set(node.id.at(-1), 0);
             const newNode = {
               ...node,
               data: getNodeData(node.label), // Will be populated based on label
@@ -359,16 +438,15 @@ export default {
           console.log("Nodes processed:", this.nodes);
           console.log("Edges processed:", this.edges);
           this.saveScenario();
-      } catch (error) {
-        console.error("Error processing JSON:", error);
-        alert(`Error: ${error.message}`);
-      }
-    };
+        } catch (error) {
+          console.error("Error processing JSON:", error);
+          alert(`Error: ${error.message}`);
+        }
+      };
 
-    reader.readAsText(this.jsonFile);
+      reader.readAsText(this.jsonFile);
+    },
   },
-  
-}
 };
 </script>
 
