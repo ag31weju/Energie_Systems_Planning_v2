@@ -2,10 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
-from .scenario_processing import process_image, parse_json  # Import the external processing method
-from PIL import Image, ImageOps
-import json
-import os, io
+from .scenario_processing import parse_json  # Import the external processing method
+import json, os
 from .response_processing import process_response
 
 
