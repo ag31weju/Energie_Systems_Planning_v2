@@ -7,7 +7,7 @@
 import math
 from typing import Any
 import numpy as np
-import node_types
+from . import node_types
 from pathlib import Path
 
 
