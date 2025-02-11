@@ -37,7 +37,6 @@ def get_abstract_pyomo_model():
 
    model.availability_profile = pyo.Param(model.H, model.T, default=1) # Availability Profile
 
-   year_factor = 24*365/len(model.T)
 
    ## Dynamic Sets 
    model.Ug = pyo.Set(within=model.U, initialize=lambda model: [(h,n) for (h,n)  in model.U if model.is_producer[h]]) # Generators
@@ -112,6 +111,7 @@ def get_abstract_pyomo_model():
 
    # Load Profiles
    def demand_profile_rule(model, h,n,t):
+      year_factor = 24*365/len(model.T)
       try:
          return model.Pd[h,n,t] + model.nSPd[h,n,t] == (model.yearly_demand[h]/year_factor)*model.demand_profile[h,t]
       except ValueError:
@@ -121,6 +121,7 @@ def get_abstract_pyomo_model():
    model.demand_profile_eq = pyo.Constraint(model.Uc, model.T, rule=demand_profile_rule) 
 
    def demand_yearly_rule(model, h,n):
+      year_factor = 24*365/len(model.T)
       return sum(model.Pd[h,n,t] + model.nSPd[h,n,t] for t in model.T) == model.yearly_demand[h]/year_factor
    model.demand_yearly_eq = pyo.Constraint(model.Uc, rule=demand_yearly_rule)
      
