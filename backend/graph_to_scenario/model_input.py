@@ -226,7 +226,11 @@ class OptNetworkInput(AbstractModelInput):
 
     # Takes the list generated from scenario and prepares it for conversion to .dat
  
-    def populate1(self, scenario_list: list):
+    def populate_from_scenario_list(self, scenario_list: list, timesteps: list[int]):
+
+        # Populate timesteps
+        self["T"].val = timesteps
+        
         nodes = set()
         technologies = set()
 
@@ -273,7 +277,7 @@ class OptNetworkInput(AbstractModelInput):
         self["U"].val = [(tech, node) for node in nodes for tech in technologies]
 
 
-    def populate(self):
+    def populate_test(self):
         # This is a simple example. The input probably should come ffrom a scenario class
         n_ts = 24  # timesteps
         dt = 1  # per hour
@@ -334,7 +338,7 @@ if __name__ == "__main__":
     ]
     h = OptNetworkInput()
     # h.populate1(entity_list)
-    h.populate()
+    h.populate_test()
 
     h.write("test2.dat")
 

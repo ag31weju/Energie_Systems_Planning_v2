@@ -73,7 +73,7 @@ def get_abstract_pyomo_model():
 
    def penalty_rule(model):
       pfac = 1e6
-      return model.PENALTY == sum(model.nSPd[h,n]*pfac for h in model.H for n in model.N if (h,n) in model.Uc)
+      return model.PENALTY == sum(model.nSPd[h,n,t]*pfac for (h,n) in model.Uc for t in model.T)
    model.penalty_eq = pyo.Constraint(rule=penalty_rule)
 
    def capex_rule(model):

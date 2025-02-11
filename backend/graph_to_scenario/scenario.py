@@ -70,7 +70,7 @@ class Scenario:
                     and tech_defaults["availability_profile_name"] != None
                 ):
                     processed_availability_profile = self.process_profile(
-                        tech_defaults["availability_profile_name"]
+                        tech_defaults["availability_profile_name"], profile_type="availability"
                     )
 
                 if (
@@ -78,7 +78,7 @@ class Scenario:
                     and tech_defaults["demand_profile_name"] != None
                 ):
                     processed_demand_profile = self.process_profile(
-                        tech_defaults["demand_profile_name"]
+                        tech_defaults["demand_profile_name"], profile_type="demand"
                     )
                 # Create the appropriate node based on type
                 if node_type == "producer":
@@ -161,12 +161,13 @@ class Scenario:
         """
         print(f"Time step chosen: {self.timestepfile_chosen}")
 
-    def process_profile(self, profile_name):
+    def process_profile(self, profile_name, profile_type):
         """
-        Processes the profile file based on the given profile name and selected timesteps.
+        Processes the profile file based on the given profile name and selected timesteps. Availability profiles are processed differently from demand profiles. Demand profiles must be normalized to sum 1, otherwise model renders infeasible.
 
         Args:
             profile_name (str): The name of the profile file to process.
+            profile_type (str): The type of profile to process (availability or demand).
 
         Returns:
             list: Processed and formatted array or data structure.
@@ -197,6 +198,21 @@ class Scenario:
                 profile_data[i - 1] for i in indices
             ]  # timesteps are not 0 index
 
+
+            # Normalize the demand profile if necessary
+            if profile_type.lower() == "demand":
+                # Normalize the demand profile to sum to 1
+                sum_values = sum(selected_data)
+                if sum_values == 0:
+                    raise ValueError("Sum of demand profile values is zero.")
+                selected_data = [value / sum_values for value in selected_data]
+            elif profile_type.lower() == "availability":
+                # Availability profiles are not normalized
+                pass
+            else:
+                raise ValueError(f"Invalid profile type: {profile_type}. Must be 'demand' or 'availability'.")
+
+
             # Format the values to six decimal places
             formatted_data = [f"{value:.6f}" for value in selected_data]
 
@@ -217,7 +233,7 @@ class Scenario:
 
     def optimize(self):
         m = model_input.OptNetworkInput()
-        m.populate1(self.nodes)
+        m.populate_from_scenario_list(self.nodes, self.timesteps)
         m.write("test.dat")
         optimizer = model.get_abstract_pyomo_model()
         instance = model.load_input(optimizer, "test.dat")
