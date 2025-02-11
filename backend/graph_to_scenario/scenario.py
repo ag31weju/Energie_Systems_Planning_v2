@@ -235,7 +235,7 @@ class Scenario:
         m = model_input.OptNetworkInput()
         m.populate_from_scenario_list(self.nodes, self.timesteps)
         m.write("test.dat")
-        optimizer = model.get_abstract_pyomo_model()
+        optimizer = model.get_abstract_pyomo_model(fix_capacities=False)
         instance = model.load_input(optimizer, "test.dat")
         instance = model.solve_instance(instance)
         print("Total Expenditure (TOTEX):", pyo.value(instance.TOTEX))

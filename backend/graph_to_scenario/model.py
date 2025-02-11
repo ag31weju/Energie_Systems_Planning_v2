@@ -11,7 +11,7 @@ from pathlib import Path
 
 OPT_DEBUG = False  # Debugging flag
 
-def get_abstract_pyomo_model():
+def get_abstract_pyomo_model(fix_capacities=False):
 
    model = pyo.AbstractModel()
 
@@ -36,6 +36,8 @@ def get_abstract_pyomo_model():
    model.yearly_demand = pyo.Param(model.H, default=0) # Yearly Demand
 
    model.availability_profile = pyo.Param(model.H, model.T, default=1) # Availability Profile
+
+   model.installed_capacity = pyo.Param(model.H, model.N, default=0) # Installed Capacity --> rhis are the sliders values in the frontend
 
 
    ## Dynamic Sets 
@@ -104,6 +106,14 @@ def get_abstract_pyomo_model():
 
 
    # Capacity Equations
+   # If fix capacity is set, then we fix the capacity to the given value -- > those are the slider values in the frontend!
+   if fix_capacities:
+      def capacity_fixed_rule(model, h,n):
+         return model.Cg[h,n] == model.installed_capacity[h,n]
+      
+      model.fix_capacity_eq = pyo.Constraint(model.Ug, rule=capacity_fixed_rule)
+
+
    # Constraint capacity from given data ( OR NOT if we want to know the final solution)
    def capacity_rule(model, h,n,t):
       return model.Pg[h,n,t] <= model.Cg[h,n]
