@@ -37,6 +37,8 @@ def get_abstract_pyomo_model():
 
    model.availability_profile = pyo.Param(model.H, model.T, default=1) # Availability Profile
 
+   year_factor = 24*365/len(model.T)
+
    ## Dynamic Sets 
    model.Ug = pyo.Set(within=model.U, initialize=lambda model: [(h,n) for (h,n)  in model.U if model.is_producer[h]]) # Generators
    model.Uc = pyo.Set(within=model.U, initialize=lambda model: [(h,n) for (h,n) in model.U if model.is_consumer[h]]) # Consumers
@@ -48,10 +50,12 @@ def get_abstract_pyomo_model():
    model.OPEX = pyo.Var() # Operational Expenditure
    model.CAPEX = pyo.Var() # Capital Expenditure
    model.TOTEX = pyo.Var() # Total Expenditure #send to frontend
+   model.PENALTY = pyo.Var() # Penalty for not satisfying demand
 
    # Power Variables
    model.Pg = pyo.Var(model.Ug, model.T, within=pyo.NonNegativeReals) # Generation #send to frontend
    model.Pd = pyo.Var(model.Uc, model.T, within=pyo.NonNegativeReals) # Demand      #send to frontend
+   model.nSPd = pyo.Var(model.Uc, model.T, within=pyo.NonNegativeReals) # Demand not satisfied
 
    model.Pi = pyo.Var(model.N, model.T) 
 
@@ -65,8 +69,13 @@ def get_abstract_pyomo_model():
 
    # Cost Equations
    def totex_rule(model):
-      return model.TOTEX == model.CAPEX + model.OPEX
+      return model.TOTEX == model.CAPEX + model.OPEX + model.PENALTY
    model.totex_eq = pyo.Constraint(rule=totex_rule)
+
+   def penalty_rule(model):
+      pfac = 1e6
+      return model.PENALTY == sum(model.nSPd[h,n]*pfac for h in model.H for n in model.N if (h,n) in model.Uc)
+   model.penalty_eq = pyo.Constraint(rule=penalty_rule)
 
    def capex_rule(model):
       # Capex already normalized by lifetime
@@ -103,9 +112,8 @@ def get_abstract_pyomo_model():
 
    # Load Profiles
    def demand_profile_rule(model, h,n,t):
-      year_factor = 24*365/len(model.T)
       try:
-         return model.Pd[h,n,t] == (model.yearly_demand[h]/year_factor)*model.demand_profile[h,t]
+         return model.Pd[h,n,t] + model.nSPd[h,n,t] == (model.yearly_demand[h]/year_factor)*model.demand_profile[h,t]
       except ValueError:
          if OPT_DEBUG:
             print("No demand profile for technology ", h, " Skipping constraint")
@@ -113,8 +121,7 @@ def get_abstract_pyomo_model():
    model.demand_profile_eq = pyo.Constraint(model.Uc, model.T, rule=demand_profile_rule) 
 
    def demand_yearly_rule(model, h,n):
-      year_factor = 24*365/len(model.T)
-      return sum(model.Pd[h,n,t] for t in model.T) == model.yearly_demand[h]/year_factor
+      return sum(model.Pd[h,n,t] + model.nSPd[h,n,t] for t in model.T) == model.yearly_demand[h]/year_factor
    model.demand_yearly_eq = pyo.Constraint(model.Uc, rule=demand_yearly_rule)
      
 
