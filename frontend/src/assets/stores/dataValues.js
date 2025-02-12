@@ -5,6 +5,7 @@ export const useDataStore = defineStore("useDataStore", () => {
   const selectedNodes = ref([-1, -1]);
   const dataValues = ref(null);
   const prodCapacities = shallowRef(new Map());
+  const nodeInfo = shallowRef(new Map());
 
   const isSelectedFirst = (nodeID) => {
     return selectedNodes.value ? selectedNodes.value[0] === nodeID : false;

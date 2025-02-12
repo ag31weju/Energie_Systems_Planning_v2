@@ -269,10 +269,15 @@ export default {
 
         //counts how many prods and cons there are
         dataStore.prodCapacities = new Map();
+        dataStore.nodeInfo = new Map();
 
         this.nodes = nodes.map((node) => {
           if (node.type === "producer" || node.type === "battery")
             dataStore.prodCapacities.set(node.id.at(-1), 0);
+          dataStore.nodeInfo.set(node.id.at(-1), {
+            type: node.type,
+            label: node.label,
+          });
           return {
             ...node,
             data: getNodeData(node.label),
@@ -417,10 +422,15 @@ export default {
           //counts how many prods and cons there are
           const dataStore = useDataStore();
           dataStore.prodCapacities = new Map();
+          dataStore.nodeInfo = new Map();
 
           this.nodes = nodes.map((node) => {
             if (node.type === "producer" || node.type === "battery")
               dataStore.prodCapacities.set(node.id.at(-1), 0);
+            dataStore.nodeInfo.set(node.id.at(-1), {
+              type: node.type,
+              label: node.label,
+            });
             const newNode = {
               ...node,
               data: getNodeData(node.label), // Will be populated based on label

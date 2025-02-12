@@ -10,7 +10,7 @@
         v-for="[key, value] in Array.from(dataStore.prodCapacities)"
         :key="key"
       >
-        node {{ key }} : {{ value }}
+       <img width="2rem" height="2rem" style="width: 2rem; height: 2rem;" :src="getNodeIcon(dataStore.nodeInfo.get(key).label)"></img> {{ dataStore.nodeInfo.get(key).label }}: {{ value }}
       </label>
     </div>
     <VuePlotly
@@ -47,6 +47,7 @@ import { ref, watch, onMounted } from "vue";
 import { VuePlotly } from "vue3-plotly";
 import { useDataStore } from "../assets/stores/dataValues";
 import { useMatrixDesignStore } from "../assets/stores/matrixDesign";
+import { getNodeIcon } from "@/utils/nodeUtils";
 
 export default {
   props: {
@@ -171,6 +172,7 @@ export default {
       clearMatrix,
       matrixDesignStore,
       dataStore,
+      getNodeIcon
     };
   },
   components: {
