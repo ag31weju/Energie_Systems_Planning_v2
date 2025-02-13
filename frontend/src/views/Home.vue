@@ -138,10 +138,10 @@ export default {
             bestIdx: propagateChange.bestIdx,
           };
           simulateData(cell, currentSliderVals);
-          await sleep(1000);
+          await sleep(100);
         }
       }
-      processBestIndex(processBestIndex.bestIdx);
+      processBestIndex(propagateChange.bestIdx);
       isAutoSimulating.value = false;
     }
 
