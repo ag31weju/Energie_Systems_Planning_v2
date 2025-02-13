@@ -114,3 +114,10 @@ Coal 1
 Solar 1
 ;
 
+param installed_capacity := 
+Wind node_4 0
+Coal node_5 2
+Solar node_6 0
+Wind node_7 4
+;
+

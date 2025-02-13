@@ -1,6 +1,6 @@
 from pathlib import Path
-import math
-from .node_types import Producer, Consumer, Battery
+import math, json
+from . node_types import Producer, Consumer, Battery, Timesteps
 from . import Utils
 from . import model_input
 from . import model
@@ -13,13 +13,18 @@ class Scenario:
         self.edges = []  # contains edges parsed from json sent from frontend
         self.timestepfile_chosen = None  # the timestep from the excel file
         self.timesteps = []
-        self.graph_data = graph_data  # the graph json from frontend
+        self.graph_data = graph_data  # the scenario+slider json from frontend
+        self.reset_flag = False
+        self.auto_simulate_flag = False
+        self.prodCapacities = []
+        self.modified_slider_values = []
         # folder paths
         self.current_dir = Path(__file__).parent
         self.excel_file_path = (
             self.current_dir / "volume_data" / "Technology_defaults.xlsx"
         )
         self.volume_data_folder = self.current_dir / "volume_data"
+        self.initialize()
 
     def initialize(self):
         """
@@ -27,9 +32,10 @@ class Scenario:
         """
         self.get_time_steps()
         self.get_default_node_values()
+        self.get_slider_data()
         self.process_graph_data()
         self.get_edges()
-        self.print_nodes()
+        # self.print_nodes()
 
     def process_graph_data(self):
         """
@@ -70,7 +76,8 @@ class Scenario:
                     and tech_defaults["availability_profile_name"] != None
                 ):
                     processed_availability_profile = self.process_profile(
-                        tech_defaults["availability_profile_name"], profile_type="availability"
+                        tech_defaults["availability_profile_name"],
+                        profile_type="availability",
                     )
 
                 if (
@@ -90,6 +97,7 @@ class Scenario:
                             operation_cost=tech_defaults.get("operation_cost"),
                             operation_lifetime=tech_defaults.get("operation_lifetime"),
                             availability_profile=processed_availability_profile,
+                            installed_capacity=self.get_installed_capacity(node["id"]),  # gets slider value for a node 
                         )
                     )
                 elif node_type == "consumer":
@@ -107,6 +115,7 @@ class Scenario:
                             node_id=node["id"],
                             technology=node["label"],
                             capacity=tech_defaults.get("capacity"),
+                            installed_capacity=self.get_installed_capacity(node["id"]),  # gets slider value for a node 
                         )
                     )
             self.nodes.append(
@@ -139,6 +148,18 @@ class Scenario:
             "data", {}
         ).get("edges", [])
 
+    def get_slider_data(self):
+        """Gets slider data from json and saves it to respective"""
+        slider_data = self.graph_data.get("sliderData")
+        self.reset_flag = slider_data.get("reset")
+        self.autoSimulate_flag = slider_data.get("autoSimulate")
+        self.prodCapacities = [
+            (id, value) for id, value in slider_data.get("prodCapacities")
+        ]
+        self.modified_slider_values = [
+            [f"node_{item[0]}", item[1]] for item in self.prodCapacities
+        ]  # adds node Id to slider data
+
     def print_nodes(self):
         """
         Gets the nodes from the graph data and stores them in self.nodes.
@@ -147,19 +168,13 @@ class Scenario:
         for node in self.nodes:
             print(node)
 
-    def print_edges(self):
-        """
-        Gets the nodes from the graph data and stores them in self.nodes.
-        """
-        print("Nodes in the scenario:")
-        for edge in self.edges:
-            print(edge)
 
-    def print_time_step(self):
-        """
-        Prints the timestep chosen for the scenario.
-        """
-        print(f"Time step chosen: {self.timestepfile_chosen}")
+    def get_installed_capacity(self, nodeId: str):
+        '''Returns the installed capacity corresponding to a node ID'''
+        for node in self.modified_slider_values:
+            if node[0] == nodeId:
+                return node[1]
+        return 0  # Return 0 if nodeId is not found
 
     def process_profile(self, profile_name, profile_type):
         """
@@ -198,7 +213,6 @@ class Scenario:
                 profile_data[i - 1] for i in indices
             ]  # timesteps are not 0 index
 
-
             # Normalize the demand profile if necessary
             if profile_type.lower() == "demand":
                 # Normalize the demand profile to sum to 1
@@ -210,8 +224,9 @@ class Scenario:
                 # Availability profiles are not normalized
                 pass
             else:
-                raise ValueError(f"Invalid profile type: {profile_type}. Must be 'demand' or 'availability'.")
-
+                raise ValueError(
+                    f"Invalid profile type: {profile_type}. Must be 'demand' or 'availability'."
+                )
 
             # Format the values to six decimal places
             formatted_data = [f"{value:.6f}" for value in selected_data]
@@ -231,16 +246,37 @@ class Scenario:
             print(f"Error processing profile {profile_name}: {e}")
             return []
 
+    @staticmethod
+    def parse_json(json_file: json):
+        """
+        Get the json file from frontend and using create_scenario.py, parse the json file for optimizer
+        """
+        scenario = Scenario(json_file)
+        scenario.optimize()
+
+
+
     def optimize(self):
         m = model_input.OptNetworkInput()
         m.populate_from_scenario_list(self.nodes, self.timesteps)
-        m.write("test.dat")
+        #temp_file_path = m.save_to_temp_file() #saves file temporarily for multiple users
+        m.write("somefile.dat") #save file to folder
+
+        '''
         optimizer = model.get_abstract_pyomo_model(fix_capacities=False)
-        instance = model.load_input(optimizer, "test.dat")
+        instance = model.load_input(optimizer)
+        instance = model.load_input_from_temp_file(optimizer, temp_file_path)
         instance = model.solve_instance(instance)
-        print("Total Expenditure (TOTEX):", pyo.value(instance.TOTEX))
-        print("CapEx:", pyo.value(instance.CAPEX))
-        print("OpEx:", pyo.value(instance.OPEX))
+        
+        print("Total Expenditure: ", pyo.value(instance.TOTEX))
+        print("CapEx: ", pyo.value(instance.CAPEX))
+        print("OpEx: ", pyo.value(instance.OPEX))
+        print("Demand: ", model.get_variable_value(instance, "Pd"))
+        print("Generation: ", model.get_variable_value(instance, "Pg"))
+        print("Unmet Demand: ", model.get_variable_value(instance, "nSPd"))
+        print("Generation Capacity: ", model.get_variable_value(instance, "Cg"))
+        print("Power Injection: ", model.get_variable_value(instance, "Pi"))
+        '''
 
 
 def main():
@@ -249,11 +285,8 @@ def main():
     graph_data = Utils.load_json(scenario_json_file)
     # Initialize the Scenario class
     scenario = Scenario(graph_data)
-    scenario.initialize()
     scenario.optimize()
 
 
-
 if __name__ == "__main__":
-    # pass
     main()

@@ -9,10 +9,10 @@ from typing import Any
 import numpy as np
 from . import node_types
 from pathlib import Path
-
-
+import io
 from abc import ABC, abstractmethod
 import random
+import tempfile
 
 
 ## -- Abstract Parser Class, can be used to parse .dat files --##
@@ -195,6 +195,25 @@ class AbstractModelInput(ABC):
             for p in self._params:
                 p.write(f)  # This calls the updated ModelParam.write method
 
+    def save_to_temp_file(self):
+        """
+        Saves the .dat file content to a temporary file and returns its path.
+        """
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".dat", mode="w", encoding="utf-8")
+
+        try:
+            for s in self._sets:
+                s.write(temp_file)
+            for p in self._params:
+                p.write(temp_file)
+
+            temp_file.flush()  # Ensure all data is written
+            return temp_file.name  # Return the file path
+
+        finally:
+            temp_file.close()  # Close file so Pyomo can read it
+
+
     pass
 
 
@@ -208,7 +227,7 @@ class OptNetworkInput(AbstractModelInput):
         for k, v in sets.items():
             self.add_set(k, v)
 
-        # Dictoionary of parameters: pname:set_list
+        # Dictionary of parameters: pname:set_list
         params = dict(
             capacity_cost=[self["H"]],
             operational_cost=[self["H"]],
@@ -218,6 +237,8 @@ class OptNetworkInput(AbstractModelInput):
             availability_profile=[self["H"], self["T"]],
             is_consumer=[self["H"]],
             is_producer=[self["H"]],
+            installed_capacity =[self["H"], self["N"]], #slider values
+            capacity =[self["H"]], #battery 
         )
 
         for k, v in params.items():
@@ -257,6 +278,9 @@ class OptNetworkInput(AbstractModelInput):
                 if hasattr(item, "availability_profile"):
                     for t, value in enumerate(item.availability_profile):
                         self["availability_profile"].add_value(float(value), (tech, t))
+                if hasattr(item, "installed_capacity"):
+                    self["installed_capacity"].add_value(item.installed_capacity, (tech, node_id))
+                        
 
             elif isinstance(item, node_types.Consumer):
                 self["is_consumer"].add_value(1, tech)
@@ -267,12 +291,16 @@ class OptNetworkInput(AbstractModelInput):
                         self["demand_profile"].add_value(float(value), (tech, t))
 
             elif isinstance(item, node_types.Battery):
-                pass  # No specific action for Battery
+                self["is_consumer"].add_value(1, tech)
+                self["is_producer"].add_value(1, tech)
+                if hasattr(item, "capacity"):
+                    self["capacity"].add_value(item.capacity, tech)
+                if hasattr(item, "installed_capacity"):
+                    self["installed_capacity"].add_value(item.installed_capacity, (tech, node_id))
 
         # Populate sets
         self["N"].val = list(nodes)
         self["H"].val = list(technologies)
-
         # Generate connections (U set)
         self["U"].val = [(tech, node) for node in nodes for tech in technologies]
 
@@ -303,43 +331,4 @@ class OptNetworkInput(AbstractModelInput):
 
 
 if __name__ == "__main__":
-    # for testing
-    entity_list = [
-        node_types.Producer(
-            node_id="node_1",
-            technology="Solar",
-            capacity_cost=1000,
-            operation_cost=36526,
-            operation_lifetime=25.0,
-            availability_profile=["0.000000", "0.000000"],
-        ),
-        node_types.Consumer(
-            node_id="node_2",
-            technology="City",
-            yearly_demand=50000000.0,
-            demand_profile=["0.000076", "0.000072"],
-        ),
-        node_types.Battery(node_id="node_3", technology="Battery", capacity=10000.0),
-        node_types.Consumer(
-            node_id="node_5",
-            technology="Industry",
-            yearly_demand=100000000.0,
-            demand_profile=["0.000076", "0.000072"],
-        ),
-        node_types.Producer(
-            node_id="node_6",
-            technology="Coal",
-            capacity_cost=2000,
-            operation_cost=0.08,
-            operation_lifetime=40.0,
-            availability_profile=[],
-        ),
-        node_types.Timesteps([1, 2]),
-    ]
-    h = OptNetworkInput()
-    # h.populate1(entity_list)
-    h.populate_test()
-
-    h.write("test2.dat")
-
     pass
