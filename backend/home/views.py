@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
-from .scenario_processing import parse_json  # Import the external processing method
 import json, os
 from .response_processing import process_response
+from graph_to_scenario.scenario import Scenario
+
 
 
 # Create your views here.
@@ -80,6 +81,9 @@ def save_slider_data(request):
             # Parse the incoming JSON data
             data = json.loads(request.body)
 
+            Scenario.parse_json(data) #Reading json and creating a Scenario instance
+
+            #here we intercept the json and run Scenario.py on it, we get a test.dat file
             # Check if reset flag is present
             reset = data.get("reset", False)
 
@@ -112,64 +116,5 @@ def save_slider_data(request):
         return JsonResponse(res, status=200)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
-@csrf_exempt  
-def save_scenario(request):
-    if request.method == 'POST':
-        try:
-            # Parse the incoming JSON data
-            data = json.loads(request.body)
-            parse_json(data)
-            
-            nodes = data.get('nodes')
-            edges = data.get('edges')
-            image_url = data.get('imageUrl')
 
-            folder_path = os.path.join(os.getcwd(), "scenario_data")
-            os.makedirs(folder_path, exist_ok=True)
-
-            # Define file path for saving JSON
-            file_path = os.path.join(folder_path, "scenario_data.json")
-            
-            with open(file_path, 'w') as f:
-                json.dump(data, f)
-
-           
-
-            return JsonResponse({"status": "success", "message": "Data saved successfully."}, status=200)
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": str(e)}, status=400)
-
-    return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
-
-#Scenario upload: gets an image, crops it and sends it back as response to be displayed, Json file is also recieved-> printed out for now
-#not in use atm
-@csrf_exempt  # Use CSRF protection in production
-def upload_files(request):
-    if request.method == "POST" and request.FILES:
-        try:
-            # Get the uploaded files
-            image = request.FILES.get("image")
-            json_file = request.FILES.get("json")
-
-            # Parse the JSON file
-            json_data = parse_json(json_file)
-            
-            # Add your logic to process the JSON file here
-
-            if not image:
-                return JsonResponse({"error": "No image file provided"}, status=400)
-
-            # Call the external image processing function
-            processed_image_io = process_image(image)
-
-            # Return the processed image in the response
-            response = HttpResponse(processed_image_io, content_type="image/png")
-            response["Content-Disposition"] = 'attachment; filename="cropped_image.png"'
-            #could add json to response as well, not needed though
-            return response
-
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
 

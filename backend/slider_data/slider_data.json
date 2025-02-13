@@ -89,15 +89,15 @@
     ],
     "sliderData": {
         "reset": false,
-        "autoSimulate": true,
+        "autoSimulate": false,
         "prodCapacities": [
             [
                 "1",
-                0
+                1
             ],
             [
                 "3",
-                5
+                0
             ],
             [
                 "6",

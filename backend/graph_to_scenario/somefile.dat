@@ -1,0 +1,100 @@
+set T := 
+1 
+2 
+; 
+
+set N := 
+node_3 
+node_1 
+node_6 
+node_5 
+node_2 
+; 
+
+set H := 
+Battery 
+Solar 
+Coal 
+Industry 
+City 
+; 
+
+set U := 
+Battery node_3
+Solar node_3
+Coal node_3
+Industry node_3
+City node_3
+Battery node_1
+Solar node_1
+Coal node_1
+Industry node_1
+City node_1
+Battery node_6
+Solar node_6
+Coal node_6
+Industry node_6
+City node_6
+Battery node_5
+Solar node_5
+Coal node_5
+Industry node_5
+City node_5
+Battery node_2
+Solar node_2
+Coal node_2
+Industry node_2
+City node_2
+; 
+
+param capacity_cost := 
+Solar 700
+Coal 1500
+;
+
+param operational_cost := 
+Solar 0
+Coal 0.3
+;
+
+param operational_lifetime := 
+Solar 25.0
+Coal 40.0
+;
+
+param demand_profile:   1   2 :=
+City            0.513514   0.486486
+Industry        0.513514   0.486486
+;
+
+param yearly_demand := 
+City 4000000.0
+Industry 1000000.0
+;
+
+param availability_profile:   1   2 :=
+Solar           0.000000   0.000000
+;
+
+param is_consumer := 
+City 1
+Battery 1
+Industry 1
+;
+
+param is_producer := 
+Solar 1
+Battery 1
+Coal 1
+;
+
+param installed_capacity := 
+Solar node_1 1
+Battery node_3 0
+Coal node_6 5
+;
+
+param capacity := 
+Battery 10000.0
+;
+
