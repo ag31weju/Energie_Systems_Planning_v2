@@ -121,6 +121,7 @@ export const useDataStore = defineStore("useDataStore", () => {
     dataValues,
     prodCapacities,
     selectedNodes,
+    nodeInfo,
     isSelectedFirst,
     isSelectedSecond,
     getDataValuesCell,

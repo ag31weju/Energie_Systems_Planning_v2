@@ -120,6 +120,15 @@ export default {
     async function autoSimulateData(propagateChange) {
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+      const bestIdxMap = new Map(propagateChange.bestIdx);
+      for (const [key, _] of dataStore.prodCapacities) {
+        if (dataStore.selectedNodes.some((el) => el === key)) {
+          dataStore.prodCapacities.set(key, 0);
+        } else {
+          dataStore.prodCapacities.set(key, bestIdxMap.get(key));
+        }
+      }
+
       for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
         for (let colIndex = 0; colIndex < 6; colIndex++) {
           if (stopAutoSimulate.value) {
@@ -141,21 +150,11 @@ export default {
           await sleep(100);
         }
       }
-      //processBestIndex(propagateChange.bestIdx);
+      processBestIndex(bestIdxMap);
       isAutoSimulating.value = false;
     }
 
-    function processBestIndex(bestIdx) {
-      console.log(bestIdx);
-      const bestIdxMap = new Map(bestIdx);
-      for (const [key, _] of dataStore.prodCapacities) {
-        if (dataStore.selectedNodes.some((el) => el === key)) {
-          dataStore.prodCapacities.set(key, 0);
-        } else {
-          dataStore.prodCapacities.set(key, bestIdxMap.get(key));
-        }
-      }
-
+    function processBestIndex(bestIdxMap) {
       dataStore.prodCapacities.set(
         dataStore.selectedNodes[0],
         bestIdxMap.get(dataStore.selectedNodes[0])

@@ -109,8 +109,7 @@ def save_slider_data(request):
     elif request.method == "GET":
         # Use the gotten Slider data for some computation with the optimizer
         res = process_response()
-        print(res.get("bestIdx"))
-        return JsonResponse(process_response(), status=200)
+        return JsonResponse(res, status=200)
     return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 @csrf_exempt  

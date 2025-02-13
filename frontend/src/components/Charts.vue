@@ -90,7 +90,6 @@ export default {
       }
     );
 
-    let selectedNodes = inject("selectedNodes");
     const dataStore = useDataStore();
     const chartsDesignStore = useChartsDesignStore();
 
@@ -199,9 +198,6 @@ export default {
             let idx = lineChartSet.value.datasets.findIndex(
               (dataset) => dataset.id === node[0]
             );
-            console.log("Hello");
-            console.log(lineChartSet.value.datasets);
-            console.log(newVal?.lineChartData);
             lineChartSet.value.datasets[idx].data =
               newVal?.lineChartData[node[0]];
           }
@@ -224,9 +220,7 @@ export default {
     function handleSliderVals(newVal) {
       const rowIndex = newVal[1];
       const colIndex = newVal[0];
-      console.log(rowIndex, colIndex);
-      console.log(chartsCache.value[rowIndex][colIndex]);
-      //assignAllData(chartsCache.value[rowIndex][colIndex]);
+      assignAllData(chartsCache.value[rowIndex][colIndex]);
     }
 
     function updateChart(newVal, colIndex, rowIndex) {
