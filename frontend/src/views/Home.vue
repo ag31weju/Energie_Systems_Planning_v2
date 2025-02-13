@@ -138,14 +138,15 @@ export default {
             bestIdx: propagateChange.bestIdx,
           };
           simulateData(cell, currentSliderVals);
-          await sleep(1000);
+          await sleep(100);
         }
       }
-      processBestIndex(processBestIndex.bestIdx);
+      //processBestIndex(propagateChange.bestIdx);
       isAutoSimulating.value = false;
     }
 
     function processBestIndex(bestIdx) {
+      console.log(bestIdx);
       const bestIdxMap = new Map(bestIdx);
       for (const [key, _] of dataStore.prodCapacities) {
         if (dataStore.selectedNodes.some((el) => el === key)) {
