@@ -448,6 +448,8 @@ export default {
 
           console.log("Nodes processed:", this.nodes);
           console.log("Edges processed:", this.edges);
+          //new scenario loading finished and assigned each node a prod or cons id
+          this.prepareNewScenario();
           this.saveScenario();
         } catch (error) {
           console.error("Error processing JSON:", error);
