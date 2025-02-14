@@ -1,0 +1,123 @@
+set T := 
+1 
+2 
+; 
+
+set N := 
+node_6 
+node_3 
+node_5 
+node_1 
+node_7 
+node_4 
+node_2 
+; 
+
+set H := 
+Industry 
+Wind 
+House 
+Coal 
+City 
+Solar 
+; 
+
+set U := 
+Industry node_6
+Wind node_6
+House node_6
+Coal node_6
+City node_6
+Solar node_6
+Industry node_3
+Wind node_3
+House node_3
+Coal node_3
+City node_3
+Solar node_3
+Industry node_5
+Wind node_5
+House node_5
+Coal node_5
+City node_5
+Solar node_5
+Industry node_1
+Wind node_1
+House node_1
+Coal node_1
+City node_1
+Solar node_1
+Industry node_7
+Wind node_7
+House node_7
+Coal node_7
+City node_7
+Solar node_7
+Industry node_4
+Wind node_4
+House node_4
+Coal node_4
+City node_4
+Solar node_4
+Industry node_2
+Wind node_2
+House node_2
+Coal node_2
+City node_2
+Solar node_2
+; 
+
+param capacity_cost := 
+Wind 1000
+Coal 1500
+Solar 700
+;
+
+param operational_cost := 
+Wind 0
+Coal 0.3
+Solar 0
+;
+
+param operational_lifetime := 
+Wind 25.0
+Coal 40.0
+Solar 25.0
+;
+
+param demand_profile:   1   2 :=
+City            0.513514   0.486486
+House           0.513514   0.486486
+Industry        0.513514   0.486486
+;
+
+param yearly_demand := 
+City 4000000.0
+House 4000.0
+Industry 1000000.0
+;
+
+param availability_profile:   1   2 :=
+Solar           0.000000   0.000000
+Wind            0.151044   0.151510
+;
+
+param is_consumer := 
+City 1
+House 1
+Industry 1
+;
+
+param is_producer := 
+Wind 1
+Coal 1
+Solar 1
+;
+
+param installed_capacity := 
+Wind node_4 0
+Coal node_5 2
+Solar node_6 0
+Wind node_7 4
+;
+

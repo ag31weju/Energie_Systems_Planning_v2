@@ -198,6 +198,7 @@ body {
   background-color: var(--primary-panel-color);
   border: var(--primary-border);
   display: block;
+  overflow: hidden;
 }
 
 #matrix-container .p-panel-header {
@@ -242,6 +243,15 @@ body {
   height: 100%;
   background-color: var(--primary-panel-color);
   border: var(--primary-border);
+  overflow: auto;
+}
+
+#charts-container .p-panel-header{
+  display: none;
+}
+
+#charts-container .p-panel-content{
+  padding: 0;
 }
 
 #checkboxes {
@@ -507,7 +517,7 @@ body {
   gap: 1rem; /* Space between buttons */
 }
 .matrix-plotly {
-  height: 80%;
+  height: 30vh;
   width: 100%;
   cursor: default;
 }
@@ -561,7 +571,6 @@ body {
 }
 
 .custom-node.selectedFirst {
-  /* box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.8); Red glow effect */
   box-shadow: 0 0 15px 5px var(--slider-handle-border-color-first);
   border: 2px solid black; /* Optional red border */
   transform: scale(1.1); /* Slightly larger */
@@ -569,7 +578,6 @@ body {
 }
 
 .custom-node.selectedSecond {
-  /* box-shadow: 0 0 15px 5px rgba(0, 0, 255, 0.8);  Red glow effect */
   box-shadow: 0 0 15px 5px var(--slider-handle-border-color-second); /* Red glow effect */
   border: 2px solid black; /* Optional red border */
   transform: scale(1.1); /* Slightly larger */
@@ -586,6 +594,36 @@ body {
 }
 
 .producer-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.battery-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.battery-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.consumer-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.consumer-icon img {
   width: 100%;
   height: 100%;
   object-fit: contain;

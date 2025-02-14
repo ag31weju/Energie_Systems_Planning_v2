@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, shallowRef } from "vue";
 
 export const useDataStore = defineStore("useDataStore", () => {
   const selectedNodes = ref([-1, -1]);
   const dataValues = ref(null);
-  const prodCapacities = ref(new Map());
+  const prodCapacities = shallowRef(new Map());
+  const nodeInfo = shallowRef(new Map());
 
   const isSelectedFirst = (nodeID) => {
     return selectedNodes.value ? selectedNodes.value[0] === nodeID : false;
@@ -39,8 +40,6 @@ export const useDataStore = defineStore("useDataStore", () => {
     forMatrix,
     forCharts
   ) {
-    console.log(colID);
-    console.log(rowID);
     const prodCapacitiesArr = Array.from(prodCapacities.value);
     function recExtractDataValuesCell(pointer, rec_depth, colIndex, rowIndex) {
       if (rec_depth == prodCapacitiesArr.length) {
@@ -63,7 +62,6 @@ export const useDataStore = defineStore("useDataStore", () => {
                 currColIndex,
                 rowIndex
               );
-              console.log("for columns", colID, currColIndex, tmp);
               matrixToWhichIsAssigned[rowIndex][currColIndex] =
                 tmp !== null && tmp !== undefined
                   ? tmp
@@ -77,7 +75,6 @@ export const useDataStore = defineStore("useDataStore", () => {
                 colIndex,
                 currRowIndex
               );
-              console.log("for rows", rowID, currRowIndex, tmp);
               matrixToWhichIsAssigned[currRowIndex][colIndex] =
                 tmp !== null && tmp !== undefined
                   ? tmp
@@ -124,6 +121,7 @@ export const useDataStore = defineStore("useDataStore", () => {
     dataValues,
     prodCapacities,
     selectedNodes,
+    nodeInfo,
     isSelectedFirst,
     isSelectedSecond,
     getDataValuesCell,

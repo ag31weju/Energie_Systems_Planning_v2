@@ -7,6 +7,7 @@ class Producer:
         operation_cost,
         operation_lifetime,
         availability_profile,
+        installed_capacity 
     ):
         self.node_id = node_id
         self.technology = technology
@@ -14,6 +15,7 @@ class Producer:
         self.operation_cost = operation_cost
         self.operation_lifetime = operation_lifetime
         self.availability_profile = availability_profile
+        self.installed_capacity = installed_capacity #slider value
 
     def __repr__(self):
         return (
@@ -21,32 +23,43 @@ class Producer:
             f"capacity_cost={self.capacity_cost}, "
             f"operation_cost={self.operation_cost}, operation_lifetime={self.operation_lifetime}, "
             f"availability_profile={self.availability_profile})"
+            f"installed_capacity={self.installed_capacity}"
         )
 
 
 class Consumer:
-    def __init__(self, node_id, technology, yearly_demand, demand_profile_name):
+    def __init__(self, node_id, technology, yearly_demand, demand_profile):
         self.node_id = node_id
         self.technology = technology
         self.yearly_demand = yearly_demand
-        self.demand_profile_name = demand_profile_name
+        self.demand_profile = demand_profile
 
     def __repr__(self):
         return (
             f"Consumer(node_id={self.node_id}, technology={self.technology}, "
             f"yearly_demand={self.yearly_demand}, "
-            f"demand_profile_name={self.demand_profile_name})"
+            f"demand_profile={self.demand_profile})"
         )
 
 
 class Battery:
-    def __init__(self, node_id, technology, capacity):
+    def __init__(self, node_id, technology, capacity,installed_capacity):
         self.node_id = node_id
         self.technology = technology
         self.capacity = capacity
+        self.installed_capacity = installed_capacity #slider value
 
     def __repr__(self):
         return (
             f"Battery(node_id={self.node_id}, technology={self.technology}, "
             f"capacity={self.capacity})"
+            f"installed_capacity={self.installed_capacity}"
         )
+
+
+class Timesteps:
+    def __init__(self, timesteplist):
+        self.timesteps = timesteplist
+
+    def __repr__(self):
+        return(f"Timesteps({self.timesteps})")

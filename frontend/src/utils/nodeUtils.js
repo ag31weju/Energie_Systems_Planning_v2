@@ -92,3 +92,25 @@ export function getNodeData(label) {
       return null;
   }
 }
+
+export function getNodeIcon(label) {
+  switch (label) {
+    case "Battery":
+      return Battery;
+    case "Gas":
+      return Gas;
+
+    case "Coal":
+      return Coal;
+
+    case "Solar":
+      return Solar;
+
+    case "Wind":
+      return Wind;
+
+    default:
+      console.warn(`Unknown node type: ${label}`);
+      return null;
+  }
+}

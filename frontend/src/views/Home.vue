@@ -5,7 +5,7 @@
   <div id="rootdiv" class="grid-row">
     <div id="outercolumn1" class="grid-column">
       <div id="imagebox" class="grid-column">
-        <Playfield></Playfield>
+        <Playfield @keydown.stop></Playfield>
       </div>
       <div id="slider-box">
         <Sliders @getSimulationData="handleSimulationData"></Sliders>
@@ -32,7 +32,14 @@
 </template>
 
 <script>
-import { ref, provide, watch, onMounted, useTemplateRef } from "vue";
+import {
+  ref,
+  provide,
+  toRaw,
+  onMounted,
+  onUnmounted,
+  useTemplateRef,
+} from "vue";
 import Chart from "primevue/chart";
 import Sliders from "../components/Sliders.vue";
 import Playfield from "../components/PlayfieldStudent.vue";
@@ -44,6 +51,23 @@ import { useDataStore } from "../assets/stores/dataValues";
 
 export default {
   setup(props, context) {
+    const disableKeyboardInput = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    onMounted(() => {
+      window.addEventListener("keydown", disableKeyboardInput);
+      window.addEventListener("keypress", disableKeyboardInput);
+      window.addEventListener("keyup", disableKeyboardInput);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener("keydown", disableKeyboardInput);
+      window.removeEventListener("keypress", disableKeyboardInput);
+      window.removeEventListener("keyup", disableKeyboardInput);
+    });
+
     const first = ref(true);
     const currTheme = usedTheme();
 
@@ -79,14 +103,12 @@ export default {
       if (propagateChange.reset) {
         isAutoSimulating.value = false;
         stopAutoSimulate.value = true;
-        if (!isAutoSimulating.value)
-          prepareNewScenario(numberProducers, numberConsumers);
+        prepareNewScenario(numberProducers, numberConsumers);
       }
       if (!isAutoSimulating.value) {
         if (propagateChange.autoSimulate) {
           isAutoSimulating.value = true;
           dataStore.dataValues = propagateChange.simData;
-
           autoSimulateData(propagateChange);
         } else {
           dataStore.updateDataValuesCell(dataStore.dataValues, propagateChange);
@@ -94,6 +116,7 @@ export default {
         }
       }
     }
+
     async function autoSimulateData(propagateChange) {
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -127,6 +150,11 @@ export default {
           await sleep(100);
         }
       }
+      processBestIndex(bestIdxMap);
+      isAutoSimulating.value = false;
+    }
+
+    function processBestIndex(bestIdxMap) {
       dataStore.prodCapacities.set(
         dataStore.selectedNodes[0],
         bestIdxMap.get(dataStore.selectedNodes[0])
@@ -139,7 +167,6 @@ export default {
         bestIdxMap.get(dataStore.selectedNodes[0]),
         bestIdxMap.get(dataStore.selectedNodes[1]),
       ];
-      isAutoSimulating.value = false;
     }
 
     function simulateData(propagateChange, currentSliderVals) {
@@ -152,12 +179,10 @@ export default {
         reset: propagateChange.reset,
         chartsValues: propagateChange.simData.chartsData,
       };
-      console.log(dataStore.dataValues);
     }
 
     function handleNodeSelection(newNode) {
       if (!isAutoSimulating.value) {
-        console.log(dataStore.selectedNodes);
         //LIFO-wise selection -> 0 first, 1 subsequently
         const idx = dataStore.selectedNodes.findIndex((el) => {
           return el === newNode;
@@ -174,7 +199,6 @@ export default {
             dataStore.selectedNodes = [dataStore.selectedNodes[0], newNode];
           }
         }
-        console.log(dataStore.selectedNodes[0], dataStore.selectedNodes[1]);
       }
     }
     provide("handleNodeSelection", handleNodeSelection);
